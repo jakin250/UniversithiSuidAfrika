@@ -1226,19 +1226,19 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label>Book Title *</label>
-                            <input type="text" required placeholder="e.g., Economics 6th Edition">
+                            <input id="bookTitle" name="bookTitle" type="text" required placeholder="e.g., Economics 6th Edition">
                         </div>
                         <div class="form-group">
                             <label>Author(s) *</label>
-                            <input type="text" required placeholder="e.g., Mankiw, Taylor">
+                            <input id="bookAuthor" name="bookAuthor" type="text" required placeholder="e.g., Mankiw, Taylor">
                         </div>
                         <div class="form-group">
                             <label>ISBN *</label>
-                            <input type="text" required placeholder="978-0-620-00000-0">
+                            <input id="bookISBN" name="bookISBN" type="text" required placeholder="978-0-620-00000-0">
                         </div>
                         <div class="form-group">
                             <label>Subject/Category *</label>
-                            <select required>
+                            <select id="bookCategory" name="bookCategory" required>
                                 <option value="">Select Category</option>
                                 <option>Accounting & Finance</option>
                                 <option>Law</option>
@@ -1252,7 +1252,7 @@
                         </div>
                         <div class="form-group">
                             <label>University *</label>
-                            <select required>
+                            <select id="bookLocation" name="bookLocation" required>
                                 <option value="">Select University</option>
                                 <option>University of Cape Town</option>
                                 <option>University of Witwatersrand</option>
@@ -1266,7 +1266,7 @@
                         </div>
                         <div class="form-group">
                             <label>Condition *</label>
-                            <select required>
+                            <select id="bookCondition" name="bookCondition" required>
                                 <option value="">Select Condition</option>
                                 <option>Like New (no markings)</option>
                                 <option>Good (minimal markings)</option>
@@ -1275,11 +1275,15 @@
                         </div>
                         <div class="form-group">
                             <label>Original Price (R)</label>
-                            <input type="number" placeholder="e.g., 850">
+                            <input id="bookOriginalPrice" name="bookOriginalPrice" type="number" placeholder="e.g., 850">
                         </div>
                         <div class="form-group">
                             <label>Your Price (R) *</label>
-                            <input type="number" required placeholder="e.g., 450">
+                            <input id="bookPrice" name="bookPrice" type="number" required placeholder="e.g., 450">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Cover Image URL (optional)</label>
+                            <input id="bookImageUrl" name="bookImageUrl" type="url" placeholder="Paste an image link (JPG/PNG)">
                         </div>
                         <div class="form-group full-width">
                             <label>Upload Photos</label>
@@ -1292,7 +1296,7 @@
                         </div>
                         <div class="form-group full-width">
                             <label>Description</label>
-                            <textarea placeholder="Describe the condition, any markings, included materials (CDs, access codes), etc."></textarea>
+                            <textarea id="bookDescription" name="bookDescription" placeholder="Describe the condition, any markings, included materials (CDs, access codes), etc."></textarea>
                         </div>
                     </div>
                     <div style="display: flex; gap: 1rem; justify-content: flex-end;">
@@ -1360,9 +1364,10 @@
         </div>
     </footer>
 
+    <script src="realtime.js"></script>
     <script>
         // Sample Data
-        const textbooks = [
+        let textbooks = [
             {
                 id: 1,
                 title: "Economics 6th Edition",
@@ -1598,10 +1603,42 @@
         let currentView = 'grid';
         let filteredBooks = [...textbooks];
 
+        async function loadListings() {
+            try {
+                const out = await sharedCampus.api('/api/bookstore/listings', 'GET');
+                const listings = out.listings || [];
+                if (listings.length) {
+                    textbooks = listings.map((l) => ({
+                        id: l.id,
+                        title: l.title,
+                        author: l.author,
+                        isbn: l.isbn || 'N/A',
+                        category: l.category || 'General',
+                        condition: l.condition || 'good',
+                        conditionLabel: l.conditionLabel || 'Good',
+                        price: Number(l.price || 0),
+                        originalPrice: Number(l.originalPrice || l.price || 0),
+                        image: l.imageUrl || "https://via.placeholder.com/300x400/4f86c6/ffffff?text=Listing",
+                        seller: l.seller || 'Student',
+                        rating: 5,
+                        sales: 0,
+                        location: l.location || 'Campus',
+                        description: l.description || '',
+                        date: 'Just now'
+                    }));
+                }
+            } catch (error) {
+                // Keep fallback data if backend is unavailable
+            } finally {
+                filteredBooks = [...textbooks];
+                renderProducts();
+                animateStats();
+            }
+        }
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            renderProducts();
-            animateStats();
+            loadListings();
         });
 
         // Render Products
@@ -1902,10 +1939,45 @@
             renderProducts();
         }
 
-        function handleSellSubmit(e) {
+        async function handleSellSubmit(e) {
             e.preventDefault();
-            showToast('Textbook listed successfully! It will be reviewed within 24 hours.', 'success');
-            setTimeout(showHome, 2000);
+            try {
+                const user = await sharedCampus.ensureLogin();
+                if (!user) return;
+
+                const form = e.target;
+                const get = (name) => (form.querySelector(`[name="${name}"]`)?.value || "").trim();
+
+                const title = get("bookTitle");
+                const author = get("bookAuthor");
+                const isbn = get("bookISBN");
+                const category = get("bookCategory");
+                const condition = get("bookCondition");
+                const price = Number(get("bookPrice") || 0);
+                const location = get("bookLocation") || "Campus";
+                const description = get("bookDescription");
+                const imageUrl = get("bookImageUrl");
+
+                const out = await sharedCampus.api("/api/bookstore/listings", "POST", {
+                    title,
+                    author,
+                    isbn,
+                    category,
+                    condition,
+                    price,
+                    location,
+                    description,
+                    imageUrl
+                });
+
+                textbooks.unshift(out.listing);
+                filteredBooks = [...textbooks];
+                renderProducts();
+                showToast("Textbook listed successfully!", "success");
+                setTimeout(showHome, 1200);
+            } catch (error) {
+                showToast(error.message || "Unable to list textbook right now.", "error");
+            }
         }
 
         function handleFileSelect(e) {
@@ -1976,10 +2048,12 @@
             showToast('Partner universities: UCT, Wits, UP, Stellenbosch, UKZN, UJ, Rhodes, NWU, and 18 more across South Africa', 'success');
         }
 
-        function toggleLogin() {
-            const email = prompt('Enter email to sign in:');
-            if (email) {
-                showToast(`Welcome back! Signed in as ${email}`, 'success');
+        async function toggleLogin() {
+            try {
+                const user = await sharedCampus.ensureLogin();
+                if (user) showToast(`Signed in as ${user.email}`, "success");
+            } catch (error) {
+                showToast(error.message || "Unable to sign in.", "error");
             }
         }
 

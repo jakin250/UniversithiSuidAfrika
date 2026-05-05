@@ -1077,6 +1077,7 @@
         </div>
     </div>
 
+    <script src="realtime.js"></script>
     <script>
         // Categories Data
         const categories = [
@@ -1095,7 +1096,7 @@
         ];
 
         // Listings Data
-        const listings = [
+        let listings = [
             { title: 'Calculus Early Transcendentals 8th Edition - Like New', price: 'R 450', location: 'UCT Campus', time: '2 hours ago', badge: 'TOP', image: '📚' },
             { title: 'MacBook Air M1 2020 - Perfect for Students', price: 'R 8,500', location: 'Wits University', time: '5 hours ago', badge: 'URGENT', image: '💻' },
             { title: 'Single Room Available Near Campus - All Bills Included', price: 'R 3,200', location: 'Stellenbosch', time: '1 day ago', badge: null, image: '🏠' },
@@ -1105,6 +1106,27 @@
             { title: 'Desk Lamp + Study Organizer Bundle', price: 'R 350', location: 'NMMU', time: '4 hours ago', badge: null, image: '💡' },
             { title: 'Engineering Textbook Bundle - 1st Year', price: 'R 1,600', location: 'UJ APK', time: '1 day ago', badge: 'BUNDLE', image: '📖' }
         ];
+
+        async function loadListings() {
+            try {
+                const out = await sharedCampus.api('/api/marketplace/listings', 'GET');
+                const remote = out.listings || [];
+                if (remote.length) {
+                    listings = remote.map((l) => ({
+                        title: l.title,
+                        price: `R ${Number(l.price || 0).toLocaleString()}`,
+                        location: l.location || 'Campus',
+                        time: 'Just now',
+                        badge: l.badge || null,
+                        image: l.imageEmoji || '📦',
+                    }));
+                }
+            } catch (error) {
+                // keep fallback
+            } finally {
+                renderListings();
+            }
+        }
 
         // Render Categories
         function renderCategories() {
@@ -1185,25 +1207,34 @@
                 content.innerHTML = `
                     <h2 style="margin-bottom:20px; color:#2e7d32;">Sign In</h2>
                     <p style="margin-bottom:20px; color:#666;">Access your StudentMarket account</p>
-                    <input type="email" placeholder="University Email" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
-                    <input type="password" placeholder="Password" style="width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
-                    <button style="width:100%; padding:14px; background:#2e7d32; color:white; border:none; border-radius:4px; font-size:16px; font-weight:700; cursor:pointer;">Sign In</button>
-                    <p style="margin-top:15px; text-align:center; font-size:14px; color:#666;">Don't have an account? <a href="#" style="color:#2e7d32; font-weight:600;">Register</a></p>
+                    <button onclick="ensureMarketplaceLogin()" style="width:100%; padding:14px; background:#2e7d32; color:white; border:none; border-radius:4px; font-size:16px; font-weight:700; cursor:pointer;">Sign In / Register</button>
+                    <p style="margin-top:15px; text-align:center; font-size:14px; color:#666;">Use your student email (e.g. name@unisa.ac.za).</p>
                 `;
             } else if (type === 'post') {
                 content.innerHTML = `
                     <h2 style="margin-bottom:20px; color:#ff9800;">Post an Ad</h2>
                     <p style="margin-bottom:20px; color:#666;">List your item in seconds</p>
-                    <input type="text" placeholder="What are you selling?" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
-                    <input type="text" placeholder="Price (R)" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
-                    <select style="width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; border-radius:4px; font-size:15px; color:#666;">
-                        <option>Select Category</option>
-                        <option>Textbooks</option>
-                        <option>Electronics</option>
-                        <option>Accommodation</option>
-                        <option>Furniture</option>
+                    <input id="adTitle" type="text" placeholder="What are you selling?" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
+                    <input id="adPrice" type="number" placeholder="Price (R)" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
+                    <input id="adLocation" type="text" placeholder="Location (e.g. UCT Campus)" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
+                    <select id="adBadge" style="width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; border-radius:4px; font-size:15px; color:#666;">
+                        <option value="">Optional badge</option>
+                        <option>TOP</option>
+                        <option>NEW</option>
+                        <option>URGENT</option>
+                        <option>POPULAR</option>
+                        <option>BUNDLE</option>
                     </select>
-                    <button style="width:100%; padding:14px; background:#ff9800; color:white; border:none; border-radius:4px; font-size:16px; font-weight:700; cursor:pointer;">Continue</button>
+                    <select id="adEmoji" style="width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; border-radius:4px; font-size:15px; color:#666;">
+                        <option value="📦">📦 General</option>
+                        <option value="📚">📚 Textbook</option>
+                        <option value="💻">💻 Electronics</option>
+                        <option value="🏠">🏠 Accommodation</option>
+                        <option value="🛋️">🛋️ Furniture</option>
+                        <option value="📱">📱 Phone</option>
+                        <option value="🚲">🚲 Transport</option>
+                    </select>
+                    <button onclick="submitMarketplaceListing()" style="width:100%; padding:14px; background:#ff9800; color:white; border:none; border-radius:4px; font-size:16px; font-weight:700; cursor:pointer;">Post ad</button>
                 `;
             }
             
@@ -1264,7 +1295,7 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
             renderCategories();
-            renderListings();
+            loadListings();
             
             // Observe elements for animation
             document.querySelectorAll('.category-card, .listing-card, .promo-card, .step-card').forEach(el => {
@@ -1278,6 +1309,54 @@
                 animateValue('statUsers', 0, 45200, 2000);
             }, 500);
         });
+
+        async function ensureMarketplaceLogin() {
+            try {
+                await sharedCampus.ensureLogin();
+                closeModal();
+            } catch (error) {
+                alert(error.message || 'Unable to sign in.');
+            }
+        }
+
+        async function submitMarketplaceListing() {
+            const title = document.getElementById('adTitle')?.value?.trim() || '';
+            const price = Number(document.getElementById('adPrice')?.value || 0);
+            const location = document.getElementById('adLocation')?.value?.trim() || 'Campus';
+            const badge = document.getElementById('adBadge')?.value || '';
+            const imageEmoji = document.getElementById('adEmoji')?.value || '📦';
+
+            if (!title || !Number.isFinite(price) || price <= 0) {
+                alert('Please enter a title and a valid price.');
+                return;
+            }
+
+            try {
+                const user = await sharedCampus.ensureLogin();
+                if (!user) return;
+
+                const out = await sharedCampus.api('/api/marketplace/listings', 'POST', {
+                    title,
+                    price,
+                    location,
+                    badge: badge || 'NEW',
+                    imageEmoji: imageEmoji || '📦'
+                });
+
+                listings.unshift({
+                    title: out.listing.title,
+                    price: `R ${Number(out.listing.price).toLocaleString()}`,
+                    location: out.listing.location,
+                    time: 'Just now',
+                    badge: out.listing.badge || null,
+                    image: out.listing.imageEmoji || '📦'
+                });
+                renderListings();
+                closeModal();
+            } catch (error) {
+                alert(error.message || 'Unable to post ad right now.');
+            }
+        }
 
         // Mobile menu
         document.querySelector('.mobile-toggle').addEventListener('click', function() {

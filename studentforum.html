@@ -1067,70 +1067,10 @@
     <!-- Toast -->
     <div class="toast" id="toast"></div>
 
+    <script src="realtime.js"></script>
     <script>
-        // Sample data
-        let posts = [
-            {
-                id: 1,
-                title: "Complete COS101 Study Notes - Algorithm Basics & Flowcharts",
-                body: "Hey everyone! I've compiled comprehensive notes for COS101 covering algorithm design, flowchart symbols, pseudocode standards, and basic control structures. These cover weeks 1-4 and include practice examples. Hope this helps with the upcoming test!",
-                author: "u/CodeMaster_SA",
-                time: "5 hours ago",
-                votes: 156,
-                comments: 23,
-                tag: "COS101",
-                tagType: "module",
-                userVote: 0
-            },
-            {
-                id: 2,
-                title: "MAT150 Integration Techniques - Summary Sheet",
-                body: "Sharing my integration techniques summary for MAT150. Covers substitution, integration by parts, partial fractions, and trigonometric integrals. I found the table approach for integration by parts really helpful. PDF link in comments!",
-                author: "u/MathWhiz",
-                time: "8 hours ago",
-                votes: 89,
-                comments: 12,
-                tag: "MAT150",
-                tagType: "module",
-                userVote: 0
-            },
-            {
-                id: 3,
-                title: "General: Best Study Spots on Campus?",
-                body: "Looking for quiet places to study between classes. The library is always packed during exam season. Any hidden gems or less crowded buildings? Preferably with power outlets and decent WiFi.",
-                author: "u/NewStudent2026",
-                time: "12 hours ago",
-                votes: 45,
-                comments: 34,
-                tag: "General",
-                tagType: "general",
-                userVote: 0
-            },
-            {
-                id: 4,
-                title: "ACC101 Financial Statements Cheat Sheet",
-                body: "Made a quick reference guide for ACC101 financial statements. Includes balance sheet structure, income statement format, and cash flow categories. Also added common exam tricks to watch out for!",
-                author: "u/AccountantToBe",
-                time: "1 day ago",
-                votes: 203,
-                comments: 45,
-                tag: "ACC101",
-                tagType: "module",
-                userVote: 0
-            },
-            {
-                id: 5,
-                title: "Study Group for PHY120 - Electromagnetism",
-                body: "Anyone want to form a study group for PHY120? Struggling with Maxwell's equations and electromagnetic induction. Planning to meet twice a week at the Science building. All welcome!",
-                author: "u/PhysicsFan",
-                time: "1 day ago",
-                votes: 67,
-                comments: 18,
-                tag: "PHY120",
-                tagType: "module",
-                userVote: 0
-            }
-        ];
+        // Loaded from backend
+        let posts = [];
 
         let currentFilter = 'hot';
         let isJoined = false;
@@ -1240,7 +1180,7 @@
             document.getElementById('moduleCode').value = '';
         }
 
-        function submitPost() {
+        async function submitPost() {
             const title = document.getElementById('postTitle').value.trim();
             const body = document.getElementById('postBody').value.trim();
             const type = document.getElementById('postType').value;
@@ -1251,23 +1191,28 @@
                 return;
             }
 
-            const newPost = {
-                id: posts.length + 1,
-                title: title,
-                body: body,
-                author: 'u/You',
-                time: 'Just now',
-                votes: 1,
-                comments: 0,
-                tag: type === 'module' && moduleCode ? moduleCode.toUpperCase() : type.charAt(0).toUpperCase() + type.slice(1),
-                tagType: type === 'module' ? 'module' : 'general',
-                userVote: 1
-            };
+            try {
+                const user = await sharedCampus.ensureLogin();
+                if (!user) return;
 
-            posts.unshift(newPost);
-            renderPosts();
-            closeModal();
-            showToast('Post created successfully!');
+                const tag = type === 'module' && moduleCode
+                    ? moduleCode.toUpperCase()
+                    : type.charAt(0).toUpperCase() + type.slice(1);
+
+                const out = await sharedCampus.api('/api/forum/posts', 'POST', {
+                    title,
+                    body,
+                    tag,
+                    tagType: type === 'module' ? 'module' : 'general'
+                });
+
+                posts.unshift(out.post);
+                renderPosts();
+                closeModal();
+                showToast('Post created successfully!');
+            } catch (error) {
+                showToast(error.message || 'Unable to post right now');
+            }
         }
 
         function viewPost(id) {
@@ -1342,8 +1287,19 @@
             `).join('');
         });
 
-        // Initial render
-        renderPosts();
+        async function loadPosts() {
+            try {
+                const out = await sharedCampus.api('/api/forum/posts', 'GET');
+                posts = out.posts || [];
+            } catch (error) {
+                posts = [];
+            } finally {
+                renderPosts();
+            }
+        }
+
+        // Initial load
+        loadPosts();
     </script>
 </body>
 </html>

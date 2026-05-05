@@ -1,0 +1,14 @@
+{
+  "name": "universithi-suid-afrika",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@vercel/kv": "^1.0.0",
+    "bcryptjs": "^2.4.3",
+    "nanoid": "^5.1.5"
+  }
+}
