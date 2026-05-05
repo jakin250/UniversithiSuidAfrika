@@ -1134,24 +1134,6 @@
 
         let currentFilter = 'hot';
         let isJoined = false;
-        let currentUser = localStorage.getItem('forumStudentEmail') || '';
-
-        function isStudentEmail(email){
-            return /@[^@]+\.(ac\.za|edu)$/i.test(email);
-        }
-
-        function requireForumLogin(){
-            if (currentUser) return true;
-            const email = prompt('Enter your student email (e.g. name@university.ac.za) to continue:');
-            if (!email || !isStudentEmail(email.trim())) {
-                showToast('Please sign in with a valid student email.');
-                return false;
-            }
-            currentUser = email.trim().toLowerCase();
-            localStorage.setItem('forumStudentEmail', currentUser);
-            showToast('Signed in as ' + currentUser);
-            return true;
-        }
 
         // Render posts
         function renderPosts() {
@@ -1247,7 +1229,6 @@
         }
 
         function openModal() {
-            if (!requireForumLogin()) return;
             document.getElementById('postModal').classList.add('active');
             document.getElementById('postTitle').focus();
         }
@@ -1274,7 +1255,7 @@
                 id: posts.length + 1,
                 title: title,
                 body: body,
-                author: `u/${currentUser.split('@')[0]}`,
+                author: 'u/You',
                 time: 'Just now',
                 votes: 1,
                 comments: 0,
