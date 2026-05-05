@@ -854,6 +854,24 @@
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
+    
+        /* Winter theme overrides */
+        :root {
+            --reddit-orange: #7fc8ff;
+            --reddit-blue: #5a93d6;
+            --bg-primary: #e9f3ff;
+            --bg-secondary: #f7fbff;
+            --bg-tertiary: #e1ecf8;
+            --text-primary: #1f3550;
+            --text-secondary: #5a7190;
+            --border-color: #bfd3ea;
+            --upvote: #4f86c6;
+            --downvote: #7ba6d8;
+            --hover-bg: #d7e6f7;
+        }
+        .banner { background: linear-gradient(90deg, #7fc8ff 0%, #c5e7ff 100%); }
+        .avatar { background: linear-gradient(135deg, #8dc5ff 0%, #77a9df 100%); }
+
     </style>
 </head>
 <body>
@@ -1116,6 +1134,24 @@
 
         let currentFilter = 'hot';
         let isJoined = false;
+        let currentUser = localStorage.getItem('forumStudentEmail') || '';
+
+        function isStudentEmail(email){
+            return /@[^@]+\.(ac\.za|edu)$/i.test(email);
+        }
+
+        function requireForumLogin(){
+            if (currentUser) return true;
+            const email = prompt('Enter your student email (e.g. name@university.ac.za) to continue:');
+            if (!email || !isStudentEmail(email.trim())) {
+                showToast('Please sign in with a valid student email.');
+                return false;
+            }
+            currentUser = email.trim().toLowerCase();
+            localStorage.setItem('forumStudentEmail', currentUser);
+            showToast('Signed in as ' + currentUser);
+            return true;
+        }
 
         // Render posts
         function renderPosts() {
@@ -1211,6 +1247,7 @@
         }
 
         function openModal() {
+            if (!requireForumLogin()) return;
             document.getElementById('postModal').classList.add('active');
             document.getElementById('postTitle').focus();
         }
@@ -1237,7 +1274,7 @@
                 id: posts.length + 1,
                 title: title,
                 body: body,
-                author: 'u/You',
+                author: `u/${currentUser.split('@')[0]}`,
                 time: 'Just now',
                 votes: 1,
                 comments: 0,
