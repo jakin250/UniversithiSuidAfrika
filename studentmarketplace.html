@@ -819,6 +819,24 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+    
+        /* Winter theme overrides */
+        body {
+            background-color: #edf5ff;
+            color: #1e3550;
+        }
+        .header-top { background: #3f6fa0; }
+        .header { background: #f8fbff; border-bottom: 1px solid #c9def5; }
+        .logo, .btn-login { color: #2d5c90; border-color: #2d5c90; }
+        .logo-icon, .search-btn { background: #2d5c90; }
+        .search-bar { border-color: #2d5c90; }
+        .hero-section {
+            background: linear-gradient(135deg, #dbeeff 0%, #bfdcff 100%);
+        }
+        .hero-content h1, .stat-number { color: #234b75; }
+        .btn-post { background: #7fb7ff; color: #15324f; }
+        .btn-post:hover { background: #62a4f0; }
+
     </style>
 </head>
 <body>
@@ -851,7 +869,7 @@
             </div>
 
             <div class="header-actions">
-                <button class="header-btn btn-login" onclick="toggleModal('login')">Sign In</button>
+                <button class="header-btn btn-login" id="loginBtn" onclick="toggleModal('login')">Sign In</button>
                 <button class="header-btn btn-post" onclick="toggleModal('post')">Post an Ad</button>
             </div>
         </div>
@@ -1077,6 +1095,10 @@
         ];
 
         // Listings Data
+        let currentUser = localStorage.getItem('marketStudentEmail') || '';
+        const userListings = JSON.parse(localStorage.getItem('marketUserListings') || '[]');
+        function isStudentEmail(email){ return /@[^@]+\.(ac\.za|edu)$/i.test(email); }
+
         const listings = [
             { title: 'Calculus Early Transcendentals 8th Edition - Like New', price: 'R 450', location: 'UCT Campus', time: '2 hours ago', badge: 'TOP', image: '📚' },
             { title: 'MacBook Air M1 2020 - Perfect for Students', price: 'R 8,500', location: 'Wits University', time: '5 hours ago', badge: 'URGENT', image: '💻' },
@@ -1098,6 +1120,13 @@
                     <div class="cat-count">${cat.count}</div>
                 </div>
             `).join('');
+        }
+
+        listings.unshift(...userListings);
+
+        function updateLoginBtn(){
+            const b = document.getElementById('loginBtn');
+            if (b) b.textContent = currentUser ? `Signed in: ${currentUser.split('@')[0]}` : 'Sign In';
         }
 
         // Render Listings
@@ -1169,15 +1198,15 @@
                     <p style="margin-bottom:20px; color:#666;">Access your StudentMarket account</p>
                     <input type="email" placeholder="University Email" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
                     <input type="password" placeholder="Password" style="width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
-                    <button style="width:100%; padding:14px; background:#2e7d32; color:white; border:none; border-radius:4px; font-size:16px; font-weight:700; cursor:pointer;">Sign In</button>
+                    <button onclick="submitMarketLogin()" style="width:100%; padding:14px; background:#2e7d32; color:white; border:none; border-radius:4px; font-size:16px; font-weight:700; cursor:pointer;">Sign In</button>
                     <p style="margin-top:15px; text-align:center; font-size:14px; color:#666;">Don't have an account? <a href="#" style="color:#2e7d32; font-weight:600;">Register</a></p>
                 `;
             } else if (type === 'post') {
                 content.innerHTML = `
                     <h2 style="margin-bottom:20px; color:#ff9800;">Post an Ad</h2>
                     <p style="margin-bottom:20px; color:#666;">List your item in seconds</p>
-                    <input type="text" placeholder="What are you selling?" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
-                    <input type="text" placeholder="Price (R)" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
+                    <input id="marketTitle" type="text" placeholder="What are you selling?" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
+                    <input id="marketPrice" type="text" placeholder="Price (R)" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
                     <select style="width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; border-radius:4px; font-size:15px; color:#666;">
                         <option>Select Category</option>
                         <option>Textbooks</option>
@@ -1185,7 +1214,7 @@
                         <option>Accommodation</option>
                         <option>Furniture</option>
                     </select>
-                    <button style="width:100%; padding:14px; background:#ff9800; color:white; border:none; border-radius:4px; font-size:16px; font-weight:700; cursor:pointer;">Continue</button>
+                    <button onclick="submitMarketListing()" style="width:100%; padding:14px; background:#ff9800; color:white; border:none; border-radius:4px; font-size:16px; font-weight:700; cursor:pointer;">Post Listing</button>
                 `;
             }
             
@@ -1194,6 +1223,28 @@
 
         function closeModal() {
             document.getElementById('modalOverlay').style.display = 'none';
+        }
+
+
+        function submitMarketLogin() {
+            const emailInput = document.querySelector('#modalContent input[type="email"]');
+            const email = emailInput ? emailInput.value.trim().toLowerCase() : '';
+            if (!email || !isStudentEmail(email)) { alert('Please use a valid student email.'); return; }
+            currentUser = email;
+            localStorage.setItem('marketStudentEmail', currentUser);
+            updateLoginBtn();
+            closeModal();
+        }
+
+        function submitMarketListing() {
+            if (!currentUser) { alert('Please sign in with your student email first.'); return; }
+            const title = document.getElementById('marketTitle')?.value.trim();
+            const price = document.getElementById('marketPrice')?.value.trim();
+            if (!title || !price) { alert('Enter item name and price.'); return; }
+            listings.unshift({ title, price: `R${price}`, location: 'Campus', time: 'Just now', image: '📦', badge: 'New' });
+            localStorage.setItem('marketUserListings', JSON.stringify(listings.filter(x => x.time === 'Just now')));
+            renderListings();
+            closeModal();
         }
 
         function showPromo(type) {
@@ -1245,6 +1296,7 @@
 
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
+            updateLoginBtn();
             renderCategories();
             renderListings();
             
@@ -1277,5 +1329,25 @@
             actions.style.zIndex = '999';
         });
     </script>
+    
+    <script>
+    (async function(){
+      if(!window.sharedCampus){ setTimeout(arguments.callee,150); return; }
+      try{const r=await sharedCampus.api('/api/marketplace/listings'); if(r.listings.length){ listings.unshift(...r.listings); renderListings(); }}catch{}
+      window.submitMarketLogin = async function(){
+        try{ const u = await sharedCampus.loginPrompt(); currentUser=u.email; updateLoginBtn(); closeModal(); }catch(e){alert(e.message)}
+      }
+      window.submitMarketListing = async function(){
+        try{
+          if(!localStorage.getItem('sessionToken')) await sharedCampus.loginPrompt();
+          const title=document.getElementById('marketTitle').value.trim();
+          const price=document.getElementById('marketPrice').value.trim();
+          const r=await sharedCampus.api('/api/marketplace/listings','POST',{title,price}); listings.unshift(r.listing); renderListings(); closeModal();
+        }catch(e){alert(e.message)}
+      }
+    })();
+    </script>
+
+    <script src="realtime.js"></script>
 </body>
 </html>
