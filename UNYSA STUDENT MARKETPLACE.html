@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Marketplace - Buy & Sell</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f7f7f7;
+            color: #373737;
+            line-height: 1.5;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* Header */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-top {
+            background: #2e7d32;
+            color: white;
+            font-size: 13px;
+            padding: 8px 0;
+        }
+
+        .header-top-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-top a {
+            color: white;
+            margin-left: 20px;
+            font-weight: 500;
+        }
+
+        .header-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2e7d32;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            width: 35px;
+            height: 35px;
+            background: #2e7d32;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .search-bar {
+            flex: 1;
+            display: flex;
+            max-width: 700px;
+            border: 2px solid #2e7d32;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .search-location {
+            padding: 12px 15px;
+            border: none;
+            border-left: 1px solid #e0e0e0;
+            background: #f5f5f5;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            min-width: 150px;
+        }
+
+        .search-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 0 25px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header-btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-login {
+            color: #2e7d32;
+            border: 1px solid #2e7d32;
+            background: white;
+        }
+
+        .btn-login:hover {
+            background: #f1f8f4;
+        }
+
+        .btn-post {
+            background: #ff9800;
+            color: white;
+            border: none;
+        }
+
+        .btn-post:hover {
+            background: #f57c00;
+        }
+
+        /* Hero Banner */
+        .hero-section {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 40px 0;
+        }
+
+        .hero-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 42px;
+            color: #1b5e20;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 18px;
+            color: #4a4a4a;
+            margin-bottom: 25px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2e7d32;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .hero-image {
+            position: relative;
+            height: 350px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Promo Banners */
+        .promo-section {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .promo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .promo-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .promo-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .promo-img {
+            height: 160px;
+            background: linear-gradient(135deg, #81c784 0%, #4caf50 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .promo-img.style-2 {
+            background: linear-gradient(135deg, #fff176 0%, #fdd835 100%);
+            color: #333;
+        }
+
+        .promo-img.style-3 {
+            background: linear-gradient(135deg, #4fc3f7 0%, #0288d1 100%);
+        }
+
+        .promo-content {
+            padding: 20px;
+        }
+
+        .promo-content h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .promo-content p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Categories */
+        .categories-section {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .view-all {
+            color: #2e7d32;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 15px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 8px;
+            padding: 25px 15px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .category-card:hover {
+            border-color: #2e7d32;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(46,125,50,0.15);
+        }
+
+        .cat-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 12px;
+            background: #e8f5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #2e7d32;
+        }
+
+        .cat-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .cat-count {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        /* Featured Listings */
+        .listings-section {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .listings-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .listing-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .listing-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+
+        .listing-img {
+            height: 200px;
+            background: #f0f0f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .listing-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .listing-card:hover .listing-img img {
+            transform: scale(1.05);
+        }
+
+        .listing-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #ff9800;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .listing-fav {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 18px;
+            color: #999;
+            transition: all 0.2s;
+        }
+
+        .listing-fav:hover, .listing-fav.active {
+            color: #e91e63;
+            background: #fce4ec;
+        }
+
+        .listing-info {
+            padding: 15px;
+        }
+
+        .listing-price {
+            font-size: 20px;
+            font-weight: 800;
+            color: #2e7d32;
+            margin-bottom: 5px;
+        }
+
+        .listing-title {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 42px;
+        }
+
+        .listing-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #999;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .listing-location {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .listing-time {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Safety Banner */
+        .safety-banner {
+            background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+            color: white;
+            padding: 40px 0;
+            margin: 50px 0;
+        }
+
+        .safety-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .safety-content h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .safety-content p {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .safety-btn {
+            display: inline-block;
+            background: white;
+            color: #2e7d32;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 15px;
+            transition: all 0.2s;
+        }
+
+        .safety-btn:hover {
+            background: #f1f8f4;
+            transform: translateY(-2px);
+        }
+
+        .safety-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .safety-feature {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .safety-feature-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .safety-feature h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .safety-feature p {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        /* How It Works */
+        .how-section {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .how-section .section-title {
+            margin-bottom: 40px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .step-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            position: relative;
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: #2e7d32;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            margin: 0 auto 20px;
+        }
+
+        .step-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .step-card p {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .footer {
+            background: #263238;
+            color: #b0bec5;
+            padding: 60px 0 0;
+            margin-top: 80px;
+        }
+
+        .footer-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-brand h3 {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-brand p {
+            font-size: 14px;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            color: #90a4ae;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .social-link:hover {
+            background: #2e7d32;
+            transform: translateY(-3px);
+        }
+
+        .footer-col h4 {
+            color: white;
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #90a4ae;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: #2e7d32;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 50px;
+            padding: 25px 0;
+            text-align: center;
+            font-size: 13px;
+            color: #78909c;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .categories-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .listings-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .promo-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .footer-inner {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-main {
+                flex-wrap: wrap;
+            }
+            .search-bar {
+                order: 3;
+                width: 100%;
+                max-width: 100%;
+                margin-top: 10px;
+            }
+            .hero-inner {
+                grid-template-columns: 1fr;
+            }
+            .hero-image {
+                height: 250px;
+            }
+            .categories-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .listings-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .promo-grid {
+                grid-template-columns: 1fr;
+            }
+            .safety-inner {
+                grid-template-columns: 1fr;
+            }
+            .safety-features {
+                margin-top: 20px;
+            }
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+            .footer-inner {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            .mobile-toggle {
+                display: block;
+            }
+            .header-actions {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .listings-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-content h1 {
+                font-size: 28px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-top">
+            <div class="header-top-inner">
+                <span>South Africa's Favourite Student Marketplace</span>
+                <div>
+                    <a href="#">Help Centre</a>
+                    <a href="#">Safety Tips</a>
+                    <a href="#">Download App</a>
+                </div>
+            </div>
+        </div>
+        <div class="header-main">
+            <div class="mobile-toggle">☰</div>
+            <a href="#" class="logo">
+                <div class="logo-icon">📚</div>
+                StudentMarket
+            </a>
+            
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="Search for textbooks, laptops, accommodation..." id="searchInput">
+                <button class="search-location" id="locationBtn">
+                    📍 All Locations
+                </button>
+                <button class="search-btn" onclick="handleSearch()">Search</button>
+            </div>
+
+            <div class="header-actions">
+                <button class="header-btn btn-login" onclick="toggleModal('login')">Sign In</button>
+                <button class="header-btn btn-post" onclick="toggleModal('post')">Post an Ad</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-inner">
+            <div class="hero-content">
+                <h1>Buy & Sell on Campus</h1>
+                <p>The safest place for students to trade textbooks, find accommodation, and score deals on everything you need for student life.</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <div class="stat-number" id="statListings">12,450</div>
+                        <div class="stat-label">Live Ads</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="statUsers">45,200</div>
+                        <div class="stat-label">Students</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="statSafe">100%</div>
+                        <div class="stat-label">Verified</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <div style="text-align: center; color: #2e7d32; padding: 40px;">
+                    <div style="font-size: 80px; margin-bottom: 20px;">🎓</div>
+                    <h3 style="font-size: 24px; margin-bottom: 10px;">Student Life Made Easy</h3>
+                    <p style="color: #666; font-size: 16px;">From textbooks to tech, find it all here</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Promo Banners -->
+    <section class="promo-section">
+        <div class="promo-grid">
+            <div class="promo-card" onclick="showPromo('shipping')">
+                <div class="promo-img">📦</div>
+                <div class="promo-content">
+                    <h3>Pay & Ship</h3>
+                    <p>Buy online and have your items delivered safely to your dorm or campus.</p>
+                </div>
+            </div>
+            <div class="promo-card" onclick="showPromo('verify')">
+                <div class="promo-img style-2">✅</div>
+                <div class="promo-content">
+                    <h3>Verified Students Only</h3>
+                    <p>Every user is verified with a student email. Trade with confidence.</p>
+                </div>
+            </div>
+            <div class="promo-card" onclick="showPromo('safe')">
+                <div class="promo-img style-3">🛡️</div>
+                <div class="promo-content">
+                    <h3>Safe Meet-up Spots</h3>
+                    <p>We recommend safe, public campus locations for all in-person exchanges.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories-section">
+        <div class="section-header">
+            <h2 class="section-title">Browse Categories</h2>
+            <a href="#" class="view-all">View all categories →</a>
+        </div>
+        <div class="categories-grid" id="categoriesGrid">
+            <!-- Populated by JS -->
+        </div>
+    </section>
+
+    <!-- Featured Listings -->
+    <section class="listings-section">
+        <div class="section-header">
+            <h2 class="section-title">Fresh on Campus</h2>
+            <a href="#" class="view-all">View all listings →</a>
+        </div>
+        <div class="listings-grid" id="listingsGrid">
+            <!-- Populated by JS -->
+        </div>
+    </section>
+
+    <!-- Safety Banner -->
+    <section class="safety-banner">
+        <div class="safety-inner">
+            <div class="safety-content">
+                <h2>Buy & Sell Safely</h2>
+                <p>Your safety is our priority. We verify every student, monitor transactions, and provide secure payment options. Join thousands of students trading with confidence.</p>
+                <a href="#" class="safety-btn">Learn About Safety</a>
+            </div>
+            <div class="safety-features">
+                <div class="safety-feature">
+                    <div class="safety-feature-icon">🔒</div>
+                    <h4>Secure Payments</h4>
+                    <p>Escrow service protects your money until you receive your item.</p>
+                </div>
+                <div class="safety-feature">
+                    <div class="safety-feature-icon">🎓</div>
+                    <h4>Student Verified</h4>
+                    <p>Every account is linked to a valid university email address.</p>
+                </div>
+                <div class="safety-feature">
+                    <div class="safety-feature-icon">📍</div>
+                    <h4>Campus Spots</h4>
+                    <p>Designated safe exchange locations at major universities.</p>
+                </div>
+                <div class="safety-feature">
+                    <div class="safety-feature-icon">⚡</div>
+                    <h4>Instant Alerts</h4>
+                    <p>Get notified about scams and suspicious activity immediately.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-section">
+        <h2 class="section-title">How StudentMarket Works</h2>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>Sign Up with Email</h3>
+                <p>Register with your university email to get verified instantly and start browsing.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>Post or Browse</h3>
+                <p>List your items in seconds or search through thousands of student deals.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>Meet & Exchange</h3>
+                <p>Chat securely, meet on campus, and complete your trade safely.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <h3>
+                    <span style="font-size: 28px;">📚</span>
+                    StudentMarket
+                </h3>
+                <p>South Africa's premier student marketplace. Buy, sell, and trade with fellow students across all major campuses.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">f</a>
+                    <a href="#" class="social-link">t</a>
+                    <a href="#" class="social-link">in</a>
+                    <a href="#" class="social-link">ig</a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>Buy</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Textbooks</a></li>
+                    <li><a href="#">Electronics</a></li>
+                    <li><a href="#">Accommodation</a></li>
+                    <li><a href="#">Furniture</a></li>
+                    <li><a href="#">Clothing</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Sell</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Post an Ad</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Seller Tips</a></li>
+                    <li><a href="#">Promote Your Ad</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Help Centre</a></li>
+                    <li><a href="#">Safety Tips</a></li>
+                    <li><a href="#">Scam Alerts</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Company</h4>
+                <ul class="footer-links">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p> StudentMarket. All rights reserved. Designed for students, by students.</p>
+        </div>
+    </footer>
+
+    <!-- Modal Overlay -->
+    <div id="modalOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; justify-content:center; align-items:center;">
+        <div style="background:white; padding:40px; border-radius:12px; max-width:500px; width:90%; position:relative; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+            <button onclick="closeModal()" style="position:absolute; top:15px; right:15px; background:none; border:none; font-size:24px; cursor:pointer;">×</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Categories Data
+        const categories = [
+            { name: 'Textbooks', count: '2,340 ads', icon: '📖', color: '#e8f5e9' },
+            { name: 'Electronics', count: '1,850 ads', icon: '💻', color: '#e3f2fd' },
+            { name: 'Accommodation', count: '890 ads', icon: '🏠', color: '#fff3e0' },
+            { name: 'Furniture', count: '1,200 ads', icon: '🛋️', color: '#fce4ec' },
+            { name: 'Clothing', count: '3,400 ads', icon: '👕', color: '#f3e5f5' },
+            { name: 'Transport', count: '560 ads', icon: '🚗', color: '#e0f2f1' },
+            { name: 'Sports', count: '780 ads', icon: '⚽', color: '#e8f5e9' },
+            { name: 'Services', count: '1,100 ads', icon: '🔧', color: '#e3f2fd' },
+            { name: 'Jobs', count: '450 ads', icon: '💼', color: '#fff3e0' },
+            { name: 'Tickets', count: '320 ads', icon: '🎫', color: '#fce4ec' },
+            { name: 'Notes', count: '2,100 ads', icon: '📝', color: '#f3e5f5' },
+            { name: 'Other', count: '1,500 ads', icon: '📦', color: '#e0f2f1' }
+        ];
+
+        // Listings Data
+        const listings = [
+            { title: 'Calculus Early Transcendentals 8th Edition - Like New', price: 'R 450', location: 'UCT Campus', time: '2 hours ago', badge: 'TOP', image: '📚' },
+            { title: 'MacBook Air M1 2020 - Perfect for Students', price: 'R 8,500', location: 'Wits University', time: '5 hours ago', badge: 'URGENT', image: '💻' },
+            { title: 'Single Room Available Near Campus - All Bills Included', price: 'R 3,200', location: 'Stellenbosch', time: '1 day ago', badge: null, image: '🏠' },
+            { title: 'Scientific Calculator TI-84 Plus - Engineering Student', price: 'R 1,200', location: 'UP Hatfield', time: '3 hours ago', badge: 'POPULAR', image: '🧮' },
+            { title: 'Bicycle for Sale - Perfect for Campus Commute', price: 'R 1,800', location: 'Rhodes University', time: '6 hours ago', badge: null, image: '🚲' },
+            { title: 'iPhone 13 128GB - Great Condition', price: 'R 7,200', location: 'UKZN Durban', time: '30 mins ago', badge: 'NEW', image: '📱' },
+            { title: 'Desk Lamp + Study Organizer Bundle', price: 'R 350', location: 'NMMU', time: '4 hours ago', badge: null, image: '💡' },
+            { title: 'Engineering Textbook Bundle - 1st Year', price: 'R 1,600', location: 'UJ APK', time: '1 day ago', badge: 'BUNDLE', image: '📖' }
+        ];
+
+        // Render Categories
+        function renderCategories() {
+            const grid = document.getElementById('categoriesGrid');
+            grid.innerHTML = categories.map((cat, index) => `
+                <div class="category-card" style="animation-delay: ${index * 0.05}s" onclick="filterCategory('${cat.name}')">
+                    <div class="cat-icon" style="background: ${cat.color}">${cat.icon}</div>
+                    <div class="cat-name">${cat.name}</div>
+                    <div class="cat-count">${cat.count}</div>
+                </div>
+            `).join('');
+        }
+
+        // Render Listings
+        function renderListings() {
+            const grid = document.getElementById('listingsGrid');
+            grid.innerHTML = listings.map((item, index) => `
+                <div class="listing-card" style="animation-delay: ${index * 0.1}s">
+                    <div class="listing-img">
+                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:80px; background: linear-gradient(135deg, #f5f5f5, #e0e0e0);">
+                            ${item.image}
+                        </div>
+                        ${item.badge ? `<span class="listing-badge">${item.badge}</span>` : ''}
+                        <button class="listing-fav" onclick="toggleFav(this, event)">♡</button>
+                    </div>
+                    <div class="listing-info">
+                        <div class="listing-price">${item.price}</div>
+                        <div class="listing-title">${item.title}</div>
+                        <div class="listing-meta">
+                            <span class="listing-location">📍 ${item.location}</span>
+                            <span class="listing-time">🕒 ${item.time}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Toggle Favorite
+        function toggleFav(btn, event) {
+            event.stopPropagation();
+            btn.classList.toggle('active');
+            btn.textContent = btn.classList.contains('active') ? '♥' : '♡';
+        }
+
+        // Filter Category
+        function filterCategory(name) {
+            alert(`Filtering by: ${name}`);
+            // In a real app, this would filter the listings
+        }
+
+        // Handle Search
+        function handleSearch() {
+            const query = document.getElementById('searchInput').value;
+            if (query.trim()) {
+                alert(`Searching for: ${query}`);
+            }
+        }
+
+        // Enter key search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') handleSearch();
+        });
+
+        // Location Button
+        document.getElementById('locationBtn').addEventListener('click', function() {
+            const locations = ['All Locations', 'Cape Town', 'Johannesburg', 'Pretoria', 'Durban', 'Stellenbosch', 'Port Elizabeth'];
+            const current = this.textContent.trim();
+            const nextIndex = (locations.indexOf(current.replace('📍 ', '')) + 1) % locations.length;
+            this.textContent = '📍 ' + locations[nextIndex];
+        });
+
+        // Modal System
+        function toggleModal(type) {
+            const overlay = document.getElementById('modalOverlay');
+            const content = document.getElementById('modalContent');
+            
+            if (type === 'login') {
+                content.innerHTML = `
+                    <h2 style="margin-bottom:20px; color:#2e7d32;">Sign In</h2>
+                    <p style="margin-bottom:20px; color:#666;">Access your StudentMarket account</p>
+                    <input type="email" placeholder="University Email" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
+                    <input type="password" placeholder="Password" style="width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
+                    <button style="width:100%; padding:14px; background:#2e7d32; color:white; border:none; border-radius:4px; font-size:16px; font-weight:700; cursor:pointer;">Sign In</button>
+                    <p style="margin-top:15px; text-align:center; font-size:14px; color:#666;">Don't have an account? <a href="#" style="color:#2e7d32; font-weight:600;">Register</a></p>
+                `;
+            } else if (type === 'post') {
+                content.innerHTML = `
+                    <h2 style="margin-bottom:20px; color:#ff9800;">Post an Ad</h2>
+                    <p style="margin-bottom:20px; color:#666;">List your item in seconds</p>
+                    <input type="text" placeholder="What are you selling?" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
+                    <input type="text" placeholder="Price (R)" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
+                    <select style="width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; border-radius:4px; font-size:15px; color:#666;">
+                        <option>Select Category</option>
+                        <option>Textbooks</option>
+                        <option>Electronics</option>
+                        <option>Accommodation</option>
+                        <option>Furniture</option>
+                    </select>
+                    <button style="width:100%; padding:14px; background:#ff9800; color:white; border:none; border-radius:4px; font-size:16px; font-weight:700; cursor:pointer;">Continue</button>
+                `;
+            }
+            
+            overlay.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
+
+        function showPromo(type) {
+            const messages = {
+                shipping: 'Pay & Ship: Secure payments with delivery to your campus!',
+                verify: 'Student Verification: Every user is verified with their university email.',
+                safe: 'Safe Meet-ups: We recommend public campus locations for all exchanges.'
+            };
+            alert(messages[type]);
+        }
+
+        // Close modal on overlay click
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Animate numbers on load
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            const range = end - start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            let current = start;
+            
+            const timer = setInterval(function() {
+                current += increment * Math.ceil(range / 50);
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                obj.textContent = current.toLocaleString() + (id === 'statSafe' ? '%' : '');
+            }, stepTime);
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCategories();
+            renderListings();
+            
+            // Observe elements for animation
+            document.querySelectorAll('.category-card, .listing-card, .promo-card, .step-card').forEach(el => {
+                el.style.opacity = '0';
+                observer.observe(el);
+            });
+
+            // Animate stats
+            setTimeout(() => {
+                animateValue('statListings', 0, 12450, 2000);
+                animateValue('statUsers', 0, 45200, 2000);
+            }, 500);
+        });
+
+        // Mobile menu
+        document.querySelector('.mobile-toggle').addEventListener('click', function() {
+            const actions = document.querySelector('.header-actions');
+            actions.style.display = actions.style.display === 'flex' ? 'none' : 'flex';
+            actions.style.position = 'absolute';
+            actions.style.top = '100%';
+            actions.style.right = '20px';
+            actions.style.background = 'white';
+            actions.style.boxShadow = '0 5px 20px rgba(0,0,0,0.1)';
+            actions.style.padding = '15px';
+            actions.style.borderRadius = '8px';
+            actions.style.flexDirection = 'column';
+            actions.style.gap = '10px';
+            actions.style.zIndex = '999';
+        });
+    </script>
+</body>
+</html>
