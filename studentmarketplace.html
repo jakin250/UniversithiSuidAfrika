@@ -883,11 +883,11 @@
                 <p>The safest place for students to trade textbooks, find accommodation, and score deals on everything you need for student life.</p>
                 <div class="hero-stats">
                     <div class="stat">
-                        <div class="stat-number" id="statListings">12,450</div>
+                        <div class="stat-number" id="statListings">0</div>
                         <div class="stat-label">Live Ads</div>
                     </div>
                     <div class="stat">
-                        <div class="stat-number" id="statUsers">45,200</div>
+                        <div class="stat-number" id="statUsers">0</div>
                         <div class="stat-label">Students</div>
                     </div>
                     <div class="stat">
@@ -1095,17 +1095,8 @@
             { name: 'Other', count: '1,500 ads', icon: '📦', color: '#e0f2f1' }
         ];
 
-        // Listings Data
-        let listings = [
-            { title: 'Calculus Early Transcendentals 8th Edition - Like New', price: 'R 450', location: 'UCT Campus', time: '2 hours ago', badge: 'TOP', image: '📚' },
-            { title: 'MacBook Air M1 2020 - Perfect for Students', price: 'R 8,500', location: 'Wits University', time: '5 hours ago', badge: 'URGENT', image: '💻' },
-            { title: 'Single Room Available Near Campus - All Bills Included', price: 'R 3,200', location: 'Stellenbosch', time: '1 day ago', badge: null, image: '🏠' },
-            { title: 'Scientific Calculator TI-84 Plus - Engineering Student', price: 'R 1,200', location: 'UP Hatfield', time: '3 hours ago', badge: 'POPULAR', image: '🧮' },
-            { title: 'Bicycle for Sale - Perfect for Campus Commute', price: 'R 1,800', location: 'Rhodes University', time: '6 hours ago', badge: null, image: '🚲' },
-            { title: 'iPhone 13 128GB - Great Condition', price: 'R 7,200', location: 'UKZN Durban', time: '30 mins ago', badge: 'NEW', image: '📱' },
-            { title: 'Desk Lamp + Study Organizer Bundle', price: 'R 350', location: 'NMMU', time: '4 hours ago', badge: null, image: '💡' },
-            { title: 'Engineering Textbook Bundle - 1st Year', price: 'R 1,600', location: 'UJ APK', time: '1 day ago', badge: 'BUNDLE', image: '📖' }
-        ];
+        // Listings Data - Empty array populated from /api/marketplace/listings
+        let listings = [];
 
         async function loadListings() {
             try {
@@ -1305,8 +1296,8 @@
 
             // Animate stats
             setTimeout(() => {
-                animateValue('statListings', 0, 12450, 2000);
-                animateValue('statUsers', 0, 45200, 2000);
+                animateValue('statListings', 0, 0, 2000);
+                animateValue('statUsers', 0, 0, 2000);
             }, 500);
         });
 
