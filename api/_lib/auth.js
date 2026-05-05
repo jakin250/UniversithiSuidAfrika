@@ -1,6 +1,13 @@
 const bcrypt = require("bcryptjs");
 const { nanoid } = require("nanoid");
-const { kv } = require("@vercel/kv");
+let kv = null;
+try {
+  // attempt to require Vercel KV; this may throw in some runtimes
+  const _kv = require("@vercel/kv");
+  kv = _kv && _kv.kv ? _kv.kv : _kv;
+} catch (err) {
+  kv = null;
+}
 
 // Provide a lightweight in-memory fallback when @vercel/kv is not available
 const KV = (function () {
