@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trending Textbooks - Textbook Exchange</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f7fa; color: #212529; }
+        header {
+            background: linear-gradient(135deg, #1a5f7a 0%, #4f86c6 100%);
+            color: white;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 1.5rem; font-weight: 700; text-decoration: none; color: white; }
+        nav { display: flex; gap: 2rem; }
+        nav a { color: rgba(255, 255, 255, 0.9); text-decoration: none; font-weight: 500; }
+        nav a:hover { color: white; }
+        .container { max-width: 1400px; margin: 2rem auto; padding: 0 2rem; }
+        h1 { font-size: 2rem; margin-bottom: 0.5rem; color: #1a5f7a; display: flex; align-items: center; gap: 1rem; }
+        .trending-icon { font-size: 2.5rem; }
+        .subtitle { color: #6c757d; margin-bottom: 2rem; }
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .book-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .book-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+        .book-header {
+            background: linear-gradient(135deg, #4f86c6, #1a5f7a);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-size: 3rem;
+        }
+        .book-rank {
+            display: inline-block;
+            background: #ff6b6b;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        .book-content {
+            padding: 1.5rem;
+        }
+        .book-title {
+            font-weight: 600;
+            color: #1a5f7a;
+            margin-bottom: 0.5rem;
+        }
+        .book-author {
+            font-size: 0.9rem;
+            color: #6c757d;
+            margin-bottom: 0.75rem;
+        }
+        .book-price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2e8b57;
+            margin-bottom: 0.5rem;
+        }
+        .book-stats {
+            font-size: 0.85rem;
+            color: #6c757d;
+            display: flex;
+            justify-content: space-between;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #6c757d;
+        }
+        .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+            margin-top: 3rem;
+        }
+        footer a { color: #1a5f7a; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <a href="bookstore.html" class="logo">📚 TextbookExchange</a>
+            <nav>
+                <a href="bookstore.html">Home</a>
+                <a href="bookstore-categories.html">Categories</a>
+                <a href="bookstore-trending.html">Trending</a>
+                <a href="javascript:alert('Sign in to sell')">Sell</a>
+            </nav>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1><span class="trending-icon">🔥</span> Trending Textbooks</h1>
+        <p class="subtitle">Most popular listings this week</p>
+
+        <div class="books-grid" id="booksGrid">
+            <div class="empty-state">
+                <div class="empty-icon">🔥</div>
+                <p>No trending books yet. <a href="bookstore.html">Browse all textbooks</a></p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 TextbookExchange. <a href="bookstore.html">Back to Bookstore</a></p>
+    </footer>
+
+    <script src="realtime.js"></script>
+    <script>
+        async function loadTrendingBooks() {
+            try {
+                const out = await sharedCampus.api('/api/bookstore/listings', 'GET');
+                const books = (out.listings || [])
+                    .sort((a, b) => (b.sales || 0) - (a.sales || 0))
+                    .slice(0, 12);
+
+                const booksGrid = document.getElementById('booksGrid');
+                if (books.length === 0) {
+                    booksGrid.innerHTML = '<div class="empty-state"><div class="empty-icon">🔥</div><p>No trending books yet. <a href="bookstore.html">Browse all textbooks</a></p></div>';
+                    return;
+                }
+
+                booksGrid.innerHTML = books.map((book, idx) => `
+                    <div class="book-card" onclick="alert('View: ' + this.querySelector('.book-title').textContent)">
+                        <div class="book-header">📖</div>
+                        <div class="book-content">
+                            <div class="book-rank">#${idx + 1} Trending</div>
+                            <div class="book-title">${book.title}</div>
+                            <div class="book-author">${book.author || 'Unknown Author'}</div>
+                            <div class="book-price">R${book.price}</div>
+                            <div class="book-stats">
+                                <span>⭐ ${(book.rating || 5).toFixed(1)}</span>
+                                <span>📍 ${book.location || 'Campus'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.log('Error loading books:', error);
+                document.getElementById('booksGrid').innerHTML = '<div class="empty-state"><p>Unable to load trending books.</p></div>';
+            }
+        }
+
+        loadTrendingBooks();
+    </script>
+</body>
+</html>

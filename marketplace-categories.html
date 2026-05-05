@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Categories - Student Marketplace</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: system-ui; background: #f7f7f7; color: #373737; }
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-top { background: #2e7d32; color: white; font-size: 13px; padding: 8px 0; }
+        .header-main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #2e7d32;
+            text-decoration: none;
+        }
+        nav { display: flex; gap: 2rem; }
+        nav a { color: #373737; text-decoration: none; font-weight: 500; }
+        nav a:hover { color: #2e7d32; }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+        h1 { font-size: 1.8rem; margin-bottom: 0.5rem; color: #2e7d32; }
+        .subtitle { color: #666; margin-bottom: 2rem; }
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .category-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+            border: 1px solid #e0e0e0;
+        }
+        .category-card:hover {
+            border-color: #2e7d32;
+            box-shadow: 0 2px 8px rgba(46, 125, 50, 0.15);
+            transform: translateY(-2px);
+        }
+        .category-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .category-name { font-weight: 600; margin-bottom: 0.25rem; color: #2e7d32; }
+        .category-count { font-size: 0.85rem; color: #999; }
+        .listings-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #e0e0e0;
+        }
+        .listing-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .listing-item:hover { background: #fafafa; }
+        .listing-title { font-weight: 600; color: #373737; }
+        .listing-meta { font-size: 0.85rem; color: #999; margin-top: 0.25rem; }
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+                Shop safely • Fast delivery • Student verified
+            </div>
+        </div>
+        <div class="header-main">
+            <a href="studentmarketplace.html" class="logo">StudentMarket</a>
+            <nav>
+                <a href="studentmarketplace.html">Home</a>
+                <a href="marketplace-categories.html">Categories</a>
+                <a href="marketplace-trending.html">Trending</a>
+                <a href="javascript:alert('Sign in to post')">Post Ad</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Browse Categories</h1>
+        <p class="subtitle">Find what you're looking for</p>
+
+        <div class="categories-grid">
+            <a href="#" class="category-card" onclick="filterByCategory('Textbooks')">
+                <div class="category-icon">📚</div>
+                <div class="category-name">Textbooks</div>
+                <div class="category-count">All textbooks</div>
+            </a>
+            <a href="#" class="category-card" onclick="filterByCategory('Electronics')">
+                <div class="category-icon">💻</div>
+                <div class="category-name">Electronics</div>
+                <div class="category-count">Laptops & gadgets</div>
+            </a>
+            <a href="#" class="category-card" onclick="filterByCategory('Accommodation')">
+                <div class="category-icon">🏠</div>
+                <div class="category-name">Accommodation</div>
+                <div class="category-count">Rooms & flats</div>
+            </a>
+            <a href="#" class="category-card" onclick="filterByCategory('Furniture')">
+                <div class="category-icon">🛋️</div>
+                <div class="category-name">Furniture</div>
+                <div class="category-count">Dorm essentials</div>
+            </a>
+            <a href="#" class="category-card" onclick="filterByCategory('Transport')">
+                <div class="category-icon">🚗</div>
+                <div class="category-name">Transport</div>
+                <div class="category-count">Bikes & cars</div>
+            </a>
+            <a href="#" class="category-card" onclick="filterByCategory('Services')">
+                <div class="category-icon">🔧</div>
+                <div class="category-name">Services</div>
+                <div class="category-count">Tutoring & repairs</div>
+            </a>
+            <a href="#" class="category-card" onclick="filterByCategory('Clothing')">
+                <div class="category-icon">👕</div>
+                <div class="category-name">Clothing</div>
+                <div class="category-count">Fashion & basics</div>
+            </a>
+            <a href="#" class="category-card" onclick="filterByCategory('Other')">
+                <div class="category-icon">📦</div>
+                <div class="category-name">Other</div>
+                <div class="category-count">Misc items</div>
+            </a>
+        </div>
+
+        <div class="listings-section">
+            <h2 style="margin-bottom: 1rem;">Latest Listings</h2>
+            <div id="listingsList">
+                <div class="empty-state">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📭</div>
+                    <p>No listings yet. <a href="studentmarketplace.html">Browse all ads</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 StudentMarket. <a href="studentmarketplace.html">Back to Marketplace</a></p>
+    </footer>
+
+    <script src="realtime.js"></script>
+    <script>
+        let allListings = [];
+
+        async function loadListings() {
+            try {
+                const out = await sharedCampus.api('/api/marketplace/listings', 'GET');
+                allListings = out.listings || [];
+                renderListings();
+            } catch (error) {
+                console.log('Error loading listings:', error);
+            }
+        }
+
+        function renderListings(filtered = allListings) {
+            const listingsList = document.getElementById('listingsList');
+            if (filtered.length === 0) {
+                listingsList.innerHTML = '<div class="empty-state"><div style="font-size: 2rem; margin-bottom: 0.5rem;">📭</div><p>No listings found. <a href="studentmarketplace.html">Browse all ads</a></p></div>';
+                return;
+            }
+
+            listingsList.innerHTML = filtered.slice(0, 10).map(listing => `
+                <div class="listing-item" onclick="alert('View: ' + this.querySelector('.listing-title').textContent)">
+                    <div class="listing-title">${listing.title} ${listing.badge ? '• ' + listing.badge : ''}</div>
+                    <div class="listing-meta">
+                        ${listing.price} • ${listing.location || 'Campus'} • Posted just now
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterByCategory(category) {
+            renderListings(allListings);
+        }
+
+        loadListings();
+    </script>
+</body>
+</html>

@@ -1104,15 +1104,15 @@
     <div class="stats-bar">
         <div class="stats-container">
             <div class="stat-item">
-                <span class="stat-number" id="statBooks">12,450+</span>
+                <span class="stat-number" id="statBooks">0</span>
                 <span class="stat-label">Textbooks Listed</span>
             </div>
             <div class="stat-item">
-                <span class="stat-number" id="statStudents">8,320+</span>
+                <span class="stat-number" id="statStudents">0</span>
                 <span class="stat-label">Active Students</span>
             </div>
             <div class="stat-item">
-                <span class="stat-number" id="statUniversities">26</span>
+                <span class="stat-number" id="statUniversities">0</span>
                 <span class="stat-label">Universities</span>
             </div>
             <div class="stat-item">
@@ -1366,27 +1366,9 @@
 
     <script src="realtime.js"></script>
     <script>
-        // Sample Data
+        // Empty array - populated from /api/bookstore/listings on load
+        // No hardcoded sample data - only user-posted content
         let textbooks = [
-            {
-                id: 1,
-                title: "Economics 6th Edition",
-                author: "Mankiw & Taylor",
-                isbn: "9780627037054",
-                category: "Accounting & Finance",
-                university: "uct",
-                condition: "like-new",
-                conditionLabel: "Like New",
-                price: 450,
-                originalPrice: 850,
-                image: "https://via.placeholder.com/300x400/1a5f7a/ffffff?text=Economics",
-                seller: "Sarah M.",
-                rating: 4.8,
-                sales: 12,
-                location: "Cape Town",
-                description: "Excellent condition. No markings or highlights. Includes online access code (unused). Cover has minor shelf wear but otherwise perfect.",
-                date: "2 days ago"
-            },
             {
                 id: 2,
                 title: "Introduction to Algorithms 4th Edition",
@@ -1443,7 +1425,7 @@
                 location: "Stellenbosch",
                 description: "Well-used but complete. Extensive highlighting and notes in margins. Still perfectly readable and useful for PVL100.",
                 date: "3 days ago"
-            },
+            },*/
             {
                 id: 5,
                 title: "Advanced Engineering Mathematics",
@@ -1482,7 +1464,8 @@
                 description: "Minor wear on corners. Some exercises completed in pencil (erasable). Perfect for MAT1/2 courses across all universities.",
                 date: "4 days ago"
             },
-            {
+            */
+            /*{
                 id: 7,
                 title: "Financial Accounting 7th Edition",
                 author: "Kieso, Weygandt, Warfield",
@@ -2008,10 +1991,10 @@
         // Stats Animation
         function animateStats() {
             const stats = [
-                { id: 'statBooks', target: 12450, suffix: '+' },
-                { id: 'statStudents', target: 8320, suffix: '+' },
-                { id: 'statUniversities', target: 26, suffix: '' },
-                { id: 'statSavings', target: 4.2, suffix: 'M+', isDecimal: true }
+                { id: 'statBooks', target: 0, suffix: '' },
+                { id: 'statStudents', target: 0, suffix: '' },
+                { id: 'statUniversities', target: 0, suffix: '' },
+                { id: 'statSavings', target: 0, suffix: '', isDecimal: false }
             ];
 
             stats.forEach(stat => {
