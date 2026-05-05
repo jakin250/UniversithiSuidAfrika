@@ -2,6 +2,33 @@ const bcrypt = require("bcryptjs");
 const { nanoid } = require("nanoid");
 const { kv } = require("@vercel/kv");
 
+// Provide a lightweight in-memory fallback when @vercel/kv is not available
+const KV = (function () {
+  if (kv && typeof kv.get === "function" && typeof kv.set === "function") return kv;
+
+  const store = new Map();
+  return {
+    async get(key) {
+      if (!store.has(key)) return null;
+      return store.get(key);
+    },
+    async set(key, value, opts) {
+      store.set(key, value);
+      return true;
+    },
+    async lpush(key, value) {
+      const arr = Array.isArray(store.get(key)) ? store.get(key) : [];
+      arr.unshift(value);
+      store.set(key, arr);
+      return arr.length;
+    },
+    async lrange(key, start, end) {
+      const arr = Array.isArray(store.get(key)) ? store.get(key) : [];
+      return arr.slice(start, end + 1);
+    },
+  };
+})();
+
 const SESSION_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 function normalizeEmail(email) {
@@ -19,14 +46,14 @@ function getToken(req) {
 
 async function createSession(user) {
   const token = nanoid(32);
-  await kv.set(`session:${token}`, { id: user.id, email: user.email, name: user.name }, { ex: SESSION_TTL_SECONDS });
+  await KV.set(`session:${token}`, { id: user.id, email: user.email, name: user.name }, { ex: SESSION_TTL_SECONDS });
   return token;
 }
 
 async function getSession(req) {
   const token = getToken(req);
   if (!token) return null;
-  const session = await kv.get(`session:${token}`);
+  const session = await KV.get(`session:${token}`);
   if (!session) return null;
   return { token, user: session };
 }
@@ -42,7 +69,7 @@ async function requireUser(req, res) {
 
 async function getUserByEmail(email) {
   const key = `user:${normalizeEmail(email)}`;
-  return kv.get(key);
+  return KV.get(key);
 }
 
 async function createUser({ email, password }) {
@@ -55,7 +82,7 @@ async function createUser({ email, password }) {
     passHash,
     createdAt: Date.now(),
   };
-  await kv.set(`user:${normalized}`, user);
+  await KV.set(`user:${normalized}`, user);
   return user;
 }
 
