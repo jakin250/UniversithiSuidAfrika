@@ -1,14 +1,122 @@
-Universithi SuidA frika
-Home page
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University SuidAfrika</title>
 
-Section
-Container
-Student Forum hyperlink
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
-Section
-Container
-Book Store hyperlink
+        body {
+            background: #f4f6f9;
+            color: #333;
+        }
 
-Section
-Container
-Student Marketplace hyperlink
+        /* HEADER */
+        header {
+            background: #002f6c;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* LAYOUT */
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 30px;
+        }
+
+        /* CARD SECTIONS */
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* CONTAINER */
+        .container {
+            padding: 20px;
+        }
+
+        /* BUTTON */
+        .btn {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #ffb400;
+            color: black;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: #e6a200;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <h1>University SuidAfrika</h1>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+
+        <!-- STUDENT FORUM -->
+        <section class="card">
+            <div class="container">
+                <h2>Student Forum</h2>
+                <p>Join discussions, share notes, and collaborate with other students.</p>
+                <a href="https://universithi-suid-afrika.vercel.app/UNYSA%20STUDENT%20FORUM.html" class="btn">Go to Forum</a>
+            </div>
+        </section>
+
+        <!-- BOOK STORE -->
+        <section class="card">
+            <div class="container">
+                <h2>Book Store</h2>
+                <p>Buy, sell, and exchange textbooks easily.</p>
+                <a href="https://universithi-suid-afrika.vercel.app/UNYSA%20BOOK%20STORE.html" class="btn">Visit Book Store</a>
+            </div>
+        </section>
+
+        <!-- STUDENT MARKETPLACE -->
+        <section class="card">
+            <div class="container">
+                <h2>Student Marketplace</h2>
+                <p>Trade items, services, and more within the student community.</p>
+                <a href="https://universithi-suid-afrika.vercel.app/UNYSA%20STUDENT%20MARKETPLACE.html" class="btn">Open Marketplace</a>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Button click interaction
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                alert("This section will be connected soon!");
+            });
+        });
+    </script>
+
+</body>
+</html>
