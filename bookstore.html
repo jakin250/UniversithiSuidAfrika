@@ -1596,21 +1596,7 @@
         let cart = [];
         let wishlist = [];
         let currentView = 'grid';
-        let currentUser = localStorage.getItem('bookstoreStudentEmail') || '';
-        const userListings = JSON.parse(localStorage.getItem('bookstoreUserListings') || '[]');
-        textbooks.unshift(...userListings);
         let filteredBooks = [...textbooks];
-
-        function isStudentEmail(email){ return /@[^@]+\.(ac\.za|edu)$/i.test(email); }
-        function ensureBookstoreLogin(){
-            if (currentUser) return true;
-            const email = prompt('Sign in with your student email to continue:');
-            if (!email || !isStudentEmail(email.trim())) { showToast('Student email required', 'warning'); return false; }
-            currentUser = email.trim().toLowerCase();
-            localStorage.setItem('bookstoreStudentEmail', currentUser);
-            showToast('Signed in as ' + currentUser, 'success');
-            return true;
-        }
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
@@ -1918,29 +1904,8 @@
 
         function handleSellSubmit(e) {
             e.preventDefault();
-            if (!ensureBookstoreLogin()) return;
-            const form = e.target;
-            const inputs = form.querySelectorAll('input');
-            const selects = form.querySelectorAll('select');
-            const textarea = form.querySelector('textarea');
-            const title = inputs[0].value.trim();
-            const author = inputs[1].value.trim();
-            const isbn = inputs[2].value.trim() || 'N/A';
-            const category = selects[0].value || 'General';
-            const conditionRaw = selects[2].value || 'Good (minimal markings)';
-            const condition = conditionRaw.toLowerCase().includes('like') ? 'like-new' : (conditionRaw.toLowerCase().includes('fair') ? 'fair' : 'good');
-            const price = Number(inputs[4].value || 0);
-            const location = selects[1].value || 'Campus';
-            const description = textarea ? textarea.value.trim() : 'User listed book';
-            if (!title || !author || !price) { showToast('Please complete title, author and price.', 'warning'); return; }
-            const listing = { id: Date.now(), title, author, isbn, category, university: 'custom', condition, conditionLabel: condition.replace('-', ' ').replace(/\w/g,m=>m.toUpperCase()), price, originalPrice: Math.round(price*1.6), image:'https://via.placeholder.com/300x400/4f86c6/ffffff?text=New+Listing', seller: currentUser.split('@')[0], rating:5, sales:0, location, description, date:'Just now' };
-            textbooks.unshift(listing);
-            localStorage.setItem('bookstoreUserListings', JSON.stringify(textbooks.filter(b => String(b.id).length > 10)));
-            filteredBooks = [...textbooks];
-            renderProducts();
-            form.reset();
-            showToast('Textbook listed successfully!', 'success');
-            setTimeout(showHome, 1200);
+            showToast('Textbook listed successfully! It will be reviewed within 24 hours.', 'success');
+            setTimeout(showHome, 2000);
         }
 
         function handleFileSelect(e) {
@@ -2023,24 +1988,5 @@
             if (e.key === 'Escape') closeModal();
         });
     </script>
-    
-    <script>
-    (async function(){
-      if(!window.sharedCampus){ setTimeout(arguments.callee,150); return; }
-      try{const r=await sharedCampus.api('/api/bookstore/listings'); if(r.listings.length){ textbooks.unshift(...r.listings); filteredBooks=[...textbooks]; renderProducts(); }}catch{}
-      const old = window.handleSellSubmit;
-      window.handleSellSubmit = async function(e){
-        e.preventDefault();
-        try{
-          if(!localStorage.getItem('sessionToken')) await sharedCampus.loginPrompt();
-          const form=e.target; const inputs=form.querySelectorAll('input'); const selects=form.querySelectorAll('select'); const desc=form.querySelector('textarea').value.trim();
-          const payload={title:inputs[0].value.trim(),author:inputs[1].value.trim(),isbn:inputs[2].value.trim(),category:selects[0].value,condition:selects[2].value,price:Number(inputs[4].value||0),originalPrice:Number(inputs[3].value||0),location:selects[1].value,description:desc};
-          const r=await sharedCampus.api('/api/bookstore/listings','POST',payload); textbooks.unshift(r.listing); filteredBooks=[...textbooks]; renderProducts(); showToast('Listed for all users','success'); form.reset();
-        }catch(err){showToast(err.message,'error')}
-      }
-    })();
-    </script>
-
-    <script src="realtime.js"></script>
 </body>
 </html>
