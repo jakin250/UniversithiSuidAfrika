@@ -847,15 +847,15 @@
             <div class="header-top-inner">
                 <span>South Africa's Favourite Student Marketplace</span>
                 <div>
-                    <a href="#">Help Centre</a>
-                    <a href="#">Safety Tips</a>
-                    <a href="#">Download App</a>
+                    <a href="messages.html">Help Centre</a>
+                    <a href="disputes.html">Safety Tips</a>
+                    <a href="dashboard.html">Dashboard</a>
                 </div>
             </div>
         </div>
         <div class="header-main">
             <div class="mobile-toggle">☰</div>
-            <a href="#" class="logo">
+            <a href="index.html" class="logo">
                 <div class="logo-icon">📚</div>
                 StudentMarket
             </a>
@@ -937,7 +937,7 @@
     <section class="categories-section">
         <div class="section-header">
             <h2 class="section-title">Browse Categories</h2>
-            <a href="#" class="view-all">View all categories →</a>
+            <a href="marketplace-categories.html" class="view-all">View all categories →</a>
         </div>
         <div class="categories-grid" id="categoriesGrid">
             <!-- Populated by JS -->
@@ -948,7 +948,7 @@
     <section class="listings-section">
         <div class="section-header">
             <h2 class="section-title">Fresh on Campus</h2>
-            <a href="#" class="view-all">View all listings →</a>
+            <a href="marketplace-trending.html" class="view-all">View all listings →</a>
         </div>
         <div class="listings-grid" id="listingsGrid">
             <!-- Populated by JS -->
@@ -961,7 +961,7 @@
             <div class="safety-content">
                 <h2>Buy & Sell Safely</h2>
                 <p>Your safety is our priority. We verify every student, monitor transactions, and provide secure payment options. Join thousands of students trading with confidence.</p>
-                <a href="#" class="safety-btn">Learn About Safety</a>
+                <a href="disputes.html" class="safety-btn">Learn About Safety</a>
             </div>
             <div class="safety-features">
                 <div class="safety-feature">
@@ -1020,47 +1020,47 @@
                 </h3>
                 <p>South Africa's premier student marketplace. Buy, sell, and trade with fellow students across all major campuses.</p>
                 <div class="social-links">
-                    <a href="#" class="social-link">f</a>
-                    <a href="#" class="social-link">t</a>
-                    <a href="#" class="social-link">in</a>
-                    <a href="#" class="social-link">ig</a>
+                    <a href="index.html" class="social-link">f</a>
+                    <a href="index.html" class="social-link">t</a>
+                    <a href="index.html" class="social-link">in</a>
+                    <a href="index.html" class="social-link">ig</a>
                 </div>
             </div>
             <div class="footer-col">
                 <h4>Buy</h4>
                 <ul class="footer-links">
-                    <li><a href="#">Textbooks</a></li>
-                    <li><a href="#">Electronics</a></li>
-                    <li><a href="#">Accommodation</a></li>
-                    <li><a href="#">Furniture</a></li>
-                    <li><a href="#">Clothing</a></li>
+                    <li><a href="marketplace-categories.html">Textbooks</a></li>
+                    <li><a href="marketplace-categories.html">Electronics</a></li>
+                    <li><a href="marketplace-categories.html">Accommodation</a></li>
+                    <li><a href="marketplace-categories.html">Furniture</a></li>
+                    <li><a href="marketplace-categories.html">Clothing</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Sell</h4>
                 <ul class="footer-links">
-                    <li><a href="#">Post an Ad</a></li>
-                    <li><a href="#">Pricing</a></li>
-                    <li><a href="#">Seller Tips</a></li>
-                    <li><a href="#">Promote Your Ad</a></li>
+                    <li><a href="create-marketplace-listing.html">Post an Ad</a></li>
+                    <li><a href="orders.html">Pricing</a></li>
+                    <li><a href="disputes.html">Seller Tips</a></li>
+                    <li><a href="create-marketplace-listing.html">Promote Your Ad</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Support</h4>
                 <ul class="footer-links">
-                    <li><a href="#">Help Centre</a></li>
-                    <li><a href="#">Safety Tips</a></li>
-                    <li><a href="#">Scam Alerts</a></li>
-                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="messages.html">Help Centre</a></li>
+                    <li><a href="disputes.html">Safety Tips</a></li>
+                    <li><a href="disputes.html">Scam Alerts</a></li>
+                    <li><a href="messages.html">Contact Us</a></li>
                 </ul>
             </div>
             <div class="footer-col">
                 <h4>Company</h4>
                 <ul class="footer-links">
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Careers</a></li>
-                    <li><a href="#">Terms of Use</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="index.html">About Us</a></li>
+                    <li><a href="dashboard.html">Careers</a></li>
+                    <li><a href="settings.html">Terms of Use</a></li>
+                    <li><a href="settings.html">Privacy Policy</a></li>
                 </ul>
             </div>
         </div>
@@ -1337,12 +1337,12 @@
         }
 
         function showPromo(type) {
-            const messages = {
-                shipping: 'Pay & Ship: Secure payments with delivery to your campus!',
-                verify: 'Student Verification: Every user is verified with their university email.',
-                safe: 'Safe Meet-ups: We recommend public campus locations for all exchanges.'
+            const routes = {
+                shipping: 'orders.html',
+                verify: 'register.html',
+                safe: 'disputes.html'
             };
-            alert(messages[type]);
+            window.location.href = routes[type] || 'dashboard.html';
         }
 
         // Close modal on overlay click

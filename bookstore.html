@@ -1060,10 +1060,10 @@
                 <span>TextbookExchange</span>
             </div>
             <nav>
-                <a href="#" onclick="showHome()">Buy Textbooks</a>
-                <a href="#" onclick="showSellForm()">Sell Textbooks</a>
-                <a href="#" onclick="showHowItWorks()">How It Works</a>
-                <a href="#" onclick="showUniversities()">Universities</a>
+                <a href="bookstore.html" onclick="showHome(); return false;">Buy Textbooks</a>
+                <a href="create-book-listing.html">Sell Textbooks</a>
+                <a href="orders.html">How It Works</a>
+                <a href="dashboard.html">Universities</a>
             </nav>
             <div class="header-actions">
                 <button class="btn btn-outline" onclick="toggleLogin()">
@@ -1332,37 +1332,37 @@
             <div class="footer-section">
                 <h3>Buy Textbooks</h3>
                 <ul>
-                    <li><a href="#">Secondhand Textbooks</a></li>
-                    <li><a href="#">New Textbooks</a></li>
-                    <li><a href="#">University Guides</a></li>
-                    <li><a href="#">Study Notes</a></li>
+                    <li><a href="bookstore-categories.html">Secondhand Textbooks</a></li>
+                    <li><a href="bookstore-categories.html">New Textbooks</a></li>
+                    <li><a href="dashboard.html">University Guides</a></li>
+                    <li><a href="notes.html">Study Notes</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Sell Textbooks</h3>
                 <ul>
-                    <li><a href="#">List a Book</a></li>
-                    <li><a href="#">Pricing Guide</a></li>
-                    <li><a href="#">Seller Protection</a></li>
-                    <li><a href="#">Shipping Guide</a></li>
+                    <li><a href="create-book-listing.html">List a Book</a></li>
+                    <li><a href="orders.html">Pricing Guide</a></li>
+                    <li><a href="disputes.html">Seller Protection</a></li>
+                    <li><a href="orders.html">Shipping Guide</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Support</h3>
                 <ul>
-                    <li><a href="#">How It Works</a></li>
-                    <li><a href="#">Safe Trade Guarantee</a></li>
-                    <li><a href="#">Delivery Information</a></li>
-                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="orders.html">How It Works</a></li>
+                    <li><a href="disputes.html">Safe Trade Guarantee</a></li>
+                    <li><a href="orders.html">Delivery Information</a></li>
+                    <li><a href="messages.html">Contact Us</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>About</h3>
                 <ul>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Blog</a></li>
-                    <li><a href="#">Partner Universities</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="index.html">About Us</a></li>
+                    <li><a href="notes.html">Blog</a></li>
+                    <li><a href="dashboard.html">Partner Universities</a></li>
+                    <li><a href="settings.html">Privacy Policy</a></li>
                 </ul>
             </div>
         </div>
@@ -1630,7 +1630,8 @@
                 total += item.price;
                 return `• ${item.title} - R${item.price}`;
             }).join('\n');
-            alert(`Shopping Cart (${cart.length} items)\n\n${items}\n\nTotal: R${total}\n\nCheckout functionality would proceed to payment gateway here.`);
+            localStorage.setItem('pendingOrder', JSON.stringify({ items: cart, total }));
+            window.location.href = 'orders.html';
         }
 
         function buyNow(id) {

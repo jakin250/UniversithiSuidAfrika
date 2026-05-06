@@ -2,16 +2,18 @@ const bcrypt = require("bcryptjs");
 const { nanoid } = require("nanoid");
 let kv = null;
 try {
-  // attempt to require Vercel KV; this may throw in some runtimes
-  const _kv = require("@vercel/kv");
-  kv = _kv && _kv.kv ? _kv.kv : _kv;
+  const hasKvEnv = process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN;
+  if (hasKvEnv) {
+    const _kv = require("@vercel/kv");
+    kv = _kv && _kv.kv ? _kv.kv : _kv;
+  }
 } catch (err) {
   kv = null;
 }
 
 // Provide a lightweight in-memory fallback when @vercel/kv is not available
 const KV = (function () {
-  if (kv && typeof kv.get === "function" && typeof kv.set === "function") return kv;
+  if (kv) return kv;
 
   const store = new Map();
   return {
@@ -53,7 +55,7 @@ function getToken(req) {
 
 async function createSession(user) {
   const token = nanoid(32);
-  await KV.set(`session:${token}`, { id: user.id, email: user.email, name: user.name }, { ex: SESSION_TTL_SECONDS });
+  await KV.set(`session:${token}`, { id: user.id, email: user.email, name: user.name, university: user.university, verified: user.verified }, { ex: SESSION_TTL_SECONDS });
   return token;
 }
 
@@ -79,13 +81,30 @@ async function getUserByEmail(email) {
   return KV.get(key);
 }
 
-async function createUser({ email, password }) {
+function detectUniversity(email) {
+  const domain = normalizeEmail(email).split("@")[1] || "";
+  const map = {
+    "uct.ac.za": "University of Cape Town",
+    "wits.ac.za": "University of the Witwatersrand",
+    "up.ac.za": "University of Pretoria",
+    "unisa.ac.za": "University of South Africa",
+    "uj.ac.za": "University of Johannesburg",
+    "ukzn.ac.za": "University of KwaZulu-Natal",
+    "sun.ac.za": "Stellenbosch University",
+  };
+  return map[domain] || domain.replace(/\.(ac\.za|edu|edu\.za)$/i, "").toUpperCase() || "Student University";
+}
+
+async function createUser({ email, password, name }) {
   const normalized = normalizeEmail(email);
   const passHash = await bcrypt.hash(String(password), 10);
   const user = {
     id: nanoid(16),
     email: normalized,
-    name: normalized.split("@")[0],
+    name: String(name || "").trim() || normalized.split("@")[0],
+    university: detectUniversity(normalized),
+    verified: true,
+    reputation: 0,
     passHash,
     createdAt: Date.now(),
   };
@@ -102,6 +121,7 @@ module.exports = {
   KV,
   normalizeEmail,
   isStudentEmail,
+  detectUniversity,
   createSession,
   getSession,
   requireUser,

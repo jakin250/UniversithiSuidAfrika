@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login | Universithi SuidAfrika</title>
+  <link rel="stylesheet" href="platform.css">
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="index.html">Universithi SuidAfrika</a><nav class="nav"><a href="register.html">Register</a><a href="dashboard.html">Dashboard</a></nav></header>
+  <main class="wrap">
+    <section class="hero"><h1>Student login</h1><p class="muted">Sign in to post, upload notes, list books, message sellers, and track orders.</p></section>
+    <form id="loginForm" class="stack">
+      <label>Student email<input name="email" type="email" required autocomplete="email"></label>
+      <label>Password<input name="password" type="password" required autocomplete="current-password"></label>
+      <button type="submit">Login</button>
+      <a href="forgot-password.html">Forgot password?</a>
+      <p data-status class="status"></p>
+    </form>
+  </main>
+  <script src="platform.js"></script>
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      try {
+        const out = await platform.api("/api/auth/login", "POST", { email: form.get("email"), password: form.get("password") });
+        localStorage.setItem("sessionToken", out.token);
+        location.href = "dashboard.html";
+      } catch (error) {
+        platform.setStatus(error.message, false);
+      }
+    });
+  </script>
+</body>
+</html>

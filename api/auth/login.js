@@ -17,10 +17,9 @@ module.exports = async function handler(req, res) {
     if (!ok) return res.status(401).json({ error: "Invalid email or password" });
 
     const token = await createSession(user);
-    return res.status(200).json({ token, user: { id: user.id, email: user.email, name: user.name } });
+    return res.status(200).json({ token, user: { id: user.id, email: user.email, name: user.name, university: user.university, verified: user.verified } });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: err?.message || 'Internal server error' });
   }
 };
-

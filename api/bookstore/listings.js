@@ -21,8 +21,8 @@ module.exports = async function handler(req, res) {
       const price = Number(b.price || 0);
       const listingType = String(b.listingType || "sale").trim().toLowerCase();
 
-      if (!title || !author || !Number.isFinite(price) || price <= 0) {
-        return res.status(400).json({ error: "Title, author, and price are required" });
+      if (!title || !author || !Number.isFinite(price) || (listingType !== "exchange" && price <= 0)) {
+        return res.status(400).json({ error: "Title, author, and a valid sale price are required" });
       }
 
       const listing = {
@@ -34,6 +34,7 @@ module.exports = async function handler(req, res) {
         listingType: listingType === "exchange" ? "exchange" : "sale",
         condition: String(b.condition || "good").trim() || "good",
         conditionLabel: String(b.conditionLabel || "").trim() || "Good",
+        quantity: Math.max(1, Number(b.quantity || 1)),
         price,
         originalPrice: Number(b.originalPrice || price),
         imageUrl: String(b.imageUrl || "").trim(),

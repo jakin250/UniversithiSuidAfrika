@@ -1,0 +1,6 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Messages</title><link rel="stylesheet" href="platform.css"></head>
+<body><header class="topbar"><a class="brand" href="index.html">Universithi SuidAfrika</a><nav class="nav"><a href="dashboard.html">Dashboard</a></nav></header>
+<main class="wrap"><section class="hero"><h1>Messages</h1><p class="muted">Buyer and seller conversations linked to listings.</p></section><form id="messageForm" class="stack"><label>Subject<input name="subject" required></label><label>Recipient<input name="recipient" placeholder="Seller or buyer name"></label><label>Message<textarea name="message" required></textarea></label><button>Send message</button><p data-status class="status"></p></form><section id="messagesList" class="grid" style="margin-top:18px"></section></main>
+<script src="platform.js"></script><script>function load(){platform.loadCollection("/api/messages/items","#messagesList",(m)=>`<article class="card"><h3>${m.subject}</h3><p>${m.message}</p><p class="muted">To ${m.recipient}</p></article>`)} platform.bindForm("#messageForm","/api/messages/items",(f)=>Object.fromEntries(f),load); load();</script></body></html>

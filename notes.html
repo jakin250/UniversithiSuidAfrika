@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Study Notes</title><link rel="stylesheet" href="platform.css"></head>
+<body>
+  <header class="topbar"><a class="brand" href="index.html">Universithi SuidAfrika</a><nav class="nav"><a href="upload-notes.html">Upload Notes</a><a href="dashboard.html">Dashboard</a></nav></header>
+  <main class="wrap">
+    <section class="hero"><h1>Study notes</h1><p class="muted">Search course notes, module summaries, uploaded text, and file links from verified students.</p></section>
+    <div class="toolbar"><input id="search" placeholder="Search by title, course, or module"><button onclick="loadNotes()">Search</button></div>
+    <section id="notesList" class="grid"></section>
+  </main>
+  <script src="platform.js"></script>
+  <script>
+    function card(n){return `<article class="card"><span class="badge">${n.course}</span><h3>${n.title}</h3><p>${n.content.slice(0,160)}</p><p class="muted">${n.module || "General"} ${n.chapter || ""}</p><a class="button" href="note-detail.html?id=${n.id}">View note</a></article>`}
+    async function loadNotes(){const q=(search.value||"").toLowerCase(); const out=await platform.api("/api/notes/items"); const items=(out.items||[]).filter(n=>!q||[n.title,n.course,n.module,n.content].some(v=>String(v||"").toLowerCase().includes(q))); notesList.innerHTML=items.length?items.map(card).join(""):`<div class="panel muted">No matching notes yet.</div>`}
+    loadNotes();
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Create Forum Post</title><link rel="stylesheet" href="platform.css"></head>
+<body><header class="topbar"><a class="brand" href="index.html">Universithi SuidAfrika</a><nav class="nav"><a href="studentforum.html">Forum</a><a href="dashboard.html">Dashboard</a></nav></header>
+<main class="wrap"><section class="hero"><h1>Create forum post</h1><p class="muted">Start a verified student discussion with a title, body, and tag.</p></section><form id="postForm" class="stack"><label>Title<input name="title" required></label><label>Tag<select name="tag"><option>General</option><option>Question</option><option>Study Notes</option><option>Resources</option></select></label><label>Content<textarea name="body" required></textarea></label><button>Publish post</button><p data-status class="status"></p></form></main>
+<script src="platform.js"></script><script>platform.bindForm("#postForm","/api/forum/posts",(f)=>({title:f.get("title"),body:f.get("body"),tag:f.get("tag"),tagType:String(f.get("tag")).toLowerCase().replaceAll(" ","-")}),()=>location.href="studentforum.html");</script></body></html>

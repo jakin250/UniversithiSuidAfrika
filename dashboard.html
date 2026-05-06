@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dashboard</title><link rel="stylesheet" href="platform.css"></head>
+<body>
+  <header class="topbar"><a class="brand" href="index.html">Universithi SuidAfrika</a><nav class="nav"><a href="studentforum.html">Forum</a><a href="notes.html">Notes</a><a href="bookstore.html">Bookstore</a><a href="studentmarketplace.html">Marketplace</a><a href="notifications.html">Notifications</a></nav></header>
+  <main class="wrap">
+    <section class="hero"><h1>Student dashboard</h1><p id="welcome" class="muted">Loading your verified student workspace...</p></section>
+    <section class="grid">
+      <a class="card" href="create-post.html"><h3>Create forum post</h3><p class="muted">Ask questions, share updates, and start discussions.</p></a>
+      <a class="card" href="upload-notes.html"><h3>Upload notes</h3><p class="muted">Add module notes, chapters, summaries, or study guides.</p></a>
+      <a class="card" href="create-book-listing.html"><h3>Sell or exchange textbooks</h3><p class="muted">List secondhand textbooks with condition and price details.</p></a>
+      <a class="card" href="create-marketplace-listing.html"><h3>Post marketplace ad</h3><p class="muted">Sell personal belongings or services to verified students.</p></a>
+      <a class="card" href="orders.html"><h3>Orders</h3><p class="muted">Track purchases, delivery, escrow status, and disputes.</p></a>
+      <a class="card" href="messages.html"><h3>Messages</h3><p class="muted">Chat with buyers and sellers about listings.</p></a>
+    </section>
+  </main>
+  <script src="platform.js"></script>
+  <script>platform.requireUser().then((u) => { if (u) welcome.textContent = `${u.name} - ${u.university || "Verified student"}`; });</script>
+</body>
+</html>
