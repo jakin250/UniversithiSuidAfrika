@@ -106,7 +106,7 @@
                 <a href="studentmarketplace.html">Home</a>
                 <a href="marketplace-categories.html">Categories</a>
                 <a href="marketplace-trending.html">Trending</a>
-                <a href="javascript:alert('Sign in to post')">Post Ad</a>
+                <a href="studentmarketplace.html">Post Ad</a>
             </nav>
         </div>
     </div>
@@ -180,7 +180,10 @@
         async function loadListings() {
             try {
                 const out = await sharedCampus.api('/api/marketplace/listings', 'GET');
-                allListings = out.listings || [];
+                allListings = (out.listings || []).map((listing) => ({
+                    ...listing,
+                    category: listing.category || 'Other'
+                }));
                 renderListings();
             } catch (error) {
                 console.log('Error loading listings:', error);
@@ -195,7 +198,7 @@
             }
 
             listingsList.innerHTML = filtered.slice(0, 10).map(listing => `
-                <div class="listing-item" onclick="alert('View: ' + this.querySelector('.listing-title').textContent)">
+                <div class="listing-item" onclick="window.location.href='studentmarketplace.html'">
                     <div class="listing-title">${listing.title} ${listing.badge ? '• ' + listing.badge : ''}</div>
                     <div class="listing-meta">
                         ${listing.price} • ${listing.location || 'Campus'} • Posted just now
@@ -205,7 +208,7 @@
         }
 
         function filterByCategory(category) {
-            renderListings(allListings);
+            renderListings(allListings.filter((listing) => listing.category === category));
         }
 
         loadListings();

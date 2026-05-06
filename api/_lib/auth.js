@@ -99,6 +99,7 @@ async function verifyPassword(user, password) {
 }
 
 module.exports = {
+  KV,
   normalizeEmail,
   isStudentEmail,
   createSession,
@@ -108,4 +109,3 @@ module.exports = {
   createUser,
   verifyPassword,
 };
-

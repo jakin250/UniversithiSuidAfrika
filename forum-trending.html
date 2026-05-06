@@ -172,7 +172,7 @@
             <a href="studentforum.html">Home</a>
             <a href="forum-browse.html">Browse</a>
             <a href="forum-trending.html">Trending</a>
-            <a href="javascript:alert('Sign in to create a post')">Create Post</a>
+            <a href="studentforum.html">Create Post</a>
         </div>
     </nav>
 
@@ -208,7 +208,7 @@
                 }
 
                 trendingList.innerHTML = posts.map((post, idx) => `
-                    <div class="post-card" onclick="alert('View post: ' + this.querySelector('.post-title').textContent)">
+                    <div class="post-card" onclick="window.location.href='studentforum.html'">
                         <div class="post-card-rank">#${idx + 1} Trending</div>
                         <div class="post-title">${post.title}</div>
                         <div class="post-meta">

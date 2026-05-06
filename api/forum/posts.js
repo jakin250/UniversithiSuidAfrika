@@ -1,5 +1,4 @@
-const { kv } = require("@vercel/kv");
-const { requireUser } = require("../_lib/auth");
+const { KV, requireUser } = require("../_lib/auth");
 
 const POSTS_KEY = "forum:posts";
 const MAX_RETURN = 100;
@@ -7,7 +6,7 @@ const MAX_RETURN = 100;
 module.exports = async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const raw = await kv.lrange(POSTS_KEY, 0, MAX_RETURN - 1);
+      const raw = await KV.lrange(POSTS_KEY, 0, MAX_RETURN - 1);
       const posts = (raw || []).map((item) => (typeof item === "string" ? JSON.parse(item) : item));
       return res.status(200).json({ posts });
     }
@@ -34,7 +33,7 @@ module.exports = async function handler(req, res) {
         userVote: 0,
       };
 
-      await kv.lpush(POSTS_KEY, JSON.stringify(post));
+      await KV.lpush(POSTS_KEY, JSON.stringify(post));
       return res.status(200).json({ post });
     }
 
@@ -44,4 +43,3 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: err?.message || 'Internal server error' });
   }
 };
-

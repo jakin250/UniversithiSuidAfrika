@@ -1081,18 +1081,18 @@
     <script>
         // Categories Data
         const categories = [
-            { name: 'Textbooks', count: '2,340 ads', icon: '📖', color: '#e8f5e9' },
-            { name: 'Electronics', count: '1,850 ads', icon: '💻', color: '#e3f2fd' },
-            { name: 'Accommodation', count: '890 ads', icon: '🏠', color: '#fff3e0' },
-            { name: 'Furniture', count: '1,200 ads', icon: '🛋️', color: '#fce4ec' },
-            { name: 'Clothing', count: '3,400 ads', icon: '👕', color: '#f3e5f5' },
-            { name: 'Transport', count: '560 ads', icon: '🚗', color: '#e0f2f1' },
-            { name: 'Sports', count: '780 ads', icon: '⚽', color: '#e8f5e9' },
-            { name: 'Services', count: '1,100 ads', icon: '🔧', color: '#e3f2fd' },
-            { name: 'Jobs', count: '450 ads', icon: '💼', color: '#fff3e0' },
-            { name: 'Tickets', count: '320 ads', icon: '🎫', color: '#fce4ec' },
-            { name: 'Notes', count: '2,100 ads', icon: '📝', color: '#f3e5f5' },
-            { name: 'Other', count: '1,500 ads', icon: '📦', color: '#e0f2f1' }
+            { name: 'Textbooks', count: '0 ads', icon: '📖', color: '#e8f5e9' },
+            { name: 'Electronics', count: '0 ads', icon: '💻', color: '#e3f2fd' },
+            { name: 'Accommodation', count: '0 ads', icon: '🏠', color: '#fff3e0' },
+            { name: 'Furniture', count: '0 ads', icon: '🛋️', color: '#fce4ec' },
+            { name: 'Clothing', count: '0 ads', icon: '👕', color: '#f3e5f5' },
+            { name: 'Transport', count: '0 ads', icon: '🚗', color: '#e0f2f1' },
+            { name: 'Sports', count: '0 ads', icon: '⚽', color: '#e8f5e9' },
+            { name: 'Services', count: '0 ads', icon: '🔧', color: '#e3f2fd' },
+            { name: 'Jobs', count: '0 ads', icon: '💼', color: '#fff3e0' },
+            { name: 'Tickets', count: '0 ads', icon: '🎫', color: '#fce4ec' },
+            { name: 'Notes', count: '0 ads', icon: '📝', color: '#f3e5f5' },
+            { name: 'Other', count: '0 ads', icon: '📦', color: '#e0f2f1' }
         ];
 
         // Listings Data - Empty array populated from /api/marketplace/listings
@@ -1105,6 +1105,7 @@
                 if (remote.length) {
                     listings = remote.map((l) => ({
                         title: l.title,
+                        category: l.category || 'Other',
                         price: `R ${Number(l.price || 0).toLocaleString()}`,
                         location: l.location || 'Campus',
                         time: 'Just now',
@@ -1115,6 +1116,7 @@
             } catch (error) {
                 // keep fallback
             } finally {
+                updateCategoryCounts();
                 renderListings();
             }
         }
@@ -1129,6 +1131,20 @@
                     <div class="cat-count">${cat.count}</div>
                 </div>
             `).join('');
+        }
+
+        function updateCategoryCounts() {
+            const counts = listings.reduce((acc, listing) => {
+                const key = listing.category || 'Other';
+                acc[key] = (acc[key] || 0) + 1;
+                return acc;
+            }, {});
+
+            categories.forEach((category) => {
+                category.count = `${counts[category.name] || 0} ads`;
+            });
+
+            renderCategories();
         }
 
         // Render Listings
@@ -1164,16 +1180,85 @@
 
         // Filter Category
         function filterCategory(name) {
-            alert(`Filtering by: ${name}`);
-            // In a real app, this would filter the listings
+            const filtered = listings.filter((listing) => (listing.category || 'Other') === name);
+
+            if (!filtered.length) {
+                document.getElementById('listingsGrid').innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">📭</div>
+                        <p>No user-posted ads yet in ${name}.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const grid = document.getElementById('listingsGrid');
+            grid.innerHTML = filtered.map((item, index) => `
+                <div class="listing-card" style="animation-delay: ${index * 0.1}s">
+                    <div class="listing-img">
+                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:80px; background: linear-gradient(135deg, #f5f5f5, #e0e0e0);">
+                            ${item.image}
+                        </div>
+                        ${item.badge ? `<span class="listing-badge">${item.badge}</span>` : ''}
+                        <button class="listing-fav" onclick="toggleFav(this, event)">♡</button>
+                    </div>
+                    <div class="listing-info">
+                        <div class="listing-price">${item.price}</div>
+                        <div class="listing-title">${item.title}</div>
+                        <div class="listing-meta">
+                            <span class="listing-location">📍 ${item.location}</span>
+                            <span class="listing-time">🕒 ${item.time}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         // Handle Search
         function handleSearch() {
-            const query = document.getElementById('searchInput').value;
-            if (query.trim()) {
-                alert(`Searching for: ${query}`);
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const filtered = listings.filter((listing) => {
+                if (!query) {
+                    return true;
+                }
+
+                return [
+                    listing.title,
+                    listing.location,
+                    listing.category,
+                    listing.price,
+                ].some((value) => String(value || '').toLowerCase().includes(query));
+            });
+
+            if (!filtered.length) {
+                document.getElementById('listingsGrid').innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔎</div>
+                        <p>No user-posted ads matched "${query}".</p>
+                    </div>
+                `;
+                return;
             }
+
+            document.getElementById('listingsGrid').innerHTML = filtered.map((item, index) => `
+                <div class="listing-card" style="animation-delay: ${index * 0.1}s">
+                    <div class="listing-img">
+                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:80px; background: linear-gradient(135deg, #f5f5f5, #e0e0e0);">
+                            ${item.image}
+                        </div>
+                        ${item.badge ? `<span class="listing-badge">${item.badge}</span>` : ''}
+                        <button class="listing-fav" onclick="toggleFav(this, event)">♡</button>
+                    </div>
+                    <div class="listing-info">
+                        <div class="listing-price">${item.price}</div>
+                        <div class="listing-title">${item.title}</div>
+                        <div class="listing-meta">
+                            <span class="listing-location">📍 ${item.location}</span>
+                            <span class="listing-time">🕒 ${item.time}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
         }
 
         // Enter key search
@@ -1208,6 +1293,21 @@
                     <input id="adTitle" type="text" placeholder="What are you selling?" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
                     <input id="adPrice" type="number" placeholder="Price (R)" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
                     <input id="adLocation" type="text" placeholder="Location (e.g. UCT Campus)" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px;">
+                    <select id="adCategory" style="width:100%; padding:12px; margin-bottom:15px; border:1px solid #ddd; border-radius:4px; font-size:15px; color:#666;">
+                        <option value="Other">Select category</option>
+                        <option value="Textbooks">Textbooks</option>
+                        <option value="Electronics">Electronics</option>
+                        <option value="Accommodation">Accommodation</option>
+                        <option value="Furniture">Furniture</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Sports">Sports</option>
+                        <option value="Services">Services</option>
+                        <option value="Jobs">Jobs</option>
+                        <option value="Tickets">Tickets</option>
+                        <option value="Notes">Notes</option>
+                        <option value="Other">Other</option>
+                    </select>
                     <select id="adBadge" style="width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; border-radius:4px; font-size:15px; color:#666;">
                         <option value="">Optional badge</option>
                         <option>TOP</option>
@@ -1314,6 +1414,7 @@
             const title = document.getElementById('adTitle')?.value?.trim() || '';
             const price = Number(document.getElementById('adPrice')?.value || 0);
             const location = document.getElementById('adLocation')?.value?.trim() || 'Campus';
+            const category = document.getElementById('adCategory')?.value || 'Other';
             const badge = document.getElementById('adBadge')?.value || '';
             const imageEmoji = document.getElementById('adEmoji')?.value || '📦';
 
@@ -1329,6 +1430,7 @@
                 const out = await sharedCampus.api('/api/marketplace/listings', 'POST', {
                     title,
                     price,
+                    category,
                     location,
                     badge: badge || 'NEW',
                     imageEmoji: imageEmoji || '📦'
@@ -1336,12 +1438,14 @@
 
                 listings.unshift({
                     title: out.listing.title,
+                    category: out.listing.category || 'Other',
                     price: `R ${Number(out.listing.price).toLocaleString()}`,
                     location: out.listing.location,
                     time: 'Just now',
                     badge: out.listing.badge || null,
                     image: out.listing.imageEmoji || '📦'
                 });
+                updateCategoryCounts();
                 renderListings();
                 closeModal();
             } catch (error) {

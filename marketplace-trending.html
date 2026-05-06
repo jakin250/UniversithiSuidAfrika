@@ -122,7 +122,7 @@
                 <a href="studentmarketplace.html">Home</a>
                 <a href="marketplace-categories.html">Categories</a>
                 <a href="marketplace-trending.html">Trending</a>
-                <a href="javascript:alert('Sign in to post')">Post Ad</a>
+                <a href="studentmarketplace.html">Post Ad</a>
             </nav>
         </div>
     </div>
@@ -159,7 +159,7 @@
                 }
 
                 listingsGrid.innerHTML = listings.map((listing, idx) => `
-                    <div class="listing-card" onclick="alert('View: ' + this.querySelector('.listing-title').textContent)">
+                    <div class="listing-card" onclick="window.location.href='studentmarketplace.html'">
                         <div class="listing-image">${listing.imageEmoji || '📦'}</div>
                         <div class="listing-content">
                             <div class="listing-rank">#${idx + 1} Trending ${listing.badge ? '• ' + listing.badge : ''}</div>

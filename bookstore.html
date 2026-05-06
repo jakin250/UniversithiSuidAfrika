@@ -1116,7 +1116,7 @@
                 <span class="stat-label">Universities</span>
             </div>
             <div class="stat-item">
-                <span class="stat-number" id="statSavings">R4.2M+</span>
+                <span class="stat-number" id="statSavings">0</span>
                 <span class="stat-label">Student Savings</span>
             </div>
         </div>
@@ -1274,6 +1274,13 @@
                             </select>
                         </div>
                         <div class="form-group">
+                            <label>Listing Type *</label>
+                            <select id="bookListingType" name="bookListingType" required>
+                                <option value="sale">Sale</option>
+                                <option value="exchange">Exchange</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <label>Original Price (R)</label>
                             <input id="bookOriginalPrice" name="bookOriginalPrice" type="number" placeholder="e.g., 850">
                         </div>
@@ -1386,13 +1393,14 @@
                         author: l.author,
                         isbn: l.isbn || 'N/A',
                         category: l.category || 'General',
+                        listingType: l.listingType || 'sale',
                         condition: l.condition || 'good',
                         conditionLabel: l.conditionLabel || 'Good',
                         price: Number(l.price || 0),
                         originalPrice: Number(l.originalPrice || l.price || 0),
                         image: l.imageUrl || "https://via.placeholder.com/300x400/4f86c6/ffffff?text=Listing",
                         seller: l.seller || 'Student',
-                        rating: 5,
+                        rating: 0,
                         sales: 0,
                         location: l.location || 'Campus',
                         description: l.description || '',
@@ -1442,14 +1450,14 @@
                                 <span>📅 ${book.date}</span>
                             </div>
                             <div class="product-price-row">
-                                <span class="price-current">R${book.price}</span>
+                                <span class="price-current">${book.listingType === 'exchange' ? 'Exchange' : `R${book.price}`}</span>
                                 <span class="price-original">R${book.originalPrice}</span>
                                 <span class="discount-badge">-${discount}%</span>
                             </div>
                         </div>
                         <div class="product-actions">
                             <button class="btn btn-primary btn-full" onclick="addToCart(${book.id})">
-                                <span>🛒</span> Add to Cart
+                                <span>${book.listingType === 'exchange' ? '🤝' : '🛒'}</span> ${book.listingType === 'exchange' ? 'Request Exchange' : 'Add to Cart'}
                             </button>
                             <button class="btn btn-outline btn-icon" onclick="openModal(${book.id})">
                                 <span>👁</span>
@@ -1482,7 +1490,7 @@
                             </div>
                             <p style="color: #666; font-size: 0.9rem; margin: 0.5rem 0;">${book.description.substring(0, 120)}...</p>
                             <div class="product-price-row">
-                                <span class="price-current">R${book.price}</span>
+                                <span class="price-current">${book.listingType === 'exchange' ? 'Exchange' : `R${book.price}`}</span>
                                 <span class="price-original">R${book.originalPrice}</span>
                                 <span class="discount-badge">-${discount}%</span>
                                 <span style="margin-left: auto; display: flex; gap: 0.5rem;">
@@ -1490,7 +1498,7 @@
                                         ${isWishlisted ? '♥ Saved' : '♡ Save'}
                                     </button>
                                     <button class="btn btn-primary" onclick="addToCart(${book.id})">
-                                        <span>🛒</span> Add to Cart
+                                        <span>${book.listingType === 'exchange' ? '🤝' : '🛒'}</span> ${book.listingType === 'exchange' ? 'Request Exchange' : 'Add to Cart'}
                                     </button>
                                     <button class="btn btn-outline" onclick="openModal(${book.id})">
                                         Details
@@ -1539,7 +1547,7 @@
                     <p class="modal-meta">by ${book.author} • ISBN: ${book.isbn} • ${book.category}</p>
                     
                     <div class="modal-price">
-                        R${book.price}
+                        ${book.listingType === 'exchange' ? 'Exchange request' : `R${book.price}`}
                         <span style="font-size: 1rem; color: var(--gray); text-decoration: line-through; font-weight: 400; margin-left: 1rem;">R${book.originalPrice}</span>
                         <span class="discount-badge" style="margin-left: 1rem;">Save ${discount}%</span>
                     </div>
@@ -1556,7 +1564,7 @@
                             📍 ${book.location} • Posted ${book.date}
                         </div>
                         <div class="safe-trade">
-                            <span>🔒</span> Safe Trade Guarantee - Payment held until delivery confirmed
+                            <span>🔒</span> ${book.listingType === 'exchange' ? 'Meet safely on campus and confirm the exchange in person.' : 'Safe Trade Guarantee - Payment held until delivery confirmed'}
                         </div>
                     </div>
                     
@@ -1567,7 +1575,7 @@
                     
                     <div class="modal-actions">
                         <button class="btn btn-primary" onclick="addToCart(${book.id}); closeModal();">
-                            <span>🛒</span> Add to Cart
+                            <span>${book.listingType === 'exchange' ? '🤝' : '🛒'}</span> ${book.listingType === 'exchange' ? 'Request Exchange' : 'Add to Cart'}
                         </button>
                         <button class="btn btn-success" onclick="buyNow(${book.id})">
                             <span>⚡</span> Buy Now
@@ -1589,6 +1597,10 @@
         // Cart
         function addToCart(id) {
             const book = textbooks.find(b => b.id === id);
+            if (book.listingType === 'exchange') {
+                showToast(`Exchange request started for "${book.title}"`, 'success');
+                return;
+            }
             if (!cart.find(item => item.id === id)) {
                 cart.push(book);
                 updateCartCount();
@@ -1725,6 +1737,7 @@
                 const isbn = get("bookISBN");
                 const category = get("bookCategory");
                 const condition = get("bookCondition");
+                const listingType = get("bookListingType") || "sale";
                 const price = Number(get("bookPrice") || 0);
                 const location = get("bookLocation") || "Campus";
                 const description = get("bookDescription");
@@ -1736,6 +1749,7 @@
                     isbn,
                     category,
                     condition,
+                    listingType,
                     price,
                     location,
                     description,

@@ -204,7 +204,7 @@
                 <a href="bookstore.html">Home</a>
                 <a href="bookstore-categories.html">Categories</a>
                 <a href="bookstore-trending.html">Trending</a>
-                <a href="javascript:alert('Sign in to sell')">Sell</a>
+                <a href="bookstore.html">Sell</a>
             </nav>
         </div>
     </header>
@@ -293,7 +293,7 @@
             }
 
             listingsList.innerHTML = filtered.slice(0, 10).map(listing => `
-                <div class="listing-item" onclick="alert('View: ' + this.querySelector('.listing-title').textContent)">
+                <div class="listing-item" onclick="window.location.href='bookstore.html'">
                     <div class="listing-title">${listing.title}</div>
                     <div class="listing-meta">
                         By ${listing.author || 'Unknown'} • R${listing.price} • ${listing.location || 'Campus'}

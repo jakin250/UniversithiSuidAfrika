@@ -1,5 +1,4 @@
-const { kv } = require("@vercel/kv");
-const { requireUser } = require("../_lib/auth");
+const { KV, requireUser } = require("../_lib/auth");
 
 const LISTINGS_KEY = "marketplace:listings";
 const MAX_RETURN = 100;
@@ -7,7 +6,7 @@ const MAX_RETURN = 100;
 module.exports = async function handler(req, res) {
   try {
     if (req.method === "GET") {
-      const raw = await kv.lrange(LISTINGS_KEY, 0, MAX_RETURN - 1);
+      const raw = await KV.lrange(LISTINGS_KEY, 0, MAX_RETURN - 1);
       const listings = (raw || []).map((item) => (typeof item === "string" ? JSON.parse(item) : item));
       return res.status(200).json({ listings });
     }
@@ -19,6 +18,7 @@ module.exports = async function handler(req, res) {
       const b = req.body || {};
       const title = String(b.title || "").trim();
       const price = Number(b.price || 0);
+      const category = String(b.category || "Other").trim() || "Other";
 
       if (!title || !Number.isFinite(price) || price <= 0) {
         return res.status(400).json({ error: "Title and price are required" });
@@ -28,6 +28,7 @@ module.exports = async function handler(req, res) {
         id: Date.now(),
         title,
         price,
+        category,
         location: String(b.location || "Campus").trim() || "Campus",
         imageEmoji: String(b.imageEmoji || "📦"),
         badge: String(b.badge || "NEW"),
@@ -35,7 +36,7 @@ module.exports = async function handler(req, res) {
         createdAt: new Date().toISOString(),
       };
 
-      await kv.lpush(LISTINGS_KEY, JSON.stringify(listing));
+      await KV.lpush(LISTINGS_KEY, JSON.stringify(listing));
       return res.status(200).json({ listing });
     }
 
@@ -45,4 +46,3 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: err?.message || 'Internal server error' });
   }
 };
-
