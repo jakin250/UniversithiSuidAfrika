@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Notifications - UCT Student Forum</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f7fc;
+      color: #0a2b3e;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #dce5ec;
+    }
+
+    .logo-area h1 {
+      font-size: 1.8rem;
+      color: #0a2b3e;
+    }
+
+    .logo-area .tagline {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+    }
+
+    .back-link {
+      color: #0f5b8c;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      transition: background 0.2s;
+    }
+
+    .back-link:hover {
+      background: #eef2f7;
+    }
+
+    .btn-primary {
+      background: #0f5b8c;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #0a4368;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #0f5b8c;
+      color: #0f5b8c;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: 0.2s;
+    }
+
+    /* Page Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .page-header h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    /* Notification Filters */
+    .filter-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+      background: white;
+      padding: 0.5rem;
+      border-radius: 60px;
+      width: fit-content;
+    }
+
+    .filter-btn {
+      padding: 0.5rem 1.2rem;
+      border: none;
+      background: transparent;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: 0.2s;
+      color: #5a6e7a;
+    }
+
+    .filter-btn.active {
+      background: #0f5b8c;
+      color: white;
+    }
+
+    .filter-btn:hover:not(.active) {
+      background: #eef2f7;
+    }
+
+    /* Mark all as read */
+    .mark-read-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 1rem;
+    }
+
+    /* Notifications List */
+    .notifications-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .notification-card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: 1px solid #eaf0f5;
+      position: relative;
+    }
+
+    .notification-card.unread {
+      background: #f0f7ff;
+      border-left: 4px solid #0f5b8c;
+    }
+
+    .notification-card:hover {
+      transform: translateX(2px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .notification-icon {
+      font-size: 1.8rem;
+      min-width: 48px;
+      text-align: center;
+    }
+
+    .notification-content {
+      flex: 1;
+    }
+
+    .notification-title {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .notification-message {
+      font-size: 0.85rem;
+      color: #4a627a;
+      margin-bottom: 0.3rem;
+    }
+
+    .notification-time {
+      font-size: 0.7rem;
+      color: #8ba0b0;
+    }
+
+    .notification-action {
+      margin-top: 0.5rem;
+    }
+
+    .mark-read-btn {
+      background: none;
+      border: none;
+      color: #8ba0b0;
+      font-size: 0.7rem;
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+    }
+
+    .mark-read-btn:hover {
+      color: #0f5b8c;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background: white;
+      border-radius: 24px;
+      color: #8ba0b0;
+    }
+
+    /* Bulk actions */
+    .bulk-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+      justify-content: flex-end;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 1rem;
+      }
+      .notification-card {
+        padding: 1rem;
+      }
+      .notification-icon {
+        font-size: 1.4rem;
+        min-width: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <div class="logo-area">
+      <h1>STUDENT FORUM</h1>
+      <div class="tagline">Your campus. Your voice.</div>
+    </div>
+    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+  </div>
+
+  <div class="page-header">
+    <h2>🔔 Notifications</h2>
+    <button id="markAllReadBtn" class="btn-outline">✓ Mark all as read</button>
+  </div>
+
+  <div class="filter-tabs">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="unread">Unread</button>
+    <button class="filter-btn" data-filter="reply">💬 Replies</button>
+    <button class="filter-btn" data-filter="upvote">👍 Upvotes</button>
+    <button class="filter-btn" data-filter="mention">@ Mentions</button>
+    <button class="filter-btn" data-filter="announcement">📢 Announcements</button>
+  </div>
+
+  <div id="notificationsContainer" class="notifications-list"></div>
+</div>
+
+<script>
+  // Mock notifications data
+  let notifications = [
+    {
+      id: 1,
+      type: "reply",
+      title: "New reply to your post",
+      message: "Thando M. replied to \"How do I survive Quantitative Methods?\": \"Practice past papers every day! Focus on understanding formulas...\"",
+      timeAgo: "2 hours ago",
+      timestamp: "2026-05-13T10:00:00",
+      read: false,
+      postId: 1,
+      actor: "Thando M.",
+      actionUrl: "#"
+    },
+    {
+      id: 2,
+      type: "upvote",
+      title: "Your comment received upvotes",
+      message: "Your comment on \"Best budget laptops for CS students?\" got 5 upvotes!",
+      timeAgo: "5 hours ago",
+      timestamp: "2026-05-13T07:00:00",
+      read: false,
+      postId: 2,
+      actor: null,
+      actionUrl: "#"
+    },
+    {
+      id: 3,
+      type: "mention",
+      title: "Someone mentioned you",
+      message: "@Thando M. in \"Study group for Thermodynamics\": \"Hey @Thando M., want to join our study session?\"",
+      timeAgo: "1 day ago",
+      timestamp: "2026-05-12T14:00:00",
+      read: true,
+      postId: 5,
+      actor: "Lerato K.",
+      actionUrl: "#"
+    },
+    {
+      id: 4,
+      type: "reply",
+      title: "New reply to your comment",
+      message: "Sipho M. replied to your comment: \"Thanks for the advice! The timer idea is brilliant.\"",
+      timeAgo: "2 days ago",
+      timestamp: "2026-05-11T20:00:00",
+      read: true,
+      postId: 1,
+      actor: "Sipho M.",
+      actionUrl: "#"
+    },
+    {
+      id: 5,
+      type: "upvote",
+      title: "Your post is trending!",
+      message: "\"How do I survive Quantitative Methods?\" reached 50 upvotes!",
+      timeAgo: "3 days ago",
+      timestamp: "2026-05-10T09:00:00",
+      read: true,
+      postId: 1,
+      actor: null,
+      actionUrl: "#"
+    },
+    {
+      id: 6,
+      type: "announcement",
+      title: "Exam Season Support Hub Now Open",
+      message: "Free tutoring, past papers, and mental health resources available. Check it out!",
+      timeAgo: "3 days ago",
+      timestamp: "2026-05-10T08:00:00",
+      read: false,
+      postId: null,
+      actor: null,
+      actionUrl: "#"
+    },
+    {
+      id: 7,
+      type: "announcement",
+      title: "New Study Group Feature Launched",
+      message: "You can now create and join study groups directly on the forum!",
+      timeAgo: "5 days ago",
+      timestamp: "2026-05-08T12:00:00",
+      read: true,
+      postId: null,
+      actor: null,
+      actionUrl: "#"
+    },
+    {
+      id: 8,
+      type: "mention",
+      title: "You were mentioned in a comment",
+      message: "@Thando M. in \"Past papers for Financial Accounting II\": \"@Thando M., do you have the 2022 paper?\"",
+      timeAgo: "1 week ago",
+      timestamp: "2026-05-06T15:00:00",
+      read: true,
+      postId: 4,
+      actor: "Aisha B.",
+      actionUrl: "#"
+    },
+    {
+      id: 9,
+      type: "reply",
+      title: "New reply in your thread",
+      message: "Jordan P. replied to \"Best budget laptops for CS students?\": \"Check out the Dell XPS series...\"",
+      timeAgo: "1 week ago",
+      timestamp: "2026-05-06T10:00:00",
+      read: true,
+      postId: 2,
+      actor: "Jordan P.",
+      actionUrl: "#"
+    },
+    {
+      id: 10,
+      type: "upvote",
+      title: "Your reply was helpful",
+      message: "Someone upvoted your comment on \"Is internship worth it in first year?\"",
+      timeAgo: "2 weeks ago",
+      timestamp: "2026-04-30T08:00:00",
+      read: true,
+      postId: 3,
+      actor: null,
+      actionUrl: "#"
+    }
+  ];
+
+  let currentFilter = "all";
+
+  // Helper functions
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function getIconForType(type) {
+    const icons = {
+      reply: "💬",
+      upvote: "👍",
+      mention: "@",
+      announcement: "📢"
+    };
+    return icons[type] || "🔔";
+  }
+
+  function markAsRead(notificationId) {
+    const notif = notifications.find(n => n.id === notificationId);
+    if (notif) {
+      notif.read = true;
+      renderNotifications();
+    }
+  }
+
+  function markAllAsRead() {
+    notifications.forEach(n => { n.read = true; });
+    renderNotifications();
+    showToast("✓ All notifications marked as read");
+  }
+
+  function getFilteredNotifications() {
+    if (currentFilter === "all") return notifications;
+    if (currentFilter === "unread") return notifications.filter(n => !n.read);
+    return notifications.filter(n => n.type === currentFilter);
+  }
+
+  function renderNotifications() {
+    const filtered = getFilteredNotifications();
+    const container = document.getElementById('notificationsContainer');
+    const unreadCount = notifications.filter(n => !n.read).length;
+    
+    // Update page header unread indicator
+    const header = document.querySelector('.page-header h2');
+    if (unreadCount > 0) {
+      header.innerHTML = `🔔 Notifications <span style="font-size:0.8rem; background:#dc2626; color:white; padding:0.1rem 0.6rem; border-radius:30px;">${unreadCount} new</span>`;
+    } else {
+      header.innerHTML = `🔔 Notifications`;
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          🔕 No notifications to show<br>
+          <span style="font-size:0.8rem;">When you receive replies or upvotes, they'll appear here.</span>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = filtered.map(notif => `
+      <div class="notification-card ${!notif.read ? 'unread' : ''}" data-id="${notif.id}">
+        <div class="notification-icon">${getIconForType(notif.type)}</div>
+        <div class="notification-content">
+          <div class="notification-title">${escapeHtml(notif.title)}</div>
+          <div class="notification-message">${escapeHtml(notif.message)}</div>
+          <div class="notification-time">🕒 ${notif.timeAgo}</div>
+          ${!notif.read ? `
+            <div class="notification-action">
+              <button class="mark-read-btn" data-id="${notif.id}">✓ Mark as read</button>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+
+    // Add click handlers for notifications
+    document.querySelectorAll('.notification-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.classList.contains('mark-read-btn')) return;
+        const id = parseInt(card.getAttribute('data-id'));
+        const notif = notifications.find(n => n.id === id);
+        if (notif && !notif.read) {
+          notif.read = true;
+          renderNotifications();
+        }
+        // Simulate navigation to related content
+        if (notif && notif.postId) {
+          alert(`🔗 Navigating to post #${notif.postId} (simulated)`);
+        } else if (notif && notif.type === 'announcement') {
+          alert(`📢 Opening announcement: ${notif.title} (simulated)`);
+        }
+      });
+    });
+
+    // Mark as read button handlers
+    document.querySelectorAll('.mark-read-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = parseInt(btn.getAttribute('data-id'));
+        markAsRead(id);
+      });
+    });
+  }
+
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.style.position = 'fixed';
+    toast.style.bottom = '20px';
+    toast.style.right = '20px';
+    toast.style.background = '#1e2f3c';
+    toast.style.color = 'white';
+    toast.style.padding = '10px 20px';
+    toast.style.borderRadius = '40px';
+    toast.style.fontSize = '0.85rem';
+    toast.style.zIndex = '1000';
+    toast.innerText = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+  }
+
+  // Filter tabs
+  function initFilters() {
+    const filters = document.querySelectorAll('.filter-btn');
+    filters.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filters.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.getAttribute('data-filter');
+        renderNotifications();
+      });
+    });
+  }
+
+  // Back button
+  document.getElementById('backToForum')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('← Returning to homepage (simulated navigation)');
+  });
+
+  document.getElementById('markAllReadBtn')?.addEventListener('click', () => {
+    markAllAsRead();
+  });
+
+  // Initial render
+  initFilters();
+  renderNotifications();
+</script>
+</body>
+</html>
+

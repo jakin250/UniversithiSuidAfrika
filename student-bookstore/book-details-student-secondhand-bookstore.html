@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Details | Student Secondhand Bookstore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f7f9fc;
+            color: #1a2a3a;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: #0f3b2c;
+            letter-spacing: -0.3px;
+        }
+
+        .logo p {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+        }
+
+        .trust-badges {
+            display: flex;
+            gap: 24px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #2c5f4a;
+        }
+
+        .badge::before {
+            content: "✓";
+            background: #0f3b2c;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #1a2a3a;
+            font-weight: 500;
+        }
+
+        .back-link {
+            margin: 24px 0;
+        }
+
+        .back-link a {
+            color: #0f3b2c;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Book Detail Layout */
+        .book-detail-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 48px;
+            margin: 32px 0;
+            background: white;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .book-images {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .main-image {
+            background: #eef2f5;
+            border-radius: 16px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .thumbnail {
+            background: #eef2f5;
+            border-radius: 8px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .thumbnail.active {
+            border-color: #0f3b2c;
+        }
+
+        .book-info-detail h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .author-edition {
+            color: #5a6e7c;
+            margin-bottom: 16px;
+            font-size: 1rem;
+        }
+
+        .price-section {
+            background: #e9f5ef;
+            padding: 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+        }
+
+        .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0f3b2c;
+        }
+
+        .condition-badge {
+            display: inline-block;
+            background: #0f3b2c;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin: 12px 0;
+        }
+
+        .description {
+            background: #f7f9fc;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 20px 0;
+            line-height: 1.6;
+        }
+
+        .seller-card {
+            background: #f7f9fc;
+            padding: 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .seller-info h4 {
+            margin-bottom: 4px;
+        }
+
+        .seller-rating {
+            color: #f5a623;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .btn-buy {
+            flex: 1;
+            background: #0f3b2c;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-chat {
+            flex: 1;
+            background: white;
+            border: 2px solid #0f3b2c;
+            color: #0f3b2c;
+            padding: 14px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-buy:hover {
+            background: #1e5a45;
+        }
+
+        .btn-chat:hover {
+            background: #e9f5ef;
+        }
+
+        /* Escrow Info Box */
+        .escrow-info {
+            background: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 32px 0;
+        }
+
+        .escrow-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .escrow-step {
+            flex: 1;
+            text-align: center;
+            font-size: 0.85rem;
+            padding: 8px;
+            background: #f7f9fc;
+            border-radius: 8px;
+        }
+
+        /* Similar Books */
+        .similar-section {
+            margin: 48px 0;
+        }
+
+        .similar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 24px;
+        }
+
+        .similar-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .similar-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .similar-cover {
+            background: #eef2f5;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .similar-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .similar-price {
+            color: #0f3b2c;
+            font-weight: 700;
+            margin-top: 8px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: #5a6e7c;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .book-detail-container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .escrow-steps {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <h1>📚 STUDENT SECONDHAND BOOKSTORE</h1>
+                <p>Buy, sell and exchange textbooks with students on your campus.</p>
+            </div>
+            <div class="trust-badges">
+                <span class="badge">Student verified</span>
+                <span class="badge">Safe Payments</span>
+                <span class="badge">Better Prices</span>
+            </div>
+            <nav>
+                <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Browse</a>
+                <a href="my-listings-student-secondhand-bookstore.html">My Listings</a>
+                <a href="sell-your-books-student-secondhand-bookstore.html">Sell</a>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="back-link">
+        <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">← Back to Browse</a>
+    </div>
+
+    <div class="book-detail-container" id="bookDetailContainer">
+        <!-- Dynamic content loaded via JS -->
+    </div>
+
+    <div class="escrow-info">
+        <h3>🔒 Secure Payment with Escrow</h3>
+        <div class="escrow-steps">
+            <div class="escrow-step">1. Buyer pays</div>
+            <div class="escrow-step">2. Payment held securely</div>
+            <div class="escrow-step">3. Dispute resolution</div>
+            <div class="escrow-step">4. Seller delivers</div>
+            <div class="escrow-step">5. Buyer confirms</div>
+            <div class="escrow-step">6. Payment released</div>
+        </div>
+    </div>
+
+    <div class="similar-section">
+        <h2>📚 Similar Books You Might Like</h2>
+        <div class="similar-grid" id="similarGrid"></div>
+    </div>
+</div>
+
+<footer>
+    <p>Student Secondhand Bookstore — Buy wisely, sell easily, exchange fairly.</p>
+</footer>
+
+<script src="../public/api-client.js"></script>
+<script>
+    const booksDB = {};
+
+    // Get book ID from URL parameter
+    function getBookIdFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('id');
+    }
+
+    // Render main book details
+    function renderBookDetails(bookId) {
+        const book = booksDB[bookId];
+        if (!book) {
+            document.getElementById('bookDetailContainer').innerHTML = '<p style="grid-column:1/-1;">Book not found. <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Go back to browse</a></p>';
+            return;
+        }
+
+        const container = document.getElementById('bookDetailContainer');
+        container.innerHTML = `
+            <div class="book-images">
+                <div class="main-image" id="mainImage">${book.images[0]}</div>
+                <div class="thumbnail-grid" id="thumbnailGrid">
+                    ${book.images.map((img, idx) => `<div class="thumbnail" data-img="${img}" data-idx="${idx}">${img}</div>`).join('')}
+                </div>
+            </div>
+            <div class="book-info-detail">
+                <h1>${book.title}</h1>
+                <div class="author-edition">${book.author} • ${book.edition}</div>
+                
+                <div class="price-section">
+                    <div class="price">R${book.price}</div>
+                    ${book.reward ? `<div style="color:#c97e00; margin-top:8px;">🎁 ${book.reward}</div>` : ''}
+                </div>
+                
+                <div class="condition-badge">📌 ${book.condition}</div>
+                <div class="condition-desc" style="margin:8px 0 16px; color:#5a6e7c;">${book.conditionDesc}</div>
+                
+                <div class="description">
+                    <strong>📖 Description:</strong><br>
+                    ${book.description}
+                </div>
+                
+                <div class="seller-card">
+                    <div class="seller-info">
+                        <h4>Seller: ${book.seller}</h4>
+                        <div>🎓 ${book.university}</div>
+                        <div class="seller-rating">⭐ ${book.rating} (${book.totalReviews} reviews)</div>
+                    </div>
+                    <div class="verified-badge" style="background:#e9f5ef; padding:6px 12px; border-radius:20px;">✓ Verified Student</div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn-buy" onclick="proceedToCheckout(${book.id})">💰 Buy Now with Escrow</button>
+                    <button class="btn-chat" onclick="openChat(${book.id})">💬 Chat with Seller</button>
+                </div>
+            </div>
+        `;
+
+        // Thumbnail click handler
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        const mainImage = document.getElementById('mainImage');
+        
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('click', () => {
+                thumbnails.forEach(t => t.classList.remove('active'));
+                thumb.classList.add('active');
+                mainImage.innerHTML = thumb.getAttribute('data-img');
+            });
+        });
+        
+        // Activate first thumbnail
+        if (thumbnails[0]) thumbnails[0].classList.add('active');
+    }
+
+    // Render similar books (same category, exclude current)
+    function renderSimilarBooks(currentId) {
+        const currentBook = booksDB[currentId];
+        if (!currentBook) return;
+        
+        const similar = Object.values(booksDB).filter(book => 
+            book.id !== currentBook.id && book.category === currentBook.category
+        ).slice(0, 4);
+        
+        const similarGrid = document.getElementById('similarGrid');
+        if (similar.length === 0) {
+            similarGrid.innerHTML = '<p>No similar books found.</p>';
+            return;
+        }
+        
+        similarGrid.innerHTML = similar.map(book => `
+            <div class="similar-card" onclick="goToBookDetails(${book.id})">
+                <div class="similar-cover">${book.images[0]}</div>
+                <div class="similar-title">${book.title}</div>
+                <div class="similar-author" style="font-size:0.75rem; color:#5a6e7c;">${book.author}</div>
+                <div class="similar-price">R${book.price}</div>
+                <div style="font-size:0.7rem; color:#0f3b2c;">${book.condition}</div>
+            </div>
+        `).join('');
+    }
+
+    // Navigation functions
+    window.proceedToCheckout = (bookId) => {
+        window.location.href = `checkout-secure-escrow-payment-student-secondhand-bookstore.html?book=${bookId}`;
+    };
+    
+    window.openChat = (bookId) => {
+        window.location.href = `chat-student-secondhand-bookstore.html?book=${bookId}`;
+    };
+    
+    window.goToBookDetails = (bookId) => {
+        window.location.href = `book-details-student-secondhand-bookstore.html?id=${bookId}`;
+    };
+
+    async function loadBook() {
+        const bookId = getBookIdFromURL() || 1;
+        const remote = await apiClient.get(`../api/bookstore/books/${bookId}`);
+        booksDB[bookId] = {
+            id: remote.id,
+            title: remote.title,
+            author: remote.author || 'Unknown author',
+            edition: remote.edition || '',
+            price: remote.price || 0,
+            condition: remote.condition || 'Good',
+            conditionDesc: remote.description || '',
+            description: remote.description || '',
+            seller: remote.seller || 'Campus Seller',
+            university: remote.university || 'Student Marketplace',
+            rating: remote.rating || 4.8,
+            totalReviews: remote.totalReviews || 0,
+            reward: remote.reward || null,
+            category: remote.category || 'General',
+            images: remote.images || ['📘', '📗', '📕']
+        };
+        renderBookDetails(bookId);
+        renderSimilarBooks(parseInt(bookId));
+    }
+
+    loadBook().catch(() => {
+        document.getElementById('bookDetailContainer').innerHTML = '<p style="grid-column:1/-1;">Book not found. <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Go back to browse</a></p>';
+    });
+</script>
+</body>
+</html>
+
+

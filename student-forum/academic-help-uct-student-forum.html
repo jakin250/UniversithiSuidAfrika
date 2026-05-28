@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Academic Help - UCT Student Forum</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f7fc;
+      color: #0a2b3e;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #dce5ec;
+    }
+
+    .logo-area h1 {
+      font-size: 1.8rem;
+      color: #0a2b3e;
+    }
+
+    .logo-area .tagline {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+    }
+
+    .back-link {
+      color: #0f5b8c;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      transition: background 0.2s;
+    }
+
+    .back-link:hover {
+      background: #eef2f7;
+    }
+
+    .btn-primary {
+      background: #0f5b8c;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #0a4368;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #0f5b8c;
+      color: #0f5b8c;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: 0.2s;
+    }
+
+    .btn-outline:hover {
+      background: #e6f0f8;
+    }
+
+    /* Category Header */
+    .category-header {
+      background: linear-gradient(135deg, #e1eef9 0%, #ffffff 100%);
+      border-radius: 28px;
+      padding: 1.8rem 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .category-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .category-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .category-description {
+      color: #4a6f8c;
+      margin-bottom: 1rem;
+      max-width: 600px;
+    }
+
+    .category-stats {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: #2c5779;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      background: white;
+      border-radius: 20px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .sort-select {
+      padding: 0.5rem 1rem;
+      border: 1px solid #cddfe8;
+      border-radius: 40px;
+      background: white;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .post-count {
+      font-size: 0.9rem;
+      color: #5a6e7a;
+    }
+
+    /* Post List */
+    .posts-list {
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .post-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid #edf2f6;
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+
+    .post-item:hover {
+      background: #fafdff;
+    }
+
+    .vote-count {
+      font-weight: 700;
+      font-size: 1.1rem;
+      min-width: 55px;
+      color: #1e6f3f;
+      background: #eef5e9;
+      padding: 0.25rem 0.5rem;
+      border-radius: 30px;
+      text-align: center;
+    }
+
+    .post-content {
+      flex: 1;
+    }
+
+    .post-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #0a2b3e;
+      margin-bottom: 0.3rem;
+    }
+
+    .post-meta {
+      font-size: 0.75rem;
+      color: #6c7e8c;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .author-name {
+      font-weight: 500;
+      color: #0f5b8c;
+    }
+
+    .tag {
+      display: inline-block;
+      background: #eef2fa;
+      padding: 0.2rem 0.6rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin: 1.5rem 0 2rem;
+      flex-wrap: wrap;
+    }
+
+    .page-btn {
+      padding: 0.5rem 1rem;
+      border: 1px solid #cddfe8;
+      background: white;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .page-btn.active {
+      background: #0f5b8c;
+      color: white;
+      border-color: #0f5b8c;
+    }
+
+    .page-btn:hover:not(.active) {
+      background: #eef2f7;
+    }
+
+    /* Sidebar */
+    .forum-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 2rem;
+    }
+
+    .sidebar-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .sidebar-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #0f5b8c;
+      padding-left: 0.7rem;
+    }
+
+    .related-cat-item {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #eef2f6;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .related-cat-item:hover {
+      color: #0f5b8c;
+    }
+
+    .badge-count {
+      background: #eef2f7;
+      padding: 0.2rem 0.5rem;
+      border-radius: 20px;
+      font-size: 0.7rem;
+    }
+
+    @media (max-width: 800px) {
+      .forum-grid {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 1rem;
+      }
+      .category-title {
+        font-size: 1.5rem;
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #7c93a8;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <div class="logo-area">
+      <h1>STUDENT FORUM</h1>
+      <div class="tagline">Your campus. Your voice.</div>
+    </div>
+    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToHome" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+  </div>
+
+  <div class="forum-grid">
+    <!-- Main Content -->
+    <div>
+      <!-- Dynamic Category Header -->
+      <div class="category-header" id="categoryHeader"></div>
+
+      <!-- Filter Bar -->
+      <div class="filter-bar">
+        <div class="post-count" id="postCount">Loading posts...</div>
+        <select id="sortSelect" class="sort-select">
+          <option value="trending">🔥 Trending (Most upvotes)</option>
+          <option value="newest">🕒 Newest first</option>
+          <option value="mostreplies">💬 Most replies</option>
+        </select>
+      </div>
+
+      <!-- Posts Container -->
+      <div id="postsContainer" class="posts-list"></div>
+
+      <!-- Pagination -->
+      <div id="paginationContainer" class="pagination"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <div class="sidebar-card">
+        <h3>📂 Other Categories</h3>
+        <div id="otherCategoriesList"></div>
+      </div>
+      <div class="sidebar-card">
+        <h3>💡 Pro Tip</h3>
+        <p style="font-size: 0.85rem;">Use the search bar (coming soon) to find specific topics. Popular categories like Academic Help have the most active discussions.</p>
+      </div>
+      <div class="sidebar-card">
+        <h3>🏆 Top Contributors in this Category</h3>
+        <div id="topContributorsCat"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // --- MOCK DATA: All posts for Academic Help category (plus few from other for demo but only show current category)
+  const allPosts = [
+    { id: 1, title: "How do I survive Quantitative Methods?", category: "Academic Help", author: "Sipho M.", timeAgo: "3h ago", votes: 327, replies: 24, tags: ["#Stats", "#QM"] },
+    { id: 2, title: "Best resources for learning Calculus?", category: "Academic Help", author: "Lerato K.", timeAgo: "1d ago", votes: 156, replies: 12, tags: ["#Calculus", "#Math"] },
+    { id: 3, title: "Group study tips for Accounting majors", category: "Academic Help", author: "Jordan P.", timeAgo: "2d ago", votes: 89, replies: 7, tags: ["#Accounting", "#StudyTips"] },
+    { id: 4, title: "How to write a killer research proposal?", category: "Academic Help", author: "Aisha B.", timeAgo: "4d ago", votes: 210, replies: 18, tags: ["#Research", "#Writing"] },
+    { id: 5, title: "Physics practical exam advice", category: "Academic Help", author: "Thabo R.", timeAgo: "5d ago", votes: 67, replies: 5, tags: ["#Physics"] },
+    { id: 6, title: "Time management for engineering students", category: "Academic Help", author: "Naledi M.", timeAgo: "6d ago", votes: 143, replies: 9, tags: ["#Engineering"] },
+    { id: 7, title: "How to reference using Harvard style?", category: "Academic Help", author: "Zanele P.", timeAgo: "1w ago", votes: 98, replies: 14, tags: ["#Referencing"] },
+    { id: 8, title: "Tips for online open-book exams", category: "Academic Help", author: "Michael B.", timeAgo: "1w ago", votes: 175, replies: 22, tags: ["#Exams"] },
+    { id: 9, title: "Best budget laptops for CS students?", category: "Tech & Gadgets", author: "Lerato K.", timeAgo: "6h ago", votes: 283, replies: 31, tags: ["#Laptops"] },
+    { id: 10, title: "Where to find free parking on campus?", category: "Campus Life", author: "Aisha B.", timeAgo: "12h ago", votes: 34, replies: 4, tags: ["#Parking"] }
+  ];
+
+  // Category info mapping
+  const categoryInfo = {
+    "Academic Help": {
+      icon: "📚",
+      description: "Get help with coursework, exams, assignments, and study strategies. Connect with tutors and peers.",
+      totalPosts: 0 // compute dynamically
+    },
+    "Study Resources": {
+      icon: "📖",
+      description: "Share and find past papers, textbooks, notes, and learning materials."
+    },
+    "Campus Life": {
+      icon: "🏫",
+      description: "Discussions about housing, events, student life, and everything campus-related."
+    },
+    "Careers": {
+      icon: "💼",
+      description: "Internships, job hunting, CV tips, and career advice."
+    },
+    "Tech & Gadgets": {
+      icon: "💻",
+      description: "Hardware, software, tech deals, and digital tools for students."
+    },
+    "General Discussion": {
+      icon: "🗣️",
+      description: "Anything else — respectful conversations, off-topic but community-focused."
+    }
+  };
+
+  // Other categories for sidebar (exclude current)
+  const allCategories = ["Academic Help", "Study Resources", "Campus Life", "Careers", "Tech & Gadgets", "General Discussion"];
+  
+  // Top contributors per category mock (academic help focused)
+  const categoryContributors = {
+    "Academic Help": ["Sipho M. (4200 pts)", "Thando M. (3800 pts)", "Lerato K. (3100 pts)"]
+  };
+
+  let currentCategory = "Academic Help"; // default, but we can detect from URL hash / param for simulation
+  let currentPage = 1;
+  const postsPerPage = 5;
+  let currentSort = "trending"; // trending, newest, mostreplies
+  let filteredPosts = [];
+
+  // Helper functions
+  function getCategoryPosts(category, sortType) {
+    let posts = allPosts.filter(p => p.category === category);
+    if (sortType === "trending") {
+      return [...posts].sort((a,b) => b.votes - a.votes);
+    } else if (sortType === "newest") {
+      // mock: timeAgo string -> assign rough order: "Just now" > "3h ago" > "1d ago" etc.
+      const timeOrder = { "Just now": 1, "3h ago": 2, "6h ago": 3, "12h ago": 4, "1d ago": 5, "2d ago": 6, "4d ago": 7, "5d ago": 8, "6d ago": 9, "1w ago": 10 };
+      return [...posts].sort((a,b) => (timeOrder[a.timeAgo] || 99) - (timeOrder[b.timeAgo] || 99));
+    } else if (sortType === "mostreplies") {
+      return [...posts].sort((a,b) => b.replies - a.replies);
+    }
+    return posts;
+  }
+
+  function renderCategoryHeader() {
+    const info = categoryInfo[currentCategory] || { icon: "📂", description: "Browse discussions and share knowledge." };
+    const total = filteredPosts.length;
+    const headerDiv = document.getElementById('categoryHeader');
+    headerDiv.innerHTML = `
+      <div class="category-icon">${info.icon}</div>
+      <div class="category-title">${currentCategory}</div>
+      <div class="category-description">${info.description}</div>
+      <div class="category-stats">
+        <span>📄 ${total} discussions</span>
+        <span>👥 ${Math.floor(total * 1.5)} active participants</span>
+      </div>
+    `;
+    document.getElementById('postCount').innerText = `📌 Showing ${total} posts`;
+  }
+
+  function renderPosts() {
+    const start = (currentPage - 1) * postsPerPage;
+    const paginatedPosts = filteredPosts.slice(start, start + postsPerPage);
+    const container = document.getElementById('postsContainer');
+    
+    if (paginatedPosts.length === 0) {
+      container.innerHTML = `<div class="empty-state">✨ No posts yet. Be the first to start a discussion in ${currentCategory}!</div>`;
+      return;
+    }
+
+    container.innerHTML = paginatedPosts.map(post => `
+      <div class="post-item" data-id="${post.id}">
+        <div class="vote-count">▲ ${post.votes}</div>
+        <div class="post-content">
+          <div class="post-title">${escapeHtml(post.title)}</div>
+          <div class="post-meta">
+            <span>by <span class="author-name">${escapeHtml(post.author)}</span></span>
+            <span>🕒 ${post.timeAgo}</span>
+            <span>💬 ${post.replies} replies</span>
+            <span>${post.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    // add click listeners to navigate to discussion detail
+    document.querySelectorAll('.post-item').forEach(el => {
+      el.addEventListener('click', (e) => {
+        const id = parseInt(el.getAttribute('data-id'));
+        alert(`🔍 Navigate to post #${id}: "${allPosts.find(p=>p.id===id)?.title}"\n(Discussion detail page would open here)`);
+      });
+    });
+  }
+
+  function renderPagination() {
+    const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+    const paginationDiv = document.getElementById('paginationContainer');
+    if (totalPages <= 1) {
+      paginationDiv.innerHTML = '';
+      return;
+    }
+    let buttonsHtml = '';
+    for (let i = 1; i <= totalPages; i++) {
+      buttonsHtml += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+    }
+    paginationDiv.innerHTML = buttonsHtml;
+    document.querySelectorAll('.page-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        currentPage = parseInt(btn.getAttribute('data-page'));
+        renderPosts();
+        renderPagination();
+        window.scrollTo({ top: document.querySelector('.filter-bar').offsetTop - 20, behavior: 'smooth' });
+      });
+    });
+  }
+
+  function renderOtherCategories() {
+    const otherCats = allCategories.filter(c => c !== currentCategory);
+    const container = document.getElementById('otherCategoriesList');
+    container.innerHTML = otherCats.map(cat => {
+      const postCount = allPosts.filter(p => p.category === cat).length;
+      return `<div class="related-cat-item" data-cat="${cat}">
+                <span>${categoryInfo[cat]?.icon || '📁'} ${cat}</span>
+                <span class="badge-count">${postCount} posts</span>
+              </div>`;
+    }).join('');
+    document.querySelectorAll('.related-cat-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const newCat = el.getAttribute('data-cat');
+        if (newCat) {
+          currentCategory = newCat;
+          currentPage = 1;
+          applyFiltersAndRender();
+        }
+      });
+    });
+  }
+
+  function renderTopContributors() {
+    const container = document.getElementById('topContributorsCat');
+    const contributors = categoryContributors[currentCategory] || ["Active contributor #1", "Helper #2", "Top answerer"];
+    container.innerHTML = `<ul style="list-style: none;">${contributors.map(c => `<li style="padding: 0.4rem 0;">🏅 ${c}</li>`).join('')}</ul>`;
+  }
+
+  function applyFiltersAndRender() {
+    filteredPosts = getCategoryPosts(currentCategory, currentSort);
+    renderCategoryHeader();
+    renderPosts();
+    renderPagination();
+    renderOtherCategories();
+    renderTopContributors();
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  // Event listeners for sort
+  document.getElementById('sortSelect')?.addEventListener('change', (e) => {
+    currentSort = e.target.value;
+    currentPage = 1;
+    applyFiltersAndRender();
+  });
+
+  // simulate category from URL hash or query param: e.g., ?cat=Study%20Resources
+  function getCategoryFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    const catParam = params.get('category');
+    if (catParam && allCategories.includes(catParam)) {
+      return catParam;
+    }
+    return "Academic Help";
+  }
+
+  // initialization
+  function init() {
+    currentCategory = getCategoryFromUrl();
+    currentSort = "trending";
+    currentPage = 1;
+    applyFiltersAndRender();
+    // update back link behavior
+    document.getElementById('backToHome')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('← Returning to homepage (simulated navigation)');
+    });
+  }
+
+  init();
+</script>
+</body>
+</html>
+
+

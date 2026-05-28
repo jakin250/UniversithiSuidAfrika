@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat | Student Secondhand Bookstore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f7f9fc;
+            color: #1a2a3a;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: #0f3b2c;
+            letter-spacing: -0.3px;
+        }
+
+        .logo p {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+        }
+
+        .trust-badges {
+            display: flex;
+            gap: 24px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #2c5f4a;
+        }
+
+        .badge::before {
+            content: "✓";
+            background: #0f3b2c;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #1a2a3a;
+            font-weight: 500;
+        }
+
+        /* Chat Layout */
+        .chat-container {
+            display: flex;
+            gap: 24px;
+            margin: 40px 0;
+            min-height: 600px;
+        }
+
+        /* Conversations Sidebar */
+        .conversations-sidebar {
+            width: 320px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: #0f3b2c;
+            color: white;
+        }
+
+        .sidebar-header h3 {
+            font-size: 1.1rem;
+        }
+
+        .sidebar-header p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .conversations-list {
+            max-height: 550px;
+            overflow-y: auto;
+        }
+
+        .conversation-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            border-bottom: 1px solid #eef2f5;
+        }
+
+        .conversation-item:hover {
+            background: #f7f9fc;
+        }
+
+        .conversation-item.active {
+            background: #e9f5ef;
+            border-left: 3px solid #0f3b2c;
+        }
+
+        .conversation-avatar {
+            width: 48px;
+            height: 48px;
+            background: #eef2f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .conversation-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .conversation-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .conversation-preview {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .conversation-time {
+            font-size: 0.7rem;
+            color: #5a6e7c;
+            text-align: right;
+        }
+
+        .unread-badge {
+            background: #0f3b2c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
+
+        /* Chat Main Area */
+        .chat-main {
+            flex: 1;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Chat Header */
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+        }
+
+        .chat-user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .chat-avatar {
+            width: 48px;
+            height: 48px;
+            background: #eef2f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .chat-user-details h4 {
+            margin-bottom: 4px;
+        }
+
+        .chat-user-details p {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+        }
+
+        .verified-badge {
+            background: #e9f5ef;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            color: #0f3b2c;
+        }
+
+        /* Order Context Card */
+        .order-context {
+            background: #f7f9fc;
+            margin: 12px 20px;
+            padding: 12px;
+            border-radius: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .order-book-cover {
+            width: 40px;
+            height: 50px;
+            background: #eef2f5;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .order-book-info {
+            flex: 1;
+        }
+
+        .order-book-title {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .order-book-meta {
+            font-size: 0.7rem;
+            color: #5a6e7c;
+        }
+
+        .view-order-btn {
+            background: none;
+            border: 1px solid #0f3b2c;
+            color: #0f3b2c;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        /* Messages Area */
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #fafbfc;
+        }
+
+        .message {
+            display: flex;
+            max-width: 70%;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message.received {
+            align-self: flex-start;
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 20px;
+            position: relative;
+        }
+
+        .message.sent .message-bubble {
+            background: #0f3b2c;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.received .message-bubble {
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: #1a2a3a;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 0.65rem;
+            margin-top: 4px;
+            opacity: 0.7;
+        }
+
+        .message.sent .message-time {
+            text-align: right;
+        }
+
+        /* Message Input */
+        .message-input-area {
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: none;
+            min-height: 44px;
+            max-height: 100px;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #0f3b2c;
+        }
+
+        .send-btn {
+            background: #0f3b2c;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 24px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .send-btn:hover {
+            background: #1e5a45;
+        }
+
+        .typing-indicator {
+            font-size: 0.75rem;
+            color: #5a6e7c;
+            padding: 4px 20px;
+            font-style: italic;
+        }
+
+        /* Empty State */
+        .empty-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+            color: #5a6e7c;
+        }
+
+        .empty-chat h3 {
+            margin-bottom: 8px;
+            color: #1a2a3a;
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: #5a6e7c;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .chat-container {
+                flex-direction: column;
+            }
+            .conversations-sidebar {
+                width: 100%;
+                max-height: 300px;
+            }
+            .message {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <h1>📚 STUDENT SECONDHAND BOOKSTORE</h1>
+                <p>Buy, sell and exchange textbooks with students on your campus.</p>
+            </div>
+            <div class="trust-badges">
+                <span class="badge">Student verified</span>
+                <span class="badge">Safe Payments</span>
+                <span class="badge">Better Prices</span>
+            </div>
+            <nav>
+                <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Browse</a>
+                <a href="my-listings-student-secondhand-bookstore.html">My Listings</a>
+                <a href="sell-your-books-student-secondhand-bookstore.html">Sell</a>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="chat-container">
+        <!-- Conversations Sidebar -->
+        <div class="conversations-sidebar">
+            <div class="sidebar-header">
+                <h3>💬 Messages</h3>
+                <p>Chat with buyers and sellers</p>
+            </div>
+            <div class="conversations-list" id="conversationsList">
+                <!-- Dynamic conversations -->
+            </div>
+        </div>
+
+        <!-- Chat Main Area -->
+        <div class="chat-main" id="chatMain">
+            <!-- Dynamic chat content -->
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>Student Secondhand Bookstore — Buy wisely, sell easily, exchange fairly.</p>
+</footer>
+
+<script>
+    // Mock data for current user (in production, this would come from login session)
+    const currentUser = {
+        id: 'current_user',
+        name: 'You',
+        avatar: '👤',
+        isBuyer: true
+    };
+    
+    // Mock conversations data
+    let conversations = [
+        {
+            id: 'conv_1',
+            withUser: {
+                id: 'seller_1',
+                name: 'Thando M.',
+                avatar: '👨‍🎓',
+                role: 'Seller',
+                university: 'UCT Student',
+                verified: true
+            },
+            orderId: 'ORD-1734567890123',
+            book: {
+                title: 'Introduction to Microeconomics',
+                author: 'Gregory Mankiw',
+                edition: '4th Edition',
+                price: 200,
+                cover: '📊'
+            },
+            lastMessage: 'Hi! I can meet you at the library tomorrow at 2pm.',
+            lastMessageTime: '2026-05-13T10:30:00',
+            unread: 2,
+            messages: [
+                {
+                    id: 'msg_1',
+                    senderId: 'current_user',
+                    text: 'Hi, is the book still available?',
+                    timestamp: '2026-05-12T14:20:00',
+                    read: true
+                },
+                {
+                    id: 'msg_2',
+                    senderId: 'seller_1',
+                    text: 'Yes, still available! It\'s in great condition as described.',
+                    timestamp: '2026-05-12T14:25:00',
+                    read: true
+                },
+                {
+                    id: 'msg_3',
+                    senderId: 'current_user',
+                    text: 'Great! Can we meet on campus?',
+                    timestamp: '2026-05-13T09:15:00',
+                    read: true
+                },
+                {
+                    id: 'msg_4',
+                    senderId: 'seller_1',
+                    text: 'Hi! I can meet you at the library tomorrow at 2pm.',
+                    timestamp: '2026-05-13T10:30:00',
+                    read: false
+                }
+            ]
+        },
+        {
+            id: 'conv_2',
+            withUser: {
+                id: 'buyer_1',
+                name: 'Sarah J.',
+                avatar: '👩‍🎓',
+                role: 'Buyer',
+                university: 'Wits University',
+                verified: true
+            },
+            orderId: 'ORD-1734567890456',
+            book: {
+                title: 'Constitutional Law of South Africa',
+                author: 'J. Dugard',
+                edition: '7th Edition',
+                price: 180,
+                cover: '⚖️'
+            },
+            lastMessage: 'I\'ve just made the payment!',
+            lastMessageTime: '2026-05-12T16:45:00',
+            unread: 0,
+            messages: [
+                {
+                    id: 'msg_5',
+                    senderId: 'buyer_1',
+                    text: 'Is this book still available?',
+                    timestamp: '2026-05-11T10:00:00',
+                    read: true
+                },
+                {
+                    id: 'msg_6',
+                    senderId: 'current_user',
+                    text: 'Yes, it is!',
+                    timestamp: '2026-05-11T10:05:00',
+                    read: true
+                },
+                {
+                    id: 'msg_7',
+                    senderId: 'buyer_1',
+                    text: 'I\'ve just made the payment!',
+                    timestamp: '2026-05-12T16:45:00',
+                    read: true
+                }
+            ]
+        },
+        {
+            id: 'conv_3',
+            withUser: {
+                id: 'seller_2',
+                name: 'Luke J.',
+                avatar: '👨‍🏫',
+                role: 'Seller',
+                university: 'Wits University',
+                verified: true
+            },
+            orderId: null,
+            book: {
+                title: 'CONSTRUCTIONAL ARTS',
+                author: 'A. Peterson',
+                edition: '3rd Edition',
+                price: 180,
+                cover: '🏗️'
+            },
+            lastMessage: 'I can lower the price to R160',
+            lastMessageTime: '2026-05-11T09:00:00',
+            unread: 0,
+            messages: [
+                {
+                    id: 'msg_8',
+                    senderId: 'current_user',
+                    text: 'Would you accept R160?',
+                    timestamp: '2026-05-10T15:00:00',
+                    read: true
+                },
+                {
+                    id: 'msg_9',
+                    senderId: 'seller_2',
+                    text: 'I can lower the price to R160',
+                    timestamp: '2026-05-11T09:00:00',
+                    read: true
+                }
+            ]
+        }
+    ];
+    
+    let activeConversationId = conversations[0]?.id || null;
+    let typingTimeout = null;
+    
+    // Format time display
+    function formatMessageTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffHours = (now - date) / (1000 * 60 * 60);
+        
+        if (diffHours < 24) {
+            return date.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' });
+        } else if (diffHours < 48) {
+            return 'Yesterday';
+        } else {
+            return date.toLocaleDateString('en-ZA', { month: 'short', day: 'numeric' });
+        }
+    }
+    
+    function formatConversationTime(timestamp) {
+        const date = new Date(timestamp);
+        const now = new Date();
+        const diffDays = (now - date) / (1000 * 60 * 60 * 24);
+        
+        if (diffDays < 1) {
+            return date.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' });
+        } else if (diffDays < 7) {
+            return date.toLocaleDateString('en-ZA', { weekday: 'short' });
+        } else {
+            return date.toLocaleDateString('en-ZA', { month: 'short', day: 'numeric' });
+        }
+    }
+    
+    // Render conversations sidebar
+    function renderConversations() {
+        const container = document.getElementById('conversationsList');
+        
+        container.innerHTML = conversations.map(conv => `
+            <div class="conversation-item ${activeConversationId === conv.id ? 'active' : ''}" 
+                 onclick="selectConversation('${conv.id}')">
+                <div class="conversation-avatar">${conv.withUser.avatar}</div>
+                <div class="conversation-info">
+                    <div class="conversation-name">${conv.withUser.name}</div>
+                    <div class="conversation-preview">${conv.lastMessage.substring(0, 40)}${conv.lastMessage.length > 40 ? '...' : ''}</div>
+                </div>
+                <div style="text-align:right">
+                    <div class="conversation-time">${formatConversationTime(conv.lastMessageTime)}</div>
+                    ${conv.unread > 0 ? `<div class="unread-badge">${conv.unread}</div>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Render chat area
+    function renderChat() {
+        const conversation = conversations.find(c => c.id === activeConversationId);
+        const chatMain = document.getElementById('chatMain');
+        
+        if (!conversation) {
+            chatMain.innerHTML = `
+                <div class="empty-chat">
+                    <div style="font-size: 4rem; margin-bottom: 16px;">💬</div>
+                    <h3>Select a conversation</h3>
+                    <p>Choose a chat from the sidebar to start messaging</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Mark messages as read
+        if (conversation.unread > 0) {
+            conversation.unread = 0;
+            renderConversations();
+        }
+        
+        chatMain.innerHTML = `
+            <div class="chat-header">
+                <div class="chat-user-info">
+                    <div class="chat-avatar">${conversation.withUser.avatar}</div>
+                    <div class="chat-user-details">
+                        <h4>${conversation.withUser.name}</h4>
+                        <p>${conversation.withUser.university} • ${conversation.withUser.role}</p>
+                    </div>
+                    <span class="verified-badge">✓ Verified Student</span>
+                </div>
+                ${conversation.orderId ? `<button class="view-order-btn" onclick="viewOrder('${conversation.orderId}')">View Order →</button>` : ''}
+            </div>
+            
+            <div class="order-context">
+                <div class="order-book-cover">${conversation.book.cover}</div>
+                <div class="order-book-info">
+                    <div class="order-book-title">${conversation.book.title}</div>
+                    <div class="order-book-meta">${conversation.book.author} • ${conversation.book.edition} • R${conversation.book.price}</div>
+                </div>
+                <button class="view-order-btn" onclick="viewBookDetails(${conversation.book.id || 1})">View Book →</button>
+            </div>
+            
+            <div class="messages-area" id="messagesArea">
+                ${renderMessages(conversation.messages)}
+            </div>
+            
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                ${conversation.withUser.name} is typing...
+            </div>
+            
+            <div class="message-input-area">
+                <div class="input-wrapper">
+                    <textarea class="message-input" id="messageInput" placeholder="Type a message..." rows="1" onkeypress="handleKeyPress(event)"></textarea>
+                    <button class="send-btn" onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        `;
+        
+        // Scroll to bottom
+        const messagesArea = document.getElementById('messagesArea');
+        if (messagesArea) {
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+        
+        // Focus input
+        document.getElementById('messageInput')?.focus();
+    }
+    
+    function renderMessages(messages) {
+        return messages.map(msg => {
+            const isSent = msg.senderId === 'current_user';
+            return `
+                <div class="message ${isSent ? 'sent' : 'received'}">
+                    <div class="message-bubble">
+                        ${msg.text}
+                        <div class="message-time">${formatMessageTime(msg.timestamp)}</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // Select conversation
+    window.selectConversation = (convId) => {
+        activeConversationId = convId;
+        renderConversations();
+        renderChat();
+    };
+    
+    // Send message
+    window.sendMessage = () => {
+        const input = document.getElementById('messageInput');
+        const text = input.value.trim();
+        
+        if (!text) return;
+        
+        const conversation = conversations.find(c => c.id === activeConversationId);
+        if (!conversation) return;
+        
+        const newMessage = {
+            id: 'msg_' + Date.now(),
+            senderId: 'current_user',
+            text: text,
+            timestamp: new Date().toISOString(),
+            read: true
+        };
+        
+        conversation.messages.push(newMessage);
+        conversation.lastMessage = text;
+        conversation.lastMessageTime = new Date().toISOString();
+        
+        // Simulate reply after 1-2 seconds
+        simulateReply(conversation);
+        
+        input.value = '';
+        renderChat();
+        
+        // Auto-resize textarea
+        input.style.height = 'auto';
+    };
+    
+    // Handle enter key
+    window.handleKeyPress = (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            sendMessage();
+        }
+    };
+    
+    // Simulate seller reply
+    function simulateReply(conversation) {
+        const replies = [
+            "Thanks for your message! I'll get back to you shortly.",
+            "Yes, that works for me! When would you like to meet?",
+            "The book is in excellent condition, I can send more photos if you'd like.",
+            "Great! I've updated the listing status.",
+            "I'm available on campus Monday-Thursday. Let me know what works for you.",
+            "Thanks for your interest! The book is still available."
+        ];
+        
+        const randomReply = replies[Math.floor(Math.random() * replies.length)];
+        
+        // Show typing indicator
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingIndicator) {
+            typingIndicator.style.display = 'block';
+            const messagesArea = document.getElementById('messagesArea');
+            if (messagesArea) messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+        
+        setTimeout(() => {
+            // Hide typing indicator
+            if (typingIndicator) typingIndicator.style.display = 'none';
+            
+            const replyMessage = {
+                id: 'msg_' + Date.now(),
+                senderId: conversation.withUser.id,
+                text: randomReply,
+                timestamp: new Date().toISOString(),
+                read: true
+            };
+            
+            conversation.messages.push(replyMessage);
+            conversation.lastMessage = randomReply;
+            conversation.lastMessageTime = new Date().toISOString();
+            
+            renderChat();
+        }, 1500);
+    }
+    
+    // View order
+    window.viewOrder = (orderId) => {
+        window.location.href = `order-tracking-student-secondhand-bookstore.html?id=${orderId}`;
+    };
+    
+    // View book details
+    window.viewBookDetails = (bookId) => {
+        window.location.href = `book-details-student-secondhand-bookstore.html?id=${bookId}`;
+    };
+    
+    // Auto-resize textarea
+    document.addEventListener('input', function(e) {
+        if (e.target && e.target.classList && e.target.classList.contains('message-input')) {
+            e.target.style.height = 'auto';
+            e.target.style.height = Math.min(e.target.scrollHeight, 100) + 'px';
+        }
+    });
+    
+    // Initialize
+    renderConversations();
+    renderChat();
+</script>
+</body>
+</html>
+
+

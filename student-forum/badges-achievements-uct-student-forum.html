@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Badges & Achievements - UCT Student Forum</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f7fc;
+      color: #0a2b3e;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #dce5ec;
+    }
+
+    .logo-area h1 {
+      font-size: 1.8rem;
+      color: #0a2b3e;
+    }
+
+    .logo-area .tagline {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+    }
+
+    .back-link {
+      color: #0f5b8c;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      transition: background 0.2s;
+    }
+
+    .back-link:hover {
+      background: #eef2f7;
+    }
+
+    /* Hero */
+    .badges-hero {
+      background: linear-gradient(135deg, #0f5b8c 0%, #1a6d9e 100%);
+      border-radius: 32px;
+      padding: 2rem;
+      text-align: center;
+      color: white;
+      margin-bottom: 2rem;
+    }
+
+    .badges-hero h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .badges-hero p {
+      opacity: 0.9;
+    }
+
+    /* Stats Summary */
+    .stats-summary {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.2rem 2rem;
+      text-align: center;
+      min-width: 150px;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0f5b8c;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: #5a6e7a;
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .filter-btn {
+      padding: 0.6rem 1.5rem;
+      border: none;
+      background: white;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+    }
+
+    .filter-btn.active {
+      background: #0f5b8c;
+      color: white;
+    }
+
+    /* Badges Grid */
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .badge-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+
+    .badge-card.earned {
+      border: 2px solid #f59e0b;
+      background: linear-gradient(135deg, #fffef7, #ffffff);
+    }
+
+    .badge-card.locked {
+      opacity: 0.7;
+    }
+
+    .badge-icon {
+      font-size: 3rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .badge-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+    }
+
+    .badge-description {
+      font-size: 0.8rem;
+      color: #5a6e7a;
+      margin-bottom: 0.8rem;
+    }
+
+    .badge-points {
+      font-size: 0.75rem;
+      color: #f59e0b;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar {
+      background: #eef2f7;
+      border-radius: 20px;
+      height: 6px;
+      margin: 0.8rem 0;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: #0f5b8c;
+      height: 100%;
+      border-radius: 20px;
+      transition: width 0.3s;
+    }
+
+    .progress-text {
+      font-size: 0.7rem;
+      color: #6c7e8c;
+    }
+
+    .earned-badge {
+      display: inline-block;
+      background: #10b981;
+      color: white;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 30px;
+      margin-top: 0.5rem;
+    }
+
+    .locked-badge {
+      display: inline-block;
+      background: #94a3b8;
+      color: white;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 30px;
+      margin-top: 0.5rem;
+    }
+
+    /* Recent Achievements */
+    .recent-section {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .recent-section h3 {
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .recent-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #eef2f6;
+    }
+
+    .recent-icon {
+      font-size: 1.5rem;
+    }
+
+    .recent-info {
+      flex: 1;
+    }
+
+    .recent-title {
+      font-weight: 600;
+    }
+
+    .recent-date {
+      font-size: 0.7rem;
+      color: #8ba0b0;
+    }
+
+    @media (max-width: 700px) {
+      .container {
+        padding: 1rem;
+      }
+      .badges-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <div class="logo-area">
+      <h1>STUDENT FORUM</h1>
+      <div class="tagline">Your campus. Your voice.</div>
+    </div>
+    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+  </div>
+
+  <div class="badges-hero">
+    <h2>🏅 Badges & Achievements</h2>
+    <p>Earn badges by being an active and helpful member of our community</p>
+  </div>
+
+  <div class="stats-summary">
+    <div class="stat-card">
+      <div class="stat-number" id="earnedCount">0</div>
+      <div class="stat-label">Badges Earned</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="totalPoints">0</div>
+      <div class="stat-label">Total Points</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="nextMilestone">0</div>
+      <div class="stat-label">Next Milestone</div>
+    </div>
+  </div>
+
+  <div class="filter-tabs">
+    <button class="filter-btn active" data-filter="all">All Badges</button>
+    <button class="filter-btn" data-filter="earned">Earned</button>
+    <button class="filter-btn" data-filter="locked">Locked</button>
+  </div>
+
+  <div id="badgesContainer" class="badges-grid"></div>
+
+  <div class="recent-section">
+    <h3>🕒 Recently Earned</h3>
+    <div id="recentContainer"></div>
+  </div>
+</div>
+
+<script>
+  // All available badges
+  const allBadges = [
+    {
+      id: 1,
+      name: "🌟 Top Contributor",
+      description: "Rank in top 5 of the leaderboard",
+      icon: "🌟",
+      points: 500,
+      category: "achievement",
+      requirement: "Reach top 5 in reputation",
+      currentProgress: 1,
+      requiredProgress: 1,
+      earned: true,
+      earnedDate: "2026-05-10"
+    },
+    {
+      id: 2,
+      name: "📚 Homework Hero",
+      description: "50+ helpful answers in Academic Help",
+      icon: "📚",
+      points: 300,
+      category: "academic",
+      requirement: "50 helpful answers",
+      currentProgress: 47,
+      requiredProgress: 50,
+      earned: false
+    },
+    {
+      id: 3,
+      name: "💡 Rising Star",
+      description: "100+ upvotes within first month",
+      icon: "💡",
+      points: 200,
+      category: "achievement",
+      requirement: "100 upvotes",
+      currentProgress: 156,
+      requiredProgress: 100,
+      earned: true,
+      earnedDate: "2026-05-05"
+    },
+    {
+      id: 4,
+      name: "🤝 Community Builder",
+      description: "Started 10+ engaging discussions",
+      icon: "🤝",
+      points: 250,
+      category: "engagement",
+      requirement: "10 discussions started",
+      currentProgress: 8,
+      requiredProgress: 10,
+      earned: false
+    },
+    {
+      id: 5,
+      name: "🎓 Verified Expert",
+      description: "Faculty-approved tutor status",
+      icon: "🎓",
+      points: 400,
+      category: "special",
+      requirement: "Receive faculty verification",
+      currentProgress: 0,
+      requiredProgress: 1,
+      earned: false
+    },
+    {
+      id: 6,
+      name: "💬 Conversation Starter",
+      description: "First post ever created",
+      icon: "💬",
+      points: 50,
+      category: "milestone",
+      requirement: "Create first post",
+      currentProgress: 1,
+      requiredProgress: 1,
+      earned: true,
+      earnedDate: "2026-03-15"
+    },
+    {
+      id: 7,
+      name: "👥 Study Group Leader",
+      description: "Create and manage a study group",
+      icon: "👥",
+      points: 150,
+      category: "engagement",
+      requirement: "Create a study group with 5+ members",
+      currentProgress: 3,
+      requiredProgress: 5,
+      earned: false
+    },
+    {
+      id: 8,
+      name: "⭐ 100 Upvotes Club",
+      description: "Receive 100 upvotes across all content",
+      icon: "⭐",
+      points: 100,
+      category: "milestone",
+      requirement: "100 total upvotes",
+      currentProgress: 156,
+      requiredProgress: 100,
+      earned: true,
+      earnedDate: "2026-05-01"
+    },
+    {
+      id: 9,
+      name: "📝 Prolific Poster",
+      description: "Create 30+ posts",
+      icon: "📝",
+      points: 200,
+      category: "milestone",
+      requirement: "30 posts created",
+      currentProgress: 23,
+      requiredProgress: 30,
+      earned: false
+    },
+    {
+      id: 10,
+      name: "🔗 Resource Sharer",
+      description: "Share 10+ helpful resources",
+      icon: "🔗",
+      points: 100,
+      category: "academic",
+      requirement: "10 resources shared",
+      currentProgress: 12,
+      requiredProgress: 10,
+      earned: true,
+      earnedDate: "2026-05-08"
+    },
+    {
+      id: 11,
+      name: "⚡ 1-Year Anniversary",
+      description: "Active member for 1 year",
+      icon: "⚡",
+      points: 100,
+      category: "milestone",
+      requirement: "Account age 365 days",
+      currentProgress: 90,
+      requiredProgress: 365,
+      earned: false
+    },
+    {
+      id: 12,
+      name: "🎯 First Upvote",
+      description: "Receive your first upvote",
+      icon: "🎯",
+      points: 25,
+      category: "milestone",
+      requirement: "First upvote received",
+      currentProgress: 1,
+      requiredProgress: 1,
+      earned: true,
+      earnedDate: "2026-03-20"
+    }
+  ];
+
+  let currentFilter = "all";
+
+  // Calculate totals
+  const earnedBadges = allBadges.filter(b => b.earned);
+  const totalPoints = earnedBadges.reduce((sum, b) => sum + b.points, 0);
+  const lockedBadges = allBadges.filter(b => !b.earned);
+  const nextMilestone = lockedBadges.length;
+
+  document.getElementById('earnedCount').innerText = earnedBadges.length;
+  document.getElementById('totalPoints').innerText = totalPoints;
+  document.getElementById('nextMilestone').innerText = nextMilestone;
+
+  // Recent earned badges (last 3 by date)
+  const recentEarned = [...earnedBadges]
+    .filter(b => b.earnedDate)
+    .sort((a, b) => new Date(b.earnedDate) - new Date(a.earnedDate))
+    .slice(0, 3);
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function renderBadges() {
+    let filtered = allBadges;
+    if (currentFilter === 'earned') {
+      filtered = allBadges.filter(b => b.earned);
+    } else if (currentFilter === 'locked') {
+      filtered = allBadges.filter(b => !b.earned);
+    }
+
+    const container = document.getElementById('badgesContainer');
+    if (filtered.length === 0) {
+      container.innerHTML = '<div style="text-align:center; padding:2rem; color:#8ba0b0;">No badges in this category</div>';
+      return;
+    }
+
+    container.innerHTML = filtered.map(badge => {
+      const progressPercent = (badge.currentProgress / badge.requiredProgress) * 100;
+      return `
+        <div class="badge-card ${badge.earned ? 'earned' : 'locked'}">
+          <div class="badge-icon">${badge.icon}</div>
+          <div class="badge-name">${escapeHtml(badge.name)}</div>
+          <div class="badge-description">${escapeHtml(badge.description)}</div>
+          <div class="badge-points">🏆 ${badge.points} points</div>
+          ${!badge.earned ? `
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${Math.min(progressPercent, 100)}%"></div>
+            </div>
+            <div class="progress-text">${badge.currentProgress} / ${badge.requiredProgress} ${badge.requirement.toLowerCase()}</div>
+            <div class="locked-badge">🔒 Locked</div>
+          ` : `
+            <div class="earned-badge">✓ Earned ${badge.earnedDate ? `on ${badge.earnedDate}` : ''}</div>
+          `}
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderRecent() {
+    const container = document.getElementById('recentContainer');
+    if (recentEarned.length === 0) {
+      container.innerHTML = '<div style="color:#8ba0b0;">No badges earned yet. Keep participating!</div>';
+      return;
+    }
+
+    container.innerHTML = recentEarned.map(badge => `
+      <div class="recent-item">
+        <div class="recent-icon">${badge.icon}</div>
+        <div class="recent-info">
+          <div class="recent-title">${escapeHtml(badge.name)}</div>
+          <div class="recent-date">Earned ${badge.earnedDate}</div>
+        </div>
+        <div class="recent-points">+${badge.points} pts</div>
+      </div>
+    `).join('');
+  }
+
+  function initFilters() {
+    const filters = document.querySelectorAll('.filter-btn');
+    filters.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filters.forEach(f => f.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.getAttribute('data-filter');
+        renderBadges();
+      });
+    });
+  }
+
+  // Back button
+  document.getElementById('backToForum')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('← Returning to homepage (simulated navigation)');
+  });
+
+  // Initialize
+  renderBadges();
+  renderRecent();
+  initFilters();
+</script>
+</body>
+</html>
+
+

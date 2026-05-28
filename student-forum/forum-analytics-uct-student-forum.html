@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Forum Analytics - UCT Student Forum</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f7fc;
+      color: #0a2b3e;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #dce5ec;
+    }
+
+    .logo-area h1 {
+      font-size: 1.8rem;
+      color: #0a2b3e;
+    }
+
+    .logo-area .tagline {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+    }
+
+    .back-link {
+      color: #0f5b8c;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      transition: background 0.2s;
+    }
+
+    .back-link:hover {
+      background: #eef2f7;
+    }
+
+    /* Hero */
+    .analytics-hero {
+      background: linear-gradient(135deg, #0f5b8c 0%, #1a6d9e 100%);
+      border-radius: 32px;
+      padding: 2rem;
+      text-align: center;
+      color: white;
+      margin-bottom: 2rem;
+    }
+
+    .analytics-hero h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .analytics-hero p {
+      opacity: 0.9;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .stat-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0f5b8c;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+    }
+
+    /* Charts Section */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .chart-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+    }
+
+    .chart-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #0f5b8c;
+      padding-left: 0.7rem;
+    }
+
+    .chart-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+
+    .bar-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .bar-label {
+      width: 120px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .bar-container {
+      flex: 1;
+      height: 30px;
+      background: #eef2f7;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0f5b8c, #1e7fb0);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 10px;
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    /* Activity Timeline */
+    .timeline {
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      height: 200px;
+      margin-top: 1rem;
+    }
+
+    .timeline-bar {
+      flex: 1;
+      margin: 0 4px;
+      background: #0f5b8c;
+      border-radius: 8px 8px 0 0;
+      transition: height 0.3s;
+      position: relative;
+    }
+
+    .timeline-label {
+      text-align: center;
+      font-size: 0.7rem;
+      margin-top: 0.5rem;
+      color: #6c7e8c;
+    }
+
+    /* Top Contributors */
+    .contributors-list {
+      list-style: none;
+    }
+
+    .contributor-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #eef2f6;
+    }
+
+    .contributor-rank {
+      width: 30px;
+      font-weight: 700;
+      color: #f59e0b;
+    }
+
+    .contributor-name {
+      flex: 1;
+      font-weight: 500;
+    }
+
+    .contributor-points {
+      color: #0f5b8c;
+      font-weight: 600;
+    }
+
+    /* Time Period Selector */
+    .period-selector {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .period-btn {
+      padding: 0.3rem 1rem;
+      border: 1px solid #cddfe8;
+      background: white;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+
+    .period-btn.active {
+      background: #0f5b8c;
+      color: white;
+      border-color: #0f5b8c;
+    }
+
+    @media (max-width: 850px) {
+      .container {
+        padding: 1rem;
+      }
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+      .bar-label {
+        width: 90px;
+        font-size: 0.75rem;
+      }
+    }
+
+    .insight-text {
+      background: #eef2fa;
+      border-radius: 16px;
+      padding: 1rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <div class="logo-area">
+      <h1>STUDENT FORUM</h1>
+      <div class="tagline">Your campus. Your voice.</div>
+    </div>
+    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+  </div>
+
+  <div class="analytics-hero">
+    <h2>📊 Forum Analytics</h2>
+    <p>Community insights, engagement metrics, and growth statistics</p>
+  </div>
+
+  <!-- Key Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-number" id="totalUsers">2,847</div>
+      <div class="stat-label">Verified Students</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📝</div>
+      <div class="stat-number" id="totalPosts">8,432</div>
+      <div class="stat-label">Total Posts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💬</div>
+      <div class="stat-number" id="totalComments">24,156</div>
+      <div class="stat-label">Comments</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👍</div>
+      <div class="stat-number" id="totalUpvotes">67,890</div>
+      <div class="stat-label">Upvotes Given</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-number" id="studyGroups">156</div>
+      <div class="stat-label">Study Groups</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-number" id="activeToday">1,234</div>
+      <div class="stat-label">Active Today</div>
+    </div>
+  </div>
+
+  <div class="period-selector">
+    <button class="period-btn active" data-period="week">Last 7 Days</button>
+    <button class="period-btn" data-period="month">Last 30 Days</button>
+    <button class="period-btn" data-period="year">Last Year</button>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-grid">
+    <!-- Category Popularity -->
+    <div class="chart-card">
+      <h3>📂 Most Active Categories</h3>
+      <div class="chart-bars" id="categoryChart"></div>
+    </div>
+
+    <!-- Daily Activity Timeline -->
+    <div class="chart-card">
+      <h3>📅 Daily Activity Trend</h3>
+      <div id="timelineChart" class="timeline"></div>
+      <div id="timelineLabels" class="timeline-labels" style="display: flex; justify-content: space-around;"></div>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <!-- Top Contributors -->
+    <div class="chart-card">
+      <h3>🏆 Top Contributors (All Time)</h3>
+      <ul class="contributors-list" id="topContributorsList"></ul>
+    </div>
+
+    <!-- Engagement Breakdown -->
+    <div class="chart-card">
+      <h3>📈 Engagement Breakdown</h3>
+      <div class="chart-bars">
+        <div class="bar-item">
+          <span class="bar-label">Posts vs Comments</span>
+          <div class="bar-container">
+            <div class="bar-fill" style="width: 26%; background: #0f5b8c;">26%</div>
+          </div>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Upvote Ratio</span>
+          <div class="bar-container">
+            <div class="bar-fill" style="width: 74%; background: #10b981;">74%</div>
+          </div>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Anonymous Posts</span>
+          <div class="bar-container">
+            <div class="bar-fill" style="width: 18%; background: #f59e0b;">18%</div>
+          </div>
+        </div>
+        <div class="bar-item">
+          <span class="bar-label">Study Group Activity</span>
+          <div class="bar-container">
+            <div class="bar-fill" style="width: 42%; background: #8b5cf6;">42%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insight Section -->
+  <div class="insight-text">
+    💡 <strong>Community Insight</strong> — Academic Help is the most active category with 1,245 posts this month. 
+    Engagement is up 23% compared to last month. Keep up the great discussions!
+  </div>
+</div>
+
+<script>
+  // Mock data for categories
+  const categoriesData = {
+    week: [
+      { name: "Academic Help", count: 312 },
+      { name: "General Discussion", count: 256 },
+      { name: "Study Resources", count: 198 },
+      { name: "Campus Life", count: 167 },
+      { name: "Tech & Gadgets", count: 134 },
+      { name: "Careers", count: 98 }
+    ],
+    month: [
+      { name: "Academic Help", count: 1245 },
+      { name: "General Discussion", count: 1023 },
+      { name: "Study Resources", count: 856 },
+      { name: "Campus Life", count: 678 },
+      { name: "Tech & Gadgets", count: 545 },
+      { name: "Careers", count: 423 }
+    ],
+    year: [
+      { name: "Academic Help", count: 8450 },
+      { name: "General Discussion", count: 6780 },
+      { name: "Study Resources", count: 5432 },
+      { name: "Campus Life", count: 4321 },
+      { name: "Tech & Gadgets", count: 3456 },
+      { name: "Careers", count: 2789 }
+    ]
+  };
+
+  // Daily activity data
+  const activityData = {
+    week: [234, 289, 312, 298, 345, 401, 389],
+    month: [234, 289, 312, 298, 345, 401, 389, 421, 398, 402, 415, 398, 356, 389, 401, 398, 412, 423, 401, 389, 398, 401, 389, 398, 402, 398, 389, 401, 398, 402],
+    year: [8234, 8456, 8789, 9012, 9234, 9456, 9678, 9890, 10123, 10345, 10567, 10789]
+  };
+
+  const weekDays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const monthDays = Array.from({ length: 30 }, (_, i) => `${i + 1}`);
+  const yearMonths = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  // Top contributors
+  const topContributors = [
+    { rank: 1, name: "Sipho M.", points: 4250 },
+    { rank: 2, name: "Lerato K.", points: 3800 },
+    { rank: 3, name: "Jordan P.", points: 3100 },
+    { rank: 4, name: "Aisha B.", points: 2600 },
+    { rank: 5, name: "Thabo R.", points: 2300 }
+  ];
+
+  let currentPeriod = "week";
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function renderCategoryChart() {
+    const data = categoriesData[currentPeriod];
+    const maxCount = Math.max(...data.map(d => d.count));
+    const container = document.getElementById('categoryChart');
+    
+    container.innerHTML = data.map(cat => {
+      const percentage = (cat.count / maxCount) * 100;
+      return `
+        <div class="bar-item">
+          <span class="bar-label">${escapeHtml(cat.name)}</span>
+          <div class="bar-container">
+            <div class="bar-fill" style="width: ${percentage}%;">${cat.count}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function renderTimeline() {
+    const data = activityData[currentPeriod];
+    const maxValue = Math.max(...data);
+    const container = document.getElementById('timelineChart');
+    const labelsContainer = document.getElementById('timelineLabels');
+    
+    let labels = [];
+    if (currentPeriod === 'week') labels = weekDays;
+    else if (currentPeriod === 'month') labels = monthDays;
+    else labels = yearMonths;
+
+    container.innerHTML = data.map((value, index) => {
+      const height = (value / maxValue) * 160;
+      return `
+        <div class="timeline-bar" style="height: ${height}px;">
+          <div style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; font-weight: 600; color: #0f5b8c;">${value}</div>
+        </div>
+      `;
+    }).join('');
+
+    labelsContainer.innerHTML = labels.slice(0, data.length).map(label => `
+      <div style="flex:1; text-align:center; font-size:0.7rem; color:#6c7e8c;">${label}</div>
+    `).join('');
+  }
+
+  function renderTopContributors() {
+    const container = document.getElementById('topContributorsList');
+    container.innerHTML = topContributors.map(c => `
+      <li class="contributor-item">
+        <span class="contributor-rank">#${c.rank}</span>
+        <span class="contributor-name">${escapeHtml(c.name)}</span>
+        <span class="contributor-points">${c.points.toLocaleString()} pts</span>
+      </li>
+    `).join('');
+  }
+
+  function updateStats() {
+    // Update stats based on period
+    if (currentPeriod === 'week') {
+      document.getElementById('totalPosts').innerText = "1,234";
+      document.getElementById('totalComments').innerText = "3,456";
+      document.getElementById('totalUpvotes').innerText = "8,901";
+      document.getElementById('activeToday').innerText = "1,234";
+    } else if (currentPeriod === 'month') {
+      document.getElementById('totalPosts').innerText = "5,678";
+      document.getElementById('totalComments').innerText = "15,432";
+      document.getElementById('totalUpvotes').innerText = "38,765";
+      document.getElementById('activeToday').innerText = "1,567";
+    } else {
+      document.getElementById('totalPosts').innerText = "8,432";
+      document.getElementById('totalComments').innerText = "24,156";
+      document.getElementById('totalUpvotes').innerText = "67,890";
+      document.getElementById('activeToday').innerText = "1,234";
+    }
+  }
+
+  function initPeriodSelector() {
+    const buttons = document.querySelectorAll('.period-btn');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentPeriod = btn.getAttribute('data-period');
+        renderCategoryChart();
+        renderTimeline();
+        updateStats();
+      });
+    });
+  }
+
+  // Back button
+  document.getElementById('backToForum')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('← Returning to homepage (simulated navigation)');
+  });
+
+  // Initialize
+  renderCategoryChart();
+  renderTimeline();
+  renderTopContributors();
+  initPeriodSelector();
+  updateStats();
+</script>
+</body>
+</html>
+

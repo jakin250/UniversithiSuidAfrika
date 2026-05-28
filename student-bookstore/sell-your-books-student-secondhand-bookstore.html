@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sell Your Books | Student Secondhand Bookstore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f7f9fc;
+            color: #1a2a3a;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: #0f3b2c;
+            letter-spacing: -0.3px;
+        }
+
+        .logo p {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+        }
+
+        .trust-badges {
+            display: flex;
+            gap: 24px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #2c5f4a;
+        }
+
+        .badge::before {
+            content: "✓";
+            background: #0f3b2c;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #1a2a3a;
+            font-weight: 500;
+        }
+
+        nav a.active {
+            color: #0f3b2c;
+            border-bottom: 2px solid #0f3b2c;
+            padding-bottom: 4px;
+        }
+
+        /* Form Layout */
+        .form-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .form-header h1 {
+            font-size: 2rem;
+            color: #0f3b2c;
+            margin-bottom: 8px;
+        }
+
+        .form-header p {
+            color: #5a6e7c;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a2a3a;
+        }
+
+        .required::after {
+            content: " *";
+            color: #dc2626;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #0f3b2c;
+            box-shadow: 0 0 0 3px rgba(15, 59, 44, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Photo Upload */
+        .photo-upload {
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            background: #f7f9fc;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .photo-upload:hover {
+            border-color: #0f3b2c;
+            background: #e9f5ef;
+        }
+
+        .photo-preview {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .preview-image {
+            width: 80px;
+            height: 80px;
+            background: #eef2f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            border: 1px solid #cbd5e1;
+        }
+
+        .remove-photo {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc2626;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* Condition Options */
+        .condition-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .condition-option {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .condition-option.selected {
+            border-color: #0f3b2c;
+            background: #e9f5ef;
+        }
+
+        .condition-option:hover {
+            border-color: #0f3b2c;
+        }
+
+        .condition-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .condition-desc {
+            font-size: 0.7rem;
+            color: #5a6e7c;
+        }
+
+        /* Exchange Option */
+        .exchange-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .exchange-toggle input {
+            width: auto;
+            transform: scale(1.2);
+        }
+
+        .exchange-fields {
+            background: #f7f9fc;
+            padding: 16px;
+            border-radius: 12px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        .exchange-fields.show {
+            display: block;
+        }
+
+        /* Action Buttons */
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+        }
+
+        .btn-submit {
+            flex: 1;
+            background: #0f3b2c;
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #1e5a45;
+        }
+
+        .btn-draft {
+            flex: 1;
+            background: white;
+            border: 2px solid #cbd5e1;
+            color: #1a2a3a;
+            padding: 14px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-draft:hover {
+            border-color: #0f3b2c;
+            background: #f7f9fc;
+        }
+
+        .btn-cancel {
+            background: white;
+            border: 2px solid #dc2626;
+            color: #dc2626;
+            padding: 14px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #fee2e2;
+        }
+
+        /* Tips Section */
+        .tips-section {
+            background: #e9f5ef;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 32px;
+        }
+
+        .tips-section h3 {
+            margin-bottom: 12px;
+            color: #0f3b2c;
+        }
+
+        .tips-section ul {
+            margin-left: 20px;
+            color: #1a2a3a;
+        }
+
+        .tips-section li {
+            margin: 8px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: #5a6e7c;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .form-container {
+                padding: 24px;
+                margin: 20px;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <h1>📚 STUDENT SECONDHAND BOOKSTORE</h1>
+                <p>Buy, sell and exchange textbooks with students on your campus.</p>
+            </div>
+            <div class="trust-badges">
+                <span class="badge">Student verified</span>
+                <span class="badge">Safe Payments</span>
+                <span class="badge">Better Prices</span>
+            </div>
+            <nav>
+                <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Browse</a>
+                <a href="my-listings-student-secondhand-bookstore.html">My Listings</a>
+                <a href="sell-your-books-student-secondhand-bookstore.html" class="active">Sell</a>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="form-container">
+        <div class="form-header">
+            <h1>📖 Sell Your Books</h1>
+            <p>List your book in minutes • Add photos • Set your price • Reach students on your campus</p>
+        </div>
+
+        <form id="sellForm">
+            <!-- Basic Information -->
+            <div class="form-group">
+                <label class="required">Book Title</label>
+                <input type="text" id="title" placeholder="e.g., Introduction to Microeconomics" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="required">Author</label>
+                    <input type="text" id="author" placeholder="Full name" required>
+                </div>
+                <div class="form-group">
+                    <label class="required">Edition</label>
+                    <input type="text" id="edition" placeholder="e.g., 4th Edition" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>ISBN (Optional)</label>
+                    <input type="text" id="isbn" placeholder="978-0-13-123456-7">
+                </div>
+                <div class="form-group">
+                    <label>Course Code (Optional)</label>
+                    <input type="text" id="course" placeholder="e.g., ECON101, LAW201">
+                </div>
+            </div>
+
+            <!-- Photo Upload -->
+            <div class="form-group">
+                <label>Add Photos (Front, Back, Inside, Condition)</label>
+                <div class="photo-upload" id="photoUpload">
+                    📸 Click or drag to upload photos
+                    <input type="file" id="photoInput" multiple accept="image/*" style="display:none">
+                </div>
+                <div class="photo-preview" id="photoPreview"></div>
+            </div>
+
+            <!-- Condition -->
+            <div class="form-group">
+                <label class="required">Condition</label>
+                <div class="condition-options" id="conditionOptions">
+                    <div class="condition-option" data-condition="excellent">
+                        <div class="condition-name">⭐ Excellent</div>
+                        <div class="condition-desc">Barely used, like new</div>
+                    </div>
+                    <div class="condition-option" data-condition="good">
+                        <div class="condition-name">📖 Good</div>
+                        <div class="condition-desc">Used with minor wear</div>
+                    </div>
+                    <div class="condition-option" data-condition="fair">
+                        <div class="condition-name">⚠️ Fair</div>
+                        <div class="condition-desc">Visible wear but usable</div>
+                    </div>
+                    <div class="condition-option" data-condition="poor">
+                        <div class="condition-name">🔧 Poor</div>
+                        <div class="condition-desc">Significant wear, all pages intact</div>
+                    </div>
+                </div>
+                <input type="hidden" id="condition" required>
+            </div>
+
+            <!-- Price -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="required">Price (ZAR)</label>
+                    <input type="number" id="price" placeholder="e.g., 250" min="0" step="1" required>
+                </div>
+                <div class="form-group">
+                    <label>Original Retail Price (Optional)</label>
+                    <input type="number" id="retailPrice" placeholder="Show how much they save" min="0">
+                </div>
+            </div>
+
+            <!-- Exchange Option -->
+            <div class="form-group">
+                <div class="exchange-toggle">
+                    <input type="checkbox" id="exchangeCheckbox">
+                    <label style="margin:0">🔄 Offer this book for exchange</label>
+                </div>
+                <div id="exchangeFields" class="exchange-fields">
+                    <div class="form-group">
+                        <label>Looking for (books you want)</label>
+                        <input type="text" id="wantedBooks" placeholder="e.g., Macroeconomics, Statistics, Physics">
+                    </div>
+                    <div class="form-group">
+                        <label>Exchange terms</label>
+                        <textarea id="exchangeTerms" placeholder="e.g., Will trade for any first-year economics textbook in good condition"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+                <label>Description (Optional)</label>
+                <textarea id="description" placeholder="Describe the book's condition, any highlights, notes, or special features..."></textarea>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" onclick="cancelListing()">Cancel</button>
+                <button type="button" class="btn-draft" onclick="saveAsDraft()">Save as Draft</button>
+                <button type="submit" class="btn-submit">Publish Listing</button>
+            </div>
+        </form>
+
+        <!-- Tips Section -->
+        <div class="tips-section">
+            <h3>💡 Tips for a successful listing</h3>
+            <ul>
+                <li>📸 Add clear photos of the front, back, and any highlighting/writing inside</li>
+                <li>💰 Price competitively - check what similar books are selling for</li>
+                <li>📝 Be honest about condition to avoid disputes</li>
+                <li>🏷️ Include course code so students can find your book easily</li>
+                <li>⚡ Respond quickly to buyer messages</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>Student Secondhand Bookstore — Buy wisely, sell easily, exchange fairly.</p>
+</footer>
+
+<script>
+    // Photo upload handling
+    let uploadedPhotos = [];
+    
+    const photoUpload = document.getElementById('photoUpload');
+    const photoInput = document.getElementById('photoInput');
+    const photoPreview = document.getElementById('photoPreview');
+    
+    photoUpload.addEventListener('click', () => {
+        photoInput.click();
+    });
+    
+    photoInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                uploadedPhotos.push(event.target.result);
+                displayPhotos();
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+    
+    function displayPhotos() {
+        photoPreview.innerHTML = uploadedPhotos.map((photo, index) => `
+            <div class="preview-image">
+                <img src="${photo}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
+                <div class="remove-photo" onclick="removePhoto(${index})">×</div>
+            </div>
+        `).join('');
+    }
+    
+    window.removePhoto = (index) => {
+        uploadedPhotos.splice(index, 1);
+        displayPhotos();
+    };
+    
+    // Condition selection
+    let selectedCondition = null;
+    const conditionOptions = document.querySelectorAll('.condition-option');
+    const conditionInput = document.getElementById('condition');
+    
+    conditionOptions.forEach(option => {
+        option.addEventListener('click', () => {
+            conditionOptions.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+            selectedCondition = option.getAttribute('data-condition');
+            conditionInput.value = selectedCondition;
+        });
+    });
+    
+    // Exchange toggle
+    const exchangeCheckbox = document.getElementById('exchangeCheckbox');
+    const exchangeFields = document.getElementById('exchangeFields');
+    
+    exchangeCheckbox.addEventListener('change', () => {
+        if (exchangeCheckbox.checked) {
+            exchangeFields.classList.add('show');
+        } else {
+            exchangeFields.classList.remove('show');
+        }
+    });
+    
+    // Cancel button
+    window.cancelListing = () => {
+        if (confirm('Are you sure? Any unsaved changes will be lost.')) {
+            window.location.href = 'my-listings-student-secondhand-bookstore.html';
+        }
+    };
+    
+    // Save as Draft
+    window.saveAsDraft = () => {
+        const title = document.getElementById('title').value;
+        const author = document.getElementById('author').value;
+        const edition = document.getElementById('edition').value;
+        const price = document.getElementById('price').value;
+        const condition = conditionInput.value;
+        
+        if (!title || !author || !edition || !price || !condition) {
+            alert('⚠️ Please fill in all required fields (Title, Author, Edition, Price, Condition) before saving as draft.');
+            return;
+        }
+        
+        const draftData = {
+            id: Date.now(),
+            title: title,
+            author: author,
+            edition: edition,
+            isbn: document.getElementById('isbn').value,
+            course: document.getElementById('course').value,
+            price: parseInt(price),
+            retailPrice: document.getElementById('retailPrice').value,
+            condition: condition,
+            description: document.getElementById('description').value,
+            photos: uploadedPhotos.length,
+            exchange: exchangeCheckbox.checked,
+            wantedBooks: document.getElementById('wantedBooks').value,
+            exchangeTerms: document.getElementById('exchangeTerms').value,
+            status: 'draft',
+            dateCreated: new Date().toISOString().split('T')[0]
+        };
+        
+        fetch('../api/bookstore/listings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(draftData)
+        }).finally(() => {
+            alert(`✅ Draft saved successfully!\n\nTitle: ${title}\nPrice: R${price}\nCondition: ${condition}\n\nYou can publish it later from My Listings.`);
+        });
+        window.location.href = 'my-listings-student-secondhand-bookstore.html';
+    };
+    
+    // Publish Listing
+    const sellForm = document.getElementById('sellForm');
+    
+    sellForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const title = document.getElementById('title').value;
+        const author = document.getElementById('author').value;
+        const edition = document.getElementById('edition').value;
+        const price = document.getElementById('price').value;
+        const condition = conditionInput.value;
+        
+        if (!title || !author || !edition || !price || !condition) {
+            alert('⚠️ Please fill in all required fields marked with *');
+            return;
+        }
+        
+        if (uploadedPhotos.length === 0) {
+            if (!confirm('📸 No photos uploaded. Listings with photos sell 3x faster! Continue anyway?')) {
+                return;
+            }
+        }
+        
+        const listingData = {
+            id: Date.now(),
+            title: title,
+            author: author,
+            edition: edition,
+            isbn: document.getElementById('isbn').value,
+            course: document.getElementById('course').value,
+            price: parseInt(price),
+            retailPrice: document.getElementById('retailPrice').value,
+            condition: condition,
+            description: document.getElementById('description').value || "No description provided",
+            photos: uploadedPhotos.length,
+            exchange: exchangeCheckbox.checked,
+            wantedBooks: document.getElementById('wantedBooks').value,
+            exchangeTerms: document.getElementById('exchangeTerms').value,
+            status: 'active',
+            dateListed: new Date().toISOString().split('T')[0],
+            reward: price >= 150 ? '+0.25 USD' : null,
+            cover: getCoverEmoji(title)
+        };
+        
+        fetch('../api/bookstore/listings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(listingData)
+        }).finally(() => {
+            alert(`🎉 Listing Published Successfully!\n\n${title}\n💰 R${price}\n📚 ${condition}\n\nYour book is now visible to ${getRandomUniversity()} students!`);
+            sellForm.reset();
+            uploadedPhotos = [];
+            displayPhotos();
+            conditionOptions.forEach(opt => opt.classList.remove('selected'));
+            conditionInput.value = '';
+            exchangeFields.classList.remove('show');
+            exchangeCheckbox.checked = false;
+        });
+    });
+    
+    function getCoverEmoji(title) {
+        const lowerTitle = title.toLowerCase();
+        if (lowerTitle.includes('law') || lowerTitle.includes('constitutional')) return '⚖️';
+        if (lowerTitle.includes('account') || lowerTitle.includes('finance')) return '💰';
+        if (lowerTitle.includes('program') || lowerTitle.includes('coding')) return '💻';
+        if (lowerTitle.includes('physic')) return '⚛️';
+        if (lowerTitle.includes('math')) return '📐';
+        if (lowerTitle.includes('architect')) return '🏛️';
+        if (lowerTitle.includes('economic') || lowerTitle.includes('micro') || lowerTitle.includes('macro')) return '📊';
+        return '📘';
+    }
+    
+    function getRandomUniversity() {
+        const universities = ['UCT', 'Wits', 'UP', 'Stellenbosch', 'Rhodes', 'Nelson Mandela'];
+        return universities[Math.floor(Math.random() * universities.length)];
+    }
+</script>
+</body>
+</html>
+
+

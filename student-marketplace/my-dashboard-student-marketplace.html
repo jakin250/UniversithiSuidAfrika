@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>My Dashboard | Student Marketplace</title>
+  <!-- Tailwind + Fonts + Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f9fafb; }
+    .tab-active {
+      border-bottom: 2px solid #4f46e5;
+      color: #4f46e5;
+    }
+    .stat-card {
+      transition: all 0.2s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    .listing-card {
+      transition: all 0.2s;
+    }
+    .listing-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="window.location.href='student-marketplace-buy-sell-trade-on-campus.html'">
+          <i class="fas fa-graduation-cap text-indigo-600 text-2xl"></i>
+          <span class="font-bold text-xl text-gray-800">Student<span class="text-indigo-600">Marketplace</span></span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+          <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+          <a href="messages-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium"><i class="far fa-comment-dots mr-1"></i>Messages</a>
+          <div class="relative group">
+            <button class="flex items-center space-x-1 text-indigo-600 font-medium">
+              <i class="far fa-user-circle text-xl"></i>
+              <span>Account</span>
+              <i class="fas fa-chevron-down text-xs"></i>
+            </button>
+            <div class="absolute right-0 w-48 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 hidden group-hover:block py-2 z-20">
+              <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+              <a href="saved-items-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Saved items</a>
+              <hr class="my-1">
+              <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+            </div>
+          </div>
+        </div>
+        <button id="mobileMenuBtn" class="md:hidden text-gray-600">
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden bg-white border-t px-4 py-2">
+      <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+      <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+      <a href="messages-student-marketplace.html" class="block py-2 text-gray-700">Messages</a>
+      <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+      <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <!-- Profile Header -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
+      <div class="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
+        <div class="flex gap-5 items-center">
+          <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-md">JD</div>
+          <div>
+            <h1 class="text-2xl font-bold text-gray-900">Jessica Davis</h1>
+            <div class="flex flex-wrap gap-2 mt-1">
+              <span class="text-sm text-gray-500"><i class="fas fa-envelope"></i> jessica.davis@university.edu</span>
+              <span class="bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full"><i class="fas fa-check-circle"></i> Verified student</span>
+            </div>
+            <div class="flex items-center gap-3 mt-2">
+              <div class="flex items-center gap-1"><i class="fas fa-star text-yellow-400"></i><span class="font-semibold">4.9</span><span class="text-xs text-gray-500">(47 reviews)</span></div>
+              <div class="text-xs text-gray-400">Member since Aug 2024</div>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-3">
+          <button id="createListingBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-semibold text-sm shadow-sm transition flex items-center gap-2"><i class="fas fa-plus-circle"></i> New listing</button>
+          <button class="border border-gray-300 hover:bg-gray-50 px-4 py-2.5 rounded-xl text-sm transition"><i class="fas fa-edit"></i> Edit profile</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="stat-card bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+        <i class="fas fa-store text-indigo-500 text-xl mb-2"></i>
+        <p class="text-2xl font-bold text-gray-800">6</p>
+        <p class="text-xs text-gray-500">Active listings</p>
+      </div>
+      <div class="stat-card bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+        <i class="fas fa-shopping-bag text-indigo-500 text-xl mb-2"></i>
+        <p class="text-2xl font-bold text-gray-800">12</p>
+        <p class="text-xs text-gray-500">Items sold</p>
+      </div>
+      <div class="stat-card bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+        <i class="fas fa-credit-card text-indigo-500 text-xl mb-2"></i>
+        <p class="text-2xl font-bold text-gray-800">$847</p>
+        <p class="text-xs text-gray-500">Total earnings</p>
+      </div>
+      <div class="stat-card bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+        <i class="fas fa-heart text-indigo-500 text-xl mb-2"></i>
+        <p class="text-2xl font-bold text-gray-800">8</p>
+        <p class="text-xs text-gray-500">Saved items</p>
+      </div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="border-b border-gray-200 mb-6">
+      <div class="flex gap-6 overflow-x-auto">
+        <button class="tab-btn py-2 px-1 font-medium text-gray-600 hover:text-indigo-600 transition" data-tab="active">📦 Active listings</button>
+        <button class="tab-btn py-2 px-1 font-medium text-gray-600 hover:text-indigo-600 transition" data-tab="sold">✅ Sold items</button>
+        <button class="tab-btn py-2 px-1 font-medium text-gray-600 hover:text-indigo-600 transition" data-tab="bought">🛍️ Purchased</button>
+        <button class="tab-btn py-2 px-1 font-medium text-gray-600 hover:text-indigo-600 transition" data-tab="saved">❤️ Saved items</button>
+      </div>
+    </div>
+
+    <!-- Tab Content: Active Listings -->
+    <div id="activeTab" class="tab-content">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <!-- Active Listing 1 -->
+        <div class="listing-card bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+          <div class="h-32 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-center"><i class="fas fa-book-open text-3xl text-indigo-400"></i></div>
+          <div class="p-4">
+            <div class="flex justify-between items-start"><h3 class="font-bold text-gray-800">Calculus: Early Transcendentals</h3><span class="text-indigo-600 font-bold">$45</span></div>
+            <p class="text-xs text-gray-500 mt-1">Textbook • Good condition</p>
+            <div class="flex justify-between items-center mt-3"><span class="text-xs text-green-600"><i class="fas fa-eye"></i> 24 views</span><button class="text-indigo-500 text-xs hover:underline">Edit</button></div>
+          </div>
+        </div>
+        <!-- Active Listing 2 -->
+        <div class="listing-card bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+          <div class="h-32 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-center"><i class="fas fa-laptop text-3xl text-indigo-400"></i></div>
+          <div class="p-4"><div class="flex justify-between"><h3 class="font-bold">Wireless Headphones</h3><span class="text-indigo-600 font-bold">$65</span></div><p class="text-xs text-gray-500">Electronics • Like new</p><div class="mt-3 flex justify-between"><span class="text-xs text-green-600">⭐ 5.0 (3 reviews)</span><button class="text-indigo-500 text-xs">Edit</button></div></div>
+        </div>
+        <!-- Active Listing 3 -->
+        <div class="listing-card bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+          <div class="h-32 bg-gradient-to-r from-blue-50 to-indigo-50 flex items-center justify-center"><i class="fas fa-tshirt text-3xl text-indigo-400"></i></div>
+          <div class="p-4"><div class="flex justify-between"><h3 class="font-bold">Navy Blue Hoodie - Size M</h3><span class="text-indigo-600 font-bold">$28</span></div><p class="text-xs text-gray-500">Clothing • Like new</p><div class="mt-3 flex justify-between"><span class="text-xs text-green-600">👀 12 views</span><button class="text-indigo-500 text-xs">Edit</button></div></div>
+        </div>
+      </div>
+      <div class="text-center mt-6"><button class="text-indigo-600 text-sm hover:underline"><i class="fas fa-plus-circle"></i> Load more active listings</button></div>
+    </div>
+
+    <!-- Sold Items Tab (hidden by default) -->
+    <div id="soldTab" class="tab-content hidden">
+      <div class="space-y-4">
+        <div class="bg-white rounded-xl border p-4 flex justify-between items-center flex-wrap gap-3"><div><p class="font-semibold">Python Crash Course</p><p class="text-sm text-gray-500">Sold for $32 • May 5, 2026</p></div><span class="text-green-600 text-sm"><i class="fas fa-check-circle"></i> Completed</span><button class="text-indigo-500 text-sm">View buyer</button></div>
+        <div class="bg-white rounded-xl border p-4 flex justify-between items-center flex-wrap gap-3"><div><p class="font-semibold">IKEA Desk Lamp</p><p class="text-sm text-gray-500">Sold for $18 • Apr 28, 2026</p></div><span class="text-green-600 text-sm">Completed</span><button class="text-indigo-500 text-sm">View buyer</button></div>
+        <div class="bg-white rounded-xl border p-4 flex justify-between items-center flex-wrap gap-3"><div><p class="font-semibold">Microeconomics Textbook</p><p class="text-sm text-gray-500">Sold for $41 • Apr 15, 2026</p></div><span class="text-green-600 text-sm">Completed</span><button class="text-indigo-500 text-sm">View buyer</button></div>
+      </div>
+    </div>
+
+    <!-- Purchased Tab -->
+    <div id="boughtTab" class="tab-content hidden">
+      <div class="space-y-4">
+        <div class="bg-white rounded-xl border p-4 flex justify-between items-center flex-wrap gap-3"><div><p class="font-semibold">Organic Chemistry Kit</p><p class="text-sm text-gray-500">Paid $52 • Order SMP-4912</p></div><span class="text-amber-600 text-sm"><i class="fas fa-clock"></i> Awaiting delivery</span><button class="text-indigo-500 text-sm">Track order</button></div>
+        <div class="bg-white rounded-xl border p-4 flex justify-between items-center flex-wrap gap-3"><div><p class="font-semibold">Wireless Mouse</p><p class="text-sm text-gray-500">Paid $25 • May 10, 2026</p></div><span class="text-green-600 text-sm">Delivered · reviewed</span><button class="text-indigo-500 text-sm">View</button></div>
+      </div>
+    </div>
+
+    <!-- Saved Items Tab -->
+    <div id="savedTab" class="tab-content hidden">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="bg-white rounded-xl border p-3 flex gap-3"><div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center"><i class="fas fa-desktop text-gray-500"></i></div><div><p class="font-semibold text-sm">Monitor 24"</p><p class="text-indigo-600 font-bold text-sm">$89</p><p class="text-xs text-gray-400">Price dropped! 🔔</p><button class="text-indigo-500 text-xs mt-1">Remove</button></div></div>
+        <div class="bg-white rounded-xl border p-3 flex gap-3"><div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center"><i class="fas fa-chair text-gray-500"></i></div><div><p class="font-semibold text-sm">Gaming Chair</p><p class="text-indigo-600 font-bold text-sm">$120</p><p class="text-xs text-gray-400">Save for later</p><button class="text-indigo-500 text-xs mt-1">Remove</button></div></div>
+        <div class="bg-white rounded-xl border p-3 flex gap-3"><div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center"><i class="fas fa-book text-gray-500"></i></div><div><p class="font-semibold text-sm">Linear Algebra</p><p class="text-indigo-600 font-bold text-sm">$38</p><button class="text-indigo-500 text-xs mt-1">Remove</button></div></div>
+      </div>
+      <div class="text-center mt-6"><p class="text-xs text-gray-400"><i class="fas fa-bell"></i> Get price drop alerts on saved items</p></div>
+    </div>
+
+    <!-- Seller Tips / Escrow info -->
+    <div class="mt-10 bg-indigo-50 rounded-xl p-5 border border-indigo-100 flex flex-col md:flex-row justify-between items-center gap-3">
+      <div><i class="fas fa-shield-alt text-indigo-600 text-xl"></i> <span class="font-medium">Your earnings: $847 held securely? No — all completed payments released after buyer confirms delivery.</span></div>
+      <button class="bg-white border border-indigo-300 text-indigo-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-100">View payout history</button>
+    </div>
+  </main>
+
+  <footer class="border-t bg-white mt-12 py-6 text-center text-gray-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4">Student Marketplace — Trusted by verified students · Escrow protection · Community driven</div>
+  </footer>
+
+  <script src="../public/api-client.js"></script>
+  <script>
+    // Tab switching
+    const tabs = document.querySelectorAll('.tab-btn');
+    const contents = {
+      active: document.getElementById('activeTab'),
+      sold: document.getElementById('soldTab'),
+      bought: document.getElementById('boughtTab'),
+      saved: document.getElementById('savedTab')
+    };
+    
+    function activateTab(tabId) {
+      Object.keys(contents).forEach(key => {
+        if(contents[key]) contents[key].classList.add('hidden');
+      });
+      if(contents[tabId]) contents[tabId].classList.remove('hidden');
+      
+      tabs.forEach(btn => {
+        btn.classList.remove('tab-active', 'text-indigo-600', 'border-b-2', 'border-indigo-600');
+        if(btn.getAttribute('data-tab') === tabId) {
+          btn.classList.add('tab-active', 'text-indigo-600', 'border-b-2', 'border-indigo-600');
+        } else {
+          btn.classList.remove('text-indigo-600');
+        }
+      });
+    }
+    
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.getAttribute('data-tab');
+        activateTab(tabId);
+      });
+    });
+    
+    // default active first tab styling
+    const firstTab = document.querySelector('.tab-btn[data-tab="active"]');
+    if(firstTab) firstTab.classList.add('tab-active', 'text-indigo-600', 'border-b-2', 'border-indigo-600');
+    
+    // Mobile menu
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if(mobileBtn) mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    
+    // Create listing simulation button
+    const createListingBtn = document.getElementById('createListingBtn');
+    if(createListingBtn) {
+      createListingBtn.addEventListener('click', () => {
+        alert("📝 Create new listing: Add title, category, condition photos, price, course code (for textbooks), and pickup details.");
+      });
+    }
+    
+    // "Edit" / action for listings demonstration
+    document.querySelectorAll('.text-indigo-500.text-xs').forEach(btn => {
+      if(btn.innerText === 'Edit') {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          alert("✏️ Edit listing flow: update price, photos, description, condition.");
+        });
+      }
+      if(btn.innerText === 'Remove') {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          alert("🗑️ Item removed from saved list.");
+        });
+      }
+    });
+    
+    // Track order button simulation
+    const trackBtn = document.querySelector('#boughtTab .text-indigo-500.text-sm');
+    if(trackBtn && trackBtn.innerText === 'Track order') {
+      trackBtn.addEventListener('click', () => alert("📦 Order tracking: real-time status, escrow info, and confirm delivery option."));
+    }
+
+    async function loadDashboardStats() {
+      try {
+        const listings = await apiClient.get('../api/marketplace/listings');
+        const orders = await apiClient.get('../api/marketplace/orders');
+        const saved = await apiClient.get('../api/marketplace/listings');
+        const statBlocks = document.querySelectorAll('.grid .text-3xl.font-bold');
+        if (statBlocks[0]) statBlocks[0].innerText = listings.length;
+        if (statBlocks[1]) statBlocks[1].innerText = orders.length;
+        if (statBlocks[2]) statBlocks[2].innerText = saved.length;
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    loadDashboardStats();
+  </script>
+</body>
+</html>
+

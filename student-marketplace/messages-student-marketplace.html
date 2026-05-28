@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Messages | Student Marketplace</title>
+  <!-- Tailwind + Fonts + Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f3f4f6; }
+    .chat-sidebar {
+      background: white;
+      border-right: 1px solid #e5e7eb;
+    }
+    .conversation-item {
+      transition: all 0.15s ease;
+      cursor: pointer;
+    }
+    .conversation-item:hover {
+      background: #f9fafb;
+    }
+    .conversation-item.active {
+      background: #eef2ff;
+      border-left: 3px solid #4f46e5;
+    }
+    .message-bubble {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 18px;
+      word-wrap: break-word;
+    }
+    .message-sent {
+      background: #4f46e5;
+      color: white;
+      border-bottom-right-radius: 4px;
+      margin-left: auto;
+    }
+    .message-received {
+      background: #f3f4f6;
+      color: #1f2937;
+      border-bottom-left-radius: 4px;
+    }
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .confirm-banner {
+      background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+      border-left: 4px solid #f59e0b;
+    }
+    .escrow-confirm-btn {
+      transition: all 0.2s;
+    }
+    /* Custom scroll */
+    .custom-scroll::-webkit-scrollbar { width: 5px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #e5e7eb; border-radius: 10px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #9ca3af; border-radius: 10px; }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="window.location.href='student-marketplace-buy-sell-trade-on-campus.html'">
+          <i class="fas fa-graduation-cap text-indigo-600 text-2xl"></i>
+          <span class="font-bold text-xl text-gray-800">Student<span class="text-indigo-600">Marketplace</span></span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+          <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+          <a href="messages-student-marketplace.html" class="text-indigo-600 font-medium border-b-2 border-indigo-600 pb-1"><i class="far fa-comment-dots mr-1"></i>Messages</a>
+          <div class="relative group">
+            <button class="flex items-center space-x-1 text-gray-700 hover:text-indigo-600">
+              <i class="far fa-user-circle text-xl"></i>
+              <span>Account</span>
+              <i class="fas fa-chevron-down text-xs"></i>
+            </button>
+            <div class="absolute right-0 w-48 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 hidden group-hover:block py-2 z-20">
+              <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+              <a href="saved-items-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Saved items</a>
+              <hr class="my-1">
+              <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+            </div>
+          </div>
+        </div>
+        <button id="mobileMenuBtn" class="md:hidden text-gray-600">
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden bg-white border-t px-4 py-2">
+      <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+      <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+      <a href="messages-student-marketplace.html" class="block py-2 text-indigo-600 font-medium">Messages</a>
+      <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+      <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden h-[85vh] flex flex-col md:flex-row">
+      
+      <!-- SIDEBAR: Conversations List -->
+      <div class="w-full md:w-80 lg:w-96 border-b md:border-b-0 md:border-r border-gray-200 flex flex-col chat-sidebar">
+        <div class="p-4 border-b border-gray-200">
+          <h2 class="font-bold text-lg flex items-center gap-2"><i class="fas fa-comments text-indigo-500"></i> Conversations</h2>
+          <div class="relative mt-3">
+            <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+            <input type="text" id="searchChat" placeholder="Search messages..." class="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-xl focus:ring-indigo-500">
+          </div>
+        </div>
+        <div id="conversationList" class="flex-1 overflow-y-auto custom-scroll">
+          <!-- Dynamic convos injected via JS -->
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL: Active Chat -->
+      <div class="flex-1 flex flex-col chat-container">
+        <!-- Chat header -->
+        <div id="chatHeader" class="p-4 border-b border-gray-200 bg-white flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold">AJ</div>
+            <div>
+              <p class="font-semibold text-gray-800" id="chatSellerName">Alex Johnson</p>
+              <p class="text-xs text-green-600"><i class="fas fa-circle text-[8px]"></i> Online · Usually replies in 2h</p>
+            </div>
+          </div>
+          <div>
+            <i class="fas fa-ellipsis-v text-gray-400 cursor-pointer"></i>
+          </div>
+        </div>
+
+        <!-- Messages area -->
+        <div id="messagesArea" class="flex-1 messages-area bg-gray-50 custom-scroll">
+          <!-- Messages injected dynamically -->
+        </div>
+
+        <!-- Special Escrow Confirm Banner (appears for active order conversation) -->
+        <div id="escrowConfirmBanner" class="confirm-banner p-3 mx-4 mb-2 rounded-lg hidden">
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <div class="flex items-center gap-2 text-sm">
+              <i class="fas fa-hand-holding-usd text-amber-600"></i>
+              <span class="font-medium text-amber-800">Payment held in escrow ($45.00)</span>
+              <span class="text-xs text-gray-600">Have you received the item and are you happy with it?</span>
+            </div>
+            <button id="quickConfirmBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-4 py-2 rounded-lg font-semibold escrow-confirm-btn">
+              <i class="fas fa-check-circle"></i> Confirm & Release Payment
+            </button>
+          </div>
+        </div>
+
+        <!-- Message input -->
+        <div class="p-4 border-t border-gray-200 bg-white">
+          <div class="flex gap-2">
+            <button class="text-gray-400 hover:text-indigo-500"><i class="fas fa-paperclip"></i></button>
+            <input type="text" id="messageInput" placeholder="Type a message..." class="flex-1 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <button id="sendMessageBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-xl hover:bg-indigo-700 transition"><i class="fas fa-paper-plane"></i></button>
+          </div>
+          <p class="text-[10px] text-gray-400 mt-2 text-center"><i class="fas fa-lock"></i> End-to-end encrypted · Campus community only</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../public/api-client.js"></script>
+  <script>
+    // Mock conversations & messages data
+    let conversations = [
+      {
+        id: 1,
+        sellerName: "Alex Johnson",
+        sellerInitials: "AJ",
+        item: "Calculus: Early Transcendentals",
+        itemPrice: 45,
+        orderId: "SMP-4829",
+        lastMessage: "Hi! The textbook is ready for pickup at the union.",
+        timestamp: "10:32 AM",
+        unread: true,
+        online: true,
+        messages: [
+          { type: "received", text: "Hey! I'm interested in the Calculus textbook.", time: "9:15 AM", sender: "buyer" },
+          { type: "sent", text: "Hi! Yes it's still available. Great condition, no highlights.", time: "9:22 AM", sender: "seller" },
+          { type: "received", text: "Perfect. I just placed the order with escrow payment.", time: "9:45 AM", sender: "buyer" },
+          { type: "sent", text: "Awesome! I'll prepare it for pickup. Meet at Student Union tomorrow?", time: "10:00 AM", sender: "seller" },
+          { type: "received", text: "Sounds good. What time works for you?", time: "10:05 AM", sender: "buyer" },
+          { type: "sent", text: "Hi! The textbook is ready for pickup at the union. I can be there 2-4 PM.", time: "10:32 AM", sender: "seller" }
+        ],
+        orderStatus: "delivered", // delivered = awaiting buyer confirmation
+        escrowAmount: 45
+      },
+      {
+        id: 2,
+        sellerName: "Jamie Lee",
+        sellerInitials: "JL",
+        item: "iPad Air 4th Gen + Pencil",
+        itemPrice: 320,
+        orderId: "SMP-4791",
+        lastMessage: "Can you do $300?",
+        timestamp: "Yesterday",
+        unread: false,
+        online: false,
+        messages: [
+          { type: "received", text: "Is the iPad still available?", time: "Yesterday", sender: "buyer" },
+          { type: "sent", text: "Yes, still available. Comes with pencil and charger.", time: "Yesterday", sender: "seller" },
+          { type: "received", text: "Can you do $300?", time: "Yesterday", sender: "buyer" }
+        ],
+        orderStatus: "pending_payment",
+        escrowAmount: null
+      },
+      {
+        id: 3,
+        sellerName: "Taylor Wong",
+        sellerInitials: "TW",
+        item: "IKEA Desk + Chair",
+        itemPrice: 75,
+        orderId: "SMP-4755",
+        lastMessage: "Pickup today after 3pm works!",
+        timestamp: "May 10",
+        unread: false,
+        online: false,
+        messages: [
+          { type: "sent", text: "The desk is assembled and ready.", time: "May 10", sender: "seller" },
+          { type: "received", text: "Pickup today after 3pm works!", time: "May 10", sender: "buyer" }
+        ],
+        orderStatus: "completed",
+        escrowAmount: null
+      }
+    ];
+
+    let currentConversationId = 1; // default open first chat
+    let currentConvData = conversations.find(c => c.id === currentConversationId);
+
+    // DOM elements
+    const conversationListDiv = document.getElementById('conversationList');
+    const messagesArea = document.getElementById('messagesArea');
+    const chatSellerNameSpan = document.getElementById('chatSellerName');
+    const messageInput = document.getElementById('messageInput');
+    const sendBtn = document.getElementById('sendMessageBtn');
+    const escrowBanner = document.getElementById('escrowConfirmBanner');
+    const quickConfirmBtn = document.getElementById('quickConfirmBtn');
+    const searchChatInput = document.getElementById('searchChat');
+
+    // Helper: Render conversation list
+    function renderConversations(filterText = '') {
+      let filtered = conversations.filter(conv => 
+        conv.sellerName.toLowerCase().includes(filterText.toLowerCase()) ||
+        conv.item.toLowerCase().includes(filterText.toLowerCase())
+      );
+      conversationListDiv.innerHTML = filtered.map(conv => `
+        <div class="conversation-item p-4 border-b border-gray-100 ${currentConversationId === conv.id ? 'active' : ''}" data-id="${conv.id}">
+          <div class="flex gap-3">
+            <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center font-bold text-gray-600">${conv.sellerInitials}</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-start">
+                <p class="font-semibold text-gray-800 truncate">${conv.sellerName}</p>
+                <span class="text-xs text-gray-400 ml-2">${conv.timestamp}</span>
+              </div>
+              <p class="text-xs text-gray-500 truncate">${conv.item}</p>
+              <p class="text-sm text-gray-600 truncate mt-1">${conv.lastMessage}</p>
+            </div>
+            ${conv.unread ? '<span class="w-2 h-2 bg-indigo-600 rounded-full mt-2"></span>' : ''}
+          </div>
+        </div>
+      `).join('');
+      
+      // attach click listeners
+      document.querySelectorAll('.conversation-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const id = parseInt(el.getAttribute('data-id'));
+          if (!isNaN(id)) {
+            currentConversationId = id;
+            currentConvData = conversations.find(c => c.id === id);
+            if(currentConvData) currentConvData.unread = false;
+            renderConversations(searchChatInput?.value || '');
+            renderMessages();
+            updateEscrowBanner();
+          }
+        });
+      });
+    }
+
+    // Render messages for current conversation
+    function renderMessages() {
+      if (!currentConvData) return;
+      chatSellerNameSpan.innerText = currentConvData.sellerName;
+      const msgs = currentConvData.messages;
+      messagesArea.innerHTML = msgs.map(msg => `
+        <div class="flex ${msg.sender === 'seller' ? 'justify-start' : 'justify-end'}">
+          <div class="message-bubble ${msg.sender === 'seller' ? 'message-received' : 'message-sent'} max-w-[75%]">
+            <p class="text-sm">${msg.text}</p>
+            <p class="text-[10px] opacity-70 mt-1 text-right">${msg.time}</p>
+          </div>
+        </div>
+      `).join('');
+      // Scroll to bottom
+      messagesArea.scrollTop = messagesArea.scrollHeight;
+    }
+
+    // Send new message
+    function sendNewMessage() {
+      const text = messageInput.value.trim();
+      if (!text || !currentConvData) return;
+      const newMsg = {
+        type: "sent",
+        text: text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        sender: "buyer"
+      };
+      currentConvData.messages.push(newMsg);
+      currentConvData.lastMessage = text;
+      currentConvData.timestamp = "Just now";
+      apiClient.post('../api/marketplace/messages', {
+        sellerName: currentConvData.sellerName,
+        sellerInitials: currentConvData.sellerInitials,
+        itemTitle: currentConvData.item,
+        itemPrice: currentConvData.itemPrice,
+        orderId: currentConvData.orderId,
+        text,
+        amount: currentConvData.escrowAmount
+      }).catch(console.error);
+      renderMessages();
+      messageInput.value = '';
+      // simulate auto-reply (optional)
+      if (text.toLowerCase().includes('pickup') || text.toLowerCase().includes('meet')) {
+        setTimeout(() => {
+          const autoReply = {
+            type: "received",
+            text: "Got it! I'll be at the pickup spot. Let me know when you arrive.",
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            sender: "seller"
+          };
+          currentConvData.messages.push(autoReply);
+          currentConvData.lastMessage = autoReply.text;
+          renderMessages();
+          renderConversations(searchChatInput?.value || '');
+        }, 1200);
+      } else {
+        renderConversations(searchChatInput?.value || '');
+      }
+    }
+
+    // Update escrow banner visibility (only for orders that are delivered but not confirmed)
+    function updateEscrowBanner() {
+      if (currentConvData && currentConvData.orderStatus === 'delivered' && currentConvData.escrowAmount) {
+        escrowBanner.classList.remove('hidden');
+      } else {
+        escrowBanner.classList.add('hidden');
+      }
+    }
+
+    // Handle quick confirm from chat (same as confirm delivery)
+    if (quickConfirmBtn) {
+      quickConfirmBtn.addEventListener('click', () => {
+        if (currentConvData && currentConvData.orderStatus === 'delivered') {
+          const confirmAction = confirm(`⚠️ CONFIRM DELIVERY: You are about to release $${currentConvData.escrowAmount} to ${currentConvData.sellerName}. 
+Only proceed if you have received the item and are satisfied. This action is final.`);
+          if (confirmAction) {
+            // Update order status
+            currentConvData.orderStatus = 'completed';
+            updateEscrowBanner();
+            // Add system message
+            currentConvData.messages.push({
+              type: "received",
+              text: `✅ Buyer confirmed delivery. Payment of $${currentConvData.escrowAmount} has been released to seller.`,
+              time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              sender: "seller"
+            });
+            renderMessages();
+            alert(`✅ Payment released! Funds of $${currentConvData.escrowAmount} have been sent to ${currentConvData.sellerName}. You can now leave a review.`);
+          }
+        }
+      });
+    }
+
+    // Search functionality
+    if (searchChatInput) {
+      searchChatInput.addEventListener('input', (e) => {
+        renderConversations(e.target.value);
+      });
+    }
+
+    // Event listeners
+    sendBtn.addEventListener('click', sendNewMessage);
+    messageInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendNewMessage();
+    });
+
+    async function loadConversations() {
+      try {
+        const messages = await apiClient.get('../api/marketplace/messages');
+        if (messages.length) {
+          const grouped = {};
+          messages.forEach((message, index) => {
+            const key = message.orderId || message.itemTitle || index;
+            if (!grouped[key]) {
+              grouped[key] = {
+                id: index + 1,
+                sellerName: message.sellerName || 'Marketplace Seller',
+                sellerInitials: (message.sellerName || 'MS').split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase(),
+                item: message.itemTitle || 'Marketplace listing',
+                itemPrice: message.itemPrice || 0,
+                orderId: message.orderId || null,
+                lastMessage: message.text || '',
+                timestamp: 'Just now',
+                unread: false,
+                online: true,
+                messages: [],
+                orderStatus: 'delivered',
+                escrowAmount: message.amount || null
+              };
+            }
+            grouped[key].messages.push({ type: 'sent', text: message.text || '', time: 'Just now', sender: 'buyer' });
+          });
+          conversations = Object.values(grouped);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+      currentConversationId = conversations[0]?.id || null;
+      currentConvData = conversations.find(c => c.id === currentConversationId);
+      renderConversations();
+      renderMessages();
+      updateEscrowBanner();
+    }
+
+    // Initial render
+    loadConversations();
+    
+    // Mobile menu
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if(mobileBtn) mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+    // Additional: Simulate Socket.io real-time feel - auto update last message timestamp
+    setInterval(() => {
+      // just to simulate "online" feel, but not required for demo
+    }, 5000);
+  </script>
+</body>
+</html>
+

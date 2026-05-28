@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Student Marketplace | Buy, Sell & Trade on Campus</title>
+  <!-- Google Fonts + Tailwind CDN + Font Awesome Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #fafbfc; }
+    /* Custom escrow step connector */
+    .escrow-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: 70px;
+      width: calc(100% - 40px);
+      height: 2px;
+      background: #e2e8f0;
+      z-index: 0;
+    }
+    .escrow-step:last-child::after { display: none; }
+    .step-icon {
+      position: relative;
+      z-index: 2;
+    }
+    .hover-scale {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .hover-scale:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo + brand -->
+        <div class="flex items-center space-x-2">
+          <i class="fas fa-graduation-cap text-indigo-600 text-2xl"></i>
+          <span class="font-bold text-xl text-gray-800">Student<span class="text-indigo-600">Marketplace</span></span>
+        </div>
+        
+        <!-- Desktop navigation -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+          <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+          <a href="messages-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium"><i class="far fa-comment-dots mr-1"></i>Messages</a>
+          <div class="relative group">
+            <button class="flex items-center space-x-1 text-gray-700 hover:text-indigo-600">
+              <i class="far fa-user-circle text-xl"></i>
+              <span>Account</span>
+              <i class="fas fa-chevron-down text-xs"></i>
+            </button>
+            <!-- dropdown -->
+            <div class="absolute right-0 w-48 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 hidden group-hover:block py-2 z-20">
+              <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+              <a href="saved-items-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Saved items</a>
+              <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Settings</a>
+              <hr class="my-1">
+              <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Mobile menu button -->
+        <div class="md:hidden">
+          <button id="mobile-menu-btn" class="text-gray-600 focus:outline-none">
+            <i class="fas fa-bars text-2xl"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Mobile sidebar (hidden) -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200 pb-4 px-4">
+      <a href="browse-listings-student-marketplace.html" class="block py-2 text-gray-700 font-medium">Browse</a>
+      <a href="create-listing-student-marketplace.html" class="block py-2 text-gray-700 font-medium">Sell</a>
+      <a href="messages-student-marketplace.html" class="block py-2 text-gray-700 font-medium">Messages</a>
+      <a href="my-dashboard-student-marketplace.html" class="block py-2 text-gray-700 font-medium">Dashboard</a>
+      <a href="saved-items-student-marketplace.html" class="block py-2 text-gray-700 font-medium">Saved items</a>
+      <a href="authentication-student-marketplace.html" class="block py-2 text-red-600 font-medium">Log out</a>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <!-- ========== HERO SECTION ========== -->
+    <div class="bg-gradient-to-r from-indigo-50 via-white to-indigo-50 rounded-2xl p-6 md:p-12 mb-16 text-center shadow-sm border border-indigo-100">
+      <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">STUDENT MARKETPLACE</h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">Buy, sell and trade with students on your campus.<br>Safe. Trusted. Student verified.</p>
+      <div class="flex flex-wrap justify-center gap-4 mt-8">
+        <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transition flex items-center gap-2"><i class="fas fa-store"></i> Start Browsing</button>
+        <button class="border border-indigo-600 text-indigo-700 hover:bg-indigo-50 px-6 py-3 rounded-xl font-semibold transition flex items-center gap-2"><i class="fas fa-plus-circle"></i> Sell an Item</button>
+      </div>
+    </div>
+
+    <!-- ========== CORE USER FLOW (simple visual steps) ========== -->
+    <div class="mb-16">
+      <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-8">✨ How it works — from browse to review</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 text-center">
+        <div class="bg-white p-3 rounded-xl shadow-sm"><span class="font-bold text-indigo-600">1</span><p class="text-sm mt-1">Browse</p></div>
+        <div class="bg-white p-3 rounded-xl shadow-sm"><span class="font-bold text-indigo-600">2</span><p class="text-sm mt-1">Search & Filter</p></div>
+        <div class="bg-white p-3 rounded-xl shadow-sm"><span class="font-bold text-indigo-600">3</span><p class="text-sm mt-1">Item Details</p></div>
+        <div class="bg-white p-3 rounded-xl shadow-sm"><span class="font-bold text-indigo-600">4</span><p class="text-sm mt-1">Checkout</p></div>
+        <div class="bg-white p-3 rounded-xl shadow-sm"><span class="font-bold text-indigo-600">5</span><p class="text-sm mt-1">Order Tracking</p></div>
+        <div class="bg-white p-3 rounded-xl shadow-sm"><span class="font-bold text-indigo-600">6</span><p class="text-sm mt-1">Confirm Delivery</p></div>
+        <div class="bg-white p-3 rounded-xl shadow-sm col-span-2 md:col-span-1"><span class="font-bold text-indigo-600">7</span><p class="text-sm mt-1">Rate & Review</p></div>
+      </div>
+    </div>
+
+    <!-- ========== CATEGORIES SECTION ========== -->
+    <div class="mb-16">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-gray-800">📚 Shop by category</h2>
+        <a href="browse-listings-student-marketplace.html" class="text-indigo-600 hover:underline">View all <i class="fas fa-arrow-right text-xs"></i></a>
+      </div>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+        <div class="bg-white p-4 rounded-xl text-center shadow-sm hover:shadow-md transition cursor-pointer border border-gray-100"><i class="fas fa-book-open text-indigo-500 text-2xl mb-2 block"></i><span class="font-medium">Textbooks</span></div>
+        <div class="bg-white p-4 rounded-xl text-center shadow-sm hover:shadow-md transition cursor-pointer"><i class="fas fa-laptop text-indigo-500 text-2xl mb-2 block"></i><span class="font-medium">Electronics</span></div>
+        <div class="bg-white p-4 rounded-xl text-center shadow-sm hover:shadow-md transition cursor-pointer"><i class="fas fa-couch text-indigo-500 text-2xl mb-2 block"></i><span class="font-medium">Furniture</span></div>
+        <div class="bg-white p-4 rounded-xl text-center shadow-sm hover:shadow-md transition cursor-pointer"><i class="fas fa-book text-indigo-500 text-2xl mb-2 block"></i><span class="font-medium">Books</span></div>
+        <div class="bg-white p-4 rounded-xl text-center shadow-sm hover:shadow-md transition cursor-pointer"><i class="fas fa-tshirt text-indigo-500 text-2xl mb-2 block"></i><span class="font-medium">Clothing</span></div>
+        <div class="bg-white p-4 rounded-xl text-center shadow-sm hover:shadow-md transition cursor-pointer"><i class="fas fa-ellipsis-h text-indigo-500 text-2xl mb-2 block"></i><span class="font-medium">More</span></div>
+      </div>
+    </div>
+
+    <!-- ========== MAIN FEATURES GRID ========== -->
+    <div class="mb-16">
+      <h2 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-10">🔥 Built for campus trade</h2>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="flex gap-4 bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-500"><i class="fas fa-check-circle text-indigo-500 text-2xl"></i><div><h3 class="font-bold">Student Verified</h3><p class="text-gray-500 text-sm">Only valid university emails can join & trade</p></div></div>
+        <div class="flex gap-4 bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-500"><i class="fas fa-lock text-indigo-500 text-2xl"></i><div><h3 class="font-bold">Secure Escrow</h3><p class="text-gray-500 text-sm">Payments held until buyer confirms delivery</p></div></div>
+        <div class="flex gap-4 bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-500"><i class="fas fa-tags text-indigo-500 text-2xl"></i><div><h3 class="font-bold">Multi-Category</h3><p class="text-gray-500 text-sm">Textbooks, electronics, furniture & more</p></div></div>
+        <div class="flex gap-4 bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-500"><i class="fas fa-search text-indigo-500 text-2xl"></i><div><h3 class="font-bold">Smart Search</h3><p class="text-gray-500 text-sm">Keyword, course code, ISBN search</p></div></div>
+        <div class="flex gap-4 bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-500"><i class="fas fa-exchange-alt text-indigo-500 text-2xl"></i><div><h3 class="font-bold">Exchange Option</h3><p class="text-gray-500 text-sm">Trade items you have for what you need</p></div></div>
+        <div class="flex gap-4 bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-500"><i class="fas fa-clipboard-list text-indigo-500 text-2xl"></i><div><h3 class="font-bold">Condition Checklist</h3><p class="text-gray-500 text-sm">Standard labels + photo requirements</p></div></div>
+        <div class="flex gap-4 bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-500"><i class="fas fa-comments text-indigo-500 text-2xl"></i><div><h3 class="font-bold">Chat System</h3><p class="text-gray-500 text-sm">Built-in messaging, safe & easy</p></div></div>
+        <div class="flex gap-4 bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-500"><i class="fas fa-star text-indigo-500 text-2xl"></i><div><h3 class="font-bold">Ratings & Reviews</h3><p class="text-gray-500 text-sm">Build your reputation on campus</p></div></div>
+        <div class="flex gap-4 bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-500"><i class="fas fa-truck text-indigo-500 text-2xl"></i><div><h3 class="font-bold">Order Tracking</h3><p class="text-gray-500 text-sm">Real-time from payment to confirmation</p></div></div>
+        <div class="flex gap-4 bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-500"><i class="fas fa-gavel text-indigo-500 text-2xl"></i><div><h3 class="font-bold">Dispute Resolution</h3><p class="text-gray-500 text-sm">Raise issues, team helps resolve fairly</p></div></div>
+        <div class="flex gap-4 bg-white p-5 rounded-xl shadow-sm border-l-4 border-indigo-500"><i class="fas fa-bookmark text-indigo-500 text-2xl"></i><div><h3 class="font-bold">Save Items</h3><p class="text-gray-500 text-sm">Price drop alerts, watchlist</p></div></div>
+      </div>
+    </div>
+
+    <!-- ========== ESCROW FLOW HIGHLIGHT ========== -->
+    <div class="bg-gray-900 text-white rounded-2xl p-6 md:p-10 mb-16">
+      <h2 class="text-2xl font-bold text-center mb-8">🛡️ Escrow protection — how your money stays safe</h2>
+      <div class="flex flex-wrap justify-around relative">
+        <div class="escrow-step relative flex flex-col items-center w-40 md:w-48 text-center">
+          <div class="step-icon bg-indigo-600 rounded-full w-12 h-12 flex items-center justify-center text-white text-xl font-bold mb-2">💰</div>
+          <p class="font-semibold">1. Buyer pays</p>
+          <span class="text-gray-300 text-xs">Payment held securely</span>
+        </div>
+        <div class="escrow-step relative flex flex-col items-center w-40 md:w-48 text-center">
+          <div class="step-icon bg-indigo-600 rounded-full w-12 h-12 flex items-center justify-center text-white text-xl font-bold mb-2">📦</div>
+          <p class="font-semibold">2. Seller delivers</p>
+          <span class="text-gray-300 text-xs">Item is delivered/made available</span>
+        </div>
+        <div class="escrow-step relative flex flex-col items-center w-40 md:w-48 text-center">
+          <div class="step-icon bg-indigo-600 rounded-full w-12 h-12 flex items-center justify-center text-white text-xl font-bold mb-2">✅</div>
+          <p class="font-semibold">3. Buyer confirms</p>
+          <span class="text-gray-300 text-xs">Satisfied with item</span>
+        </div>
+        <div class="escrow-step relative flex flex-col items-center w-40 md:w-48 text-center">
+          <div class="step-icon bg-indigo-600 rounded-full w-12 h-12 flex items-center justify-center text-white text-xl font-bold mb-2">💸</div>
+          <p class="font-semibold">4. Payment released</p>
+          <span class="text-gray-300 text-xs">Funds to seller</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== TRUST & SAFETY + SAMPLE LISTINGS (Mock Preview) ========== -->
+    <div class="grid lg:grid-cols-3 gap-8 mb-16">
+      <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
+        <i class="fas fa-shield-alt text-indigo-600 text-3xl mb-3"></i>
+        <h3 class="text-xl font-bold mb-4">Trust & Safety</h3>
+        <ul class="space-y-3 text-gray-700">
+          <li><i class="fas fa-envelope text-indigo-500 w-5"></i> University email verification</li>
+          <li><i class="fas fa-flag text-indigo-500 w-5"></i> Report & block users</li>
+          <li><i class="fas fa-eye text-indigo-500 w-5"></i> Moderated listings</li>
+          <li><i class="fas fa-credit-card text-indigo-500 w-5"></i> Secure payments via Flutterwave</li>
+          <li><i class="fas fa-handshake text-indigo-500 w-5"></i> Dispute resolution support</li>
+          <li><i class="fas fa-book text-indigo-500 w-5"></i> Community guidelines</li>
+        </ul>
+      </div>
+      <div class="lg:col-span-2">
+        <div class="flex justify-between items-center mb-4"><h3 class="text-xl font-bold">🔥 Recent listings from your campus</h3><a href="browse-listings-student-marketplace.html" class="text-indigo-600 text-sm">View all</a></div>
+        <div class="grid sm:grid-cols-2 gap-5">
+          <div class="bg-white rounded-xl shadow-sm overflow-hidden border hover-scale transition cursor-pointer">
+            <div class="h-36 bg-gray-200 relative"><i class="fas fa-book absolute bottom-2 right-2 bg-white p-1 rounded-full text-xs"></i></div>
+            <div class="p-3"><h4 class="font-bold">Calculus: Early Transcendentals</h4><p class="text-indigo-600 font-bold text-lg">$45</p><div class="flex justify-between text-sm text-gray-500"><span>📘 Good condition</span><span>⭐ 4.8</span></div></div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm overflow-hidden border hover-scale transition cursor-pointer">
+            <div class="h-36 bg-gray-200 relative"><i class="fas fa-laptop absolute bottom-2 right-2 bg-white p-1 rounded-full text-xs"></i></div>
+            <div class="p-3"><h4 class="font-bold">iPad Air 4th Gen + Pencil</h4><p class="text-indigo-600 font-bold text-lg">$320</p><div class="flex justify-between text-sm text-gray-500"><span>✨ Like new</span><span>⭐ 5.0</span></div></div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm overflow-hidden border hover-scale transition cursor-pointer">
+            <div class="h-36 bg-gray-200 relative"><i class="fas fa-chair absolute bottom-2 right-2 bg-white p-1 rounded-full text-xs"></i></div>
+            <div class="p-3"><h4 class="font-bold">IKEA Desk + Office Chair</h4><p class="text-indigo-600 font-bold text-lg">$75</p><div class="flex justify-between text-sm text-gray-500"><span>🪑 Acceptable</span><span>⭐ 4.5</span></div></div>
+          </div>
+          <div class="bg-white rounded-xl shadow-sm overflow-hidden border hover-scale transition cursor-pointer">
+            <div class="h-36 bg-gray-200 relative"><i class="fas fa-tshirt absolute bottom-2 right-2 bg-white p-1 rounded-full text-xs"></i></div>
+            <div class="p-3"><h4 class="font-bold">Hoodie - University Edition</h4><p class="text-indigo-600 font-bold text-lg">$25</p><div class="flex justify-between text-sm text-gray-500"><span>🧥 Like new</span><span>⭐ 4.7</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== CAMPUS COMMUNITY + CHAT CONFIRM EXAMPLE ========== -->
+    <div class="bg-indigo-50 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-5 mb-12">
+      <div><i class="fas fa-users text-indigo-700 text-3xl mr-3"></i><span class="font-bold text-gray-800">👥 Only students from your university — verified community</span></div>
+      <div class="text-sm bg-white p-3 rounded-xl shadow-sm"><i class="fas fa-comment-dots text-indigo-500 mr-2"></i> "Have you received your item and are you happy with it?<br> Confirm & release payment directly in chat"</div>
+    </div>
+
+    <!-- ========== TECH STACK + FOOTER AREA ========== -->
+    <div class="border-t pt-10 text-center text-gray-500 text-sm">
+      <div class="flex flex-wrap justify-center gap-4 mb-6">
+        <span class="bg-gray-100 px-3 py-1 rounded-full">Next.js + Tailwind</span><span class="bg-gray-100 px-3 py-1 rounded-full">Node.js + Express</span><span class="bg-gray-100 px-3 py-1 rounded-full">PostgreSQL</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full">Flutterwave</span><span class="bg-gray-100 px-3 py-1 rounded-full">Socket.io</span><span class="bg-gray-100 px-3 py-1 rounded-full">Firebase</span>
+        <span class="bg-gray-100 px-3 py-1 rounded-full">React Native (mobile app)</span>
+      </div>
+      <p>© 2026 Student Marketplace — safe, trusted, student verified. Campus pickup locations only.</p>
+      <div class="flex justify-center gap-6 mt-4">
+        <a href="browse-listings-student-marketplace.html" class="hover:text-indigo-600">About</a>
+        <a href="authentication-student-marketplace.html" class="hover:text-indigo-600">Trust & Safety</a>
+        <a href="authentication-student-marketplace.html" class="hover:text-indigo-600">Help Center</a>
+        <a href="dispute-resolution-student-marketplace.html" class="hover:text-indigo-600">Dispute</a>
+      </div>
+    </div>
+  </main>
+  
+  <script>
+    // Mobile menu toggle
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileBtn) {
+      mobileBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+    // Simple interactive demo for buttons (toast simulation)
+    const browseBtn = document.querySelector('.bg-indigo-600.hover\\:bg-indigo-700');
+    const sellBtn = document.querySelector('.border.border-indigo-600');
+    if (browseBtn) {
+      browseBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'browse-listings-student-marketplace.html';
+      });
+    }
+    if (sellBtn) {
+      sellBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'create-listing-student-marketplace.html';
+      });
+    }
+    // Add simple hover feedback on listing cards
+    document.querySelectorAll('.hover-scale').forEach(card => {
+      card.addEventListener('click', () => {
+        window.location.href = 'browse-listings-student-marketplace.html';
+      });
+    });
+  </script>
+  <!-- Additional style for escrow line connector (fix for pseudo-element) -->
+  <style>
+    .escrow-step {
+      position: relative;
+    }
+    @media (min-width: 768px) {
+      .escrow-step:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        top: 28px;
+        left: 75%;
+        width: 50%;
+        height: 2px;
+        background: #334155;
+        z-index: 0;
+      }
+      .escrow-step .step-icon {
+        background-color: #4f46e5;
+      }
+    }
+    /* responsive fix for small screens: hide connector line for cleaner mobile */
+    @media (max-width: 768px) {
+      .escrow-step::after {
+        display: none;
+      }
+    }
+  </style>
+</body>
+</html>
+

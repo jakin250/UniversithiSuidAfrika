@@ -1,6 +1,0 @@
-<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Notifications</title><link rel="stylesheet" href="platform.css"></head>
-<body><header class="topbar"><a class="brand" href="index.html">Universithi SuidAfrika</a><nav class="nav"><a href="dashboard.html">Dashboard</a></nav></header>
-<main class="wrap"><section class="hero"><h1>Notifications</h1><p class="muted">Replies, sales, messages, orders, and platform updates.</p></section><section id="notificationsList" class="grid"></section></main>
-<script src="platform.js"></script><script>platform.loadCollection("/api/notifications/items","#notificationsList",(n)=>`<article class="card"><span class="badge">${n.type}</span><h3>${n.title}</h3><p>${n.body || "No details added."}</p></article>`);</script></body></html>

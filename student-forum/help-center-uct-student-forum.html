@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Help Center - UCT Student Forum</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f7fc;
+      color: #0a2b3e;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #dce5ec;
+    }
+
+    .logo-area h1 {
+      font-size: 1.8rem;
+      color: #0a2b3e;
+    }
+
+    .logo-area .tagline {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+    }
+
+    .back-link {
+      color: #0f5b8c;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      transition: background 0.2s;
+    }
+
+    .back-link:hover {
+      background: #eef2f7;
+    }
+
+    /* Hero */
+    .help-hero {
+      background: linear-gradient(135deg, #0f5b8c 0%, #1a6d9e 100%);
+      border-radius: 32px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      color: white;
+      margin-bottom: 2rem;
+    }
+
+    .help-hero h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .help-hero p {
+      opacity: 0.9;
+      margin-bottom: 1.5rem;
+    }
+
+    .search-container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      border: none;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-family: inherit;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* Categories */
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .category-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid #eaf0f5;
+    }
+
+    .category-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    }
+
+    .category-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .category-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .category-card p {
+      font-size: 0.8rem;
+      color: #5a6e7a;
+    }
+
+    /* FAQ Section */
+    .faq-section {
+      background: white;
+      border-radius: 32px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .faq-section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #0f5b8c;
+      padding-left: 1rem;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid #eef2f6;
+      margin-bottom: 0.5rem;
+    }
+
+    .faq-question {
+      padding: 1rem 0;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .faq-question:hover {
+      color: #0f5b8c;
+    }
+
+    .faq-icon {
+      font-size: 1.2rem;
+      transition: transform 0.2s;
+    }
+
+    .faq-answer {
+      padding: 0 0 1rem 1rem;
+      color: #4a627a;
+      font-size: 0.9rem;
+      display: none;
+      line-height: 1.6;
+    }
+
+    .faq-answer.active {
+      display: block;
+    }
+
+    /* Contact Card */
+    .contact-card {
+      background: linear-gradient(135deg, #eef2f7, #ffffff);
+      border-radius: 24px;
+      padding: 1.5rem;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .contact-card h3 {
+      margin-bottom: 0.5rem;
+    }
+
+    .contact-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .btn-primary {
+      background: #0f5b8c;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #0f5b8c;
+      color: #0f5b8c;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    @media (max-width: 700px) {
+      .container {
+        padding: 1rem;
+      }
+      .help-hero h2 {
+        font-size: 1.5rem;
+      }
+      .faq-section {
+        padding: 1.2rem;
+      }
+    }
+
+    .search-highlight {
+      background-color: #fef3c7;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <div class="logo-area">
+      <h1>STUDENT FORUM</h1>
+      <div class="tagline">Your campus. Your voice.</div>
+    </div>
+    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+  </div>
+
+  <div class="help-hero">
+    <h2>📚 Help Center</h2>
+    <p>Find answers, guides, and support for using the UCT Student Forum</p>
+    <div class="search-container">
+      <input type="text" id="faqSearch" class="search-input" placeholder="Search for help... e.g., 'how to post', 'study groups'">
+    </div>
+  </div>
+
+  <!-- Quick Categories -->
+  <div class="categories-grid" id="categoriesGrid">
+    <div class="category-card" data-category="getting-started">
+      <div class="category-icon">🚀</div>
+      <h3>Getting Started</h3>
+      <p>Create an account, profile setup, and basics</p>
+    </div>
+    <div class="category-card" data-category="posting">
+      <div class="category-icon">✍️</div>
+      <h3>Posting & Replying</h3>
+      <p>How to create posts, comment, and format</p>
+    </div>
+    <div class="category-card" data-category="study-groups">
+      <div class="category-icon">👥</div>
+      <h3>Study Groups</h3>
+      <p>Create, join, and manage study groups</p>
+    </div>
+    <div class="category-card" data-category="account">
+      <div class="category-icon">⚙️</div>
+      <h3>Account Settings</h3>
+      <p>Privacy, notifications, and preferences</p>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="faq-section">
+    <h2>📖 Frequently Asked Questions</h2>
+    <div id="faqContainer">
+      <!-- FAQ items will be injected here -->
+    </div>
+  </div>
+
+  <!-- Contact Support -->
+  <div class="contact-card">
+    <h3>Still need help?</h3>
+    <p>Our support team is here to assist you</p>
+    <div class="contact-buttons">
+      <button id="contactSupportBtn" class="btn-primary">📧 Contact Support</button>
+      <button id="reportBugBtn" class="btn-outline">🐛 Report a Bug</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // FAQ Data
+  const faqData = [
+    {
+      id: 1,
+      question: "How do I create an account?",
+      answer: "All UCT students are automatically verified through their university email. Click 'Sign Up' and use your @uct.ac.za email address. You'll receive a verification link.",
+      category: "getting-started",
+      keywords: ["account", "sign up", "register", "create account", "verification"]
+    },
+    {
+      id: 2,
+      question: "How do I create a new post?",
+      answer: "Click the 'Start a Discussion' button on the homepage or navigate to the Create Post page. Fill in the title, select a category, write your content, add optional tags, and click 'Publish'.",
+      category: "posting",
+      keywords: ["post", "create", "discussion", "publish", "share"]
+    },
+    {
+      id: 3,
+      question: "Can I post anonymously?",
+      answer: "Yes! When creating a post, check the 'Post anonymously' checkbox. Your username will be hidden, and the post will appear as 'Anonymous Student'.",
+      category: "posting",
+      keywords: ["anonymous", "privacy", "hide name", "incognito"]
+    },
+    {
+      id: 4,
+      question: "How do I join or create a study group?",
+      answer: "Navigate to the 'Study Groups' page from the main menu. Browse existing groups and click 'Join', or click 'Create New Study Group' to start your own. You'll need to provide a group name, course, and description.",
+      category: "study-groups",
+      keywords: ["study group", "join group", "create group", "collaborate"]
+    },
+    {
+      id: 5,
+      question: "How do I upvote content?",
+      answer: "Click the ▲ (upvote) button on any post or comment. Upvoting helps highlight helpful content and increases the author's reputation points.",
+      category: "posting",
+      keywords: ["upvote", "like", "vote", "reputation", "karma"]
+    },
+    {
+      id: 6,
+      question: "How do I change my notification settings?",
+      answer: "Go to your Dashboard → Account Settings. From there you can choose email preferences for replies, upvotes, and announcements.",
+      category: "account",
+      keywords: ["notifications", "email", "alerts", "preferences"]
+    },
+    {
+      id: 7,
+      question: "What should I do if I see inappropriate content?",
+      answer: "Use the 'Report' button on any post or comment. You can also visit the Report Center to submit a report with details. Moderators will review it within 24-48 hours.",
+      category: "getting-started",
+      keywords: ["report", "inappropriate", "abuse", "moderation", "flag"]
+    },
+    {
+      id: 8,
+      question: "How do I edit or delete my post?",
+      answer: "Click the '...' menu on your post and select 'Edit' or 'Delete'. You can only edit posts within 30 minutes of posting. Deleted posts are permanently removed.",
+      category: "posting",
+      keywords: ["edit", "delete", "remove", "update"]
+    },
+    {
+      id: 9,
+      question: "How are reputation points earned?",
+      answer: "You earn points when others upvote your posts and comments. Creating helpful content, participating in discussions, and having your answer marked as 'Best Answer' also awards points.",
+      category: "getting-started",
+      keywords: ["reputation", "points", "karma", "badges"]
+    },
+    {
+      id: 10,
+      question: "Can I save posts to read later?",
+      answer: "Yes! Click the 'Save' icon on any post. Saved posts can be found in your Dashboard under the 'Saved Items' tab.",
+      category: "posting",
+      keywords: ["save", "bookmark", "read later", "favorite"]
+    },
+    {
+      id: 11,
+      question: "How do I mention someone in a comment?",
+      answer: "Type '@' followed by their username (e.g., @SiphoM). They will receive a notification that you mentioned them.",
+      category: "posting",
+      keywords: ["mention", "@", "tag", "notify"]
+    },
+    {
+      id: 12,
+      question: "Is the forum accessible on mobile?",
+      answer: "Yes! The UCT Student Forum is fully responsive and works on all devices. You can also save it to your home screen as a web app.",
+      category: "account",
+      keywords: ["mobile", "phone", "responsive", "app"]
+    }
+  ];
+
+  let currentSearchTerm = "";
+  let currentCategory = "all";
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function highlightText(text, searchTerm) {
+    if (!searchTerm) return escapeHtml(text);
+    const regex = new RegExp(`(${escapeRegex(searchTerm)})`, 'gi');
+    return escapeHtml(text).replace(regex, `<span class="search-highlight">$1</span>`);
+  }
+
+  function escapeRegex(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  function getFilteredFaqs() {
+    let filtered = [...faqData];
+    
+    if (currentCategory !== "all") {
+      filtered = filtered.filter(faq => faq.category === currentCategory);
+    }
+    
+    if (currentSearchTerm) {
+      const term = currentSearchTerm.toLowerCase();
+      filtered = filtered.filter(faq => 
+        faq.question.toLowerCase().includes(term) || 
+        faq.answer.toLowerCase().includes(term) ||
+        faq.keywords.some(kw => kw.toLowerCase().includes(term))
+      );
+    }
+    
+    return filtered;
+  }
+
+  function renderFaqs() {
+    const filtered = getFilteredFaqs();
+    const container = document.getElementById('faqContainer');
+    
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div style="text-align: center; padding: 2rem; color: #8ba0b0;">
+          🔍 No results found for "${escapeHtml(currentSearchTerm)}".<br>
+          Try different keywords or browse categories.
+        </div>
+      `;
+      return;
+    }
+    
+    container.innerHTML = filtered.map(faq => `
+      <div class="faq-item" data-id="${faq.id}">
+        <div class="faq-question">
+          <span>${highlightText(faq.question, currentSearchTerm)}</span>
+          <span class="faq-icon">▼</span>
+        </div>
+        <div class="faq-answer">
+          ${highlightText(faq.answer, currentSearchTerm)}
+        </div>
+      </div>
+    `).join('');
+    
+    // Attach click handlers for FAQ items
+    document.querySelectorAll('.faq-question').forEach((question, index) => {
+      question.addEventListener('click', () => {
+        const answer = question.nextElementSibling;
+        const icon = question.querySelector('.faq-icon');
+        answer.classList.toggle('active');
+        icon.style.transform = answer.classList.contains('active') ? 'rotate(180deg)' : 'rotate(0deg)';
+      });
+    });
+  }
+
+  function initCategoryFilters() {
+    const categories = document.querySelectorAll('.category-card');
+    categories.forEach(card => {
+      card.addEventListener('click', () => {
+        const category = card.getAttribute('data-category');
+        currentCategory = currentCategory === category ? "all" : category;
+        
+        // Update UI to show active category
+        categories.forEach(c => c.style.border = "1px solid #eaf0f5");
+        if (currentCategory !== "all") {
+          card.style.border = "2px solid #0f5b8c";
+          card.style.backgroundColor = "#f0f7ff";
+        }
+        
+        renderFaqs();
+        
+        // Smooth scroll to FAQ section
+        document.querySelector('.faq-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  }
+
+  function initSearch() {
+    const searchInput = document.getElementById('faqSearch');
+    let debounceTimer;
+    
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        currentSearchTerm = e.target.value.trim();
+        currentCategory = "all";
+        // Reset category highlights
+        document.querySelectorAll('.category-card').forEach(c => {
+          c.style.border = "1px solid #eaf0f5";
+          c.style.backgroundColor = "white";
+        });
+        renderFaqs();
+      }, 300);
+    });
+  }
+
+  // Contact support simulation
+  function contactSupport() {
+    alert("📧 Support request opened.\n\nOur team typically responds within 24 hours. You can also email support@uctstudentforum.com");
+  }
+
+  function reportBug() {
+    const bugDescription = prompt("Please describe the bug you encountered:");
+    if (bugDescription) {
+      alert("🐛 Bug report submitted. Thank you for helping improve the forum!");
+    }
+  }
+
+  // Back button
+  document.getElementById('backToForum')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('← Returning to homepage (simulated navigation)');
+  });
+
+  document.getElementById('contactSupportBtn')?.addEventListener('click', contactSupport);
+  document.getElementById('reportBugBtn')?.addEventListener('click', reportBug);
+
+  // Initialize
+  renderFaqs();
+  initCategoryFilters();
+  initSearch();
+</script>
+</body>
+</html>
+

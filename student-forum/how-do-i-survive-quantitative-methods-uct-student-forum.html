@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>How do I survive Quantitative Methods? - UCT Student Forum</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f7fc;
+      color: #0a2b3e;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #dce5ec;
+    }
+
+    .logo-area h1 {
+      font-size: 1.8rem;
+      color: #0a2b3e;
+    }
+
+    .logo-area .tagline {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+    }
+
+    .back-link {
+      color: #0f5b8c;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      transition: background 0.2s;
+    }
+
+    .back-link:hover {
+      background: #eef2f7;
+    }
+
+    .btn-primary {
+      background: #0f5b8c;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #0a4368;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #0f5b8c;
+      color: #0f5b8c;
+      padding: 0.4rem 1rem;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: 0.2s;
+    }
+
+    .btn-outline:hover {
+      background: #e6f0f8;
+    }
+
+    /* Layout */
+    .discussion-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 2rem;
+    }
+
+    /* Main Post Card */
+    .post-card {
+      background: white;
+      border-radius: 28px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+
+    .post-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .post-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .category-badge {
+      background: #eef2f7;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #0f5b8c;
+    }
+
+    .post-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.2rem;
+      margin: 1rem 0 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e9eef3;
+      color: #6c7e8c;
+      font-size: 0.85rem;
+    }
+
+    .author-info {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .author-avatar-small {
+      width: 32px;
+      height: 32px;
+      background: #0f5b8c;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.8rem;
+    }
+
+    .post-body {
+      font-size: 1.05rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.7;
+    }
+
+    .vote-section {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .vote-buttons {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f0f4f9;
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+    }
+
+    .vote-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: #6c7e8c;
+      transition: 0.1s;
+    }
+
+    .vote-btn:hover {
+      color: #0f5b8c;
+    }
+
+    .vote-count {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    /* Comments Section */
+    .comments-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .comments-header h3 {
+      font-size: 1.3rem;
+    }
+
+    .comment-sort {
+      padding: 0.4rem 1rem;
+      border: 1px solid #cddfe8;
+      border-radius: 40px;
+      background: white;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .comment-thread {
+      margin-bottom: 1.5rem;
+    }
+
+    .comment-card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.2rem;
+      margin-bottom: 1rem;
+      border: 1px solid #eaf0f5;
+      transition: 0.1s;
+    }
+
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 0.6rem;
+    }
+
+    .comment-author {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .comment-author-name {
+      font-weight: 600;
+      color: #0a2b3e;
+    }
+
+    .author-badge {
+      font-size: 0.65rem;
+      background: #eef2f7;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      color: #0f5b8c;
+    }
+
+    .comment-time {
+      font-size: 0.7rem;
+      color: #8ba0b0;
+    }
+
+    .comment-body {
+      margin: 0.6rem 0;
+      line-height: 1.5;
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .comment-vote-btn, .reply-btn {
+      background: none;
+      border: none;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: #6c7e8c;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .comment-vote-btn:hover, .reply-btn:hover {
+      color: #0f5b8c;
+    }
+
+    .replies-container {
+      margin-left: 2.5rem;
+      margin-top: 1rem;
+      padding-left: 1rem;
+      border-left: 2px solid #e0e8f0;
+    }
+
+    .reply-form {
+      margin-top: 0.8rem;
+      display: none;
+    }
+
+    .reply-form.active {
+      display: block;
+    }
+
+    .reply-input {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1px solid #cddfe8;
+      border-radius: 16px;
+      font-family: inherit;
+      font-size: 0.85rem;
+      margin-top: 0.4rem;
+    }
+
+    /* New comment form */
+    .new-comment-form {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .new-comment-form textarea {
+      width: 100%;
+      padding: 1rem;
+      border: 1.5px solid #e0e9f0;
+      border-radius: 20px;
+      font-family: inherit;
+      resize: vertical;
+    }
+
+    /* Sidebar */
+    .sidebar-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      position: sticky;
+      top: 1.5rem;
+    }
+
+    .sidebar-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #0f5b8c;
+      padding-left: 0.7rem;
+    }
+
+    .similar-post {
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #eef2f6;
+      cursor: pointer;
+    }
+
+    .similar-post:hover {
+      color: #0f5b8c;
+    }
+
+    .similar-title {
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 800px) {
+      .discussion-grid {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 1rem;
+      }
+      .post-title {
+        font-size: 1.4rem;
+      }
+      .replies-container {
+        margin-left: 1rem;
+      }
+    }
+
+    .empty-comments {
+      text-align: center;
+      padding: 2rem;
+      color: #8ba0b0;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <div class="logo-area">
+      <h1>STUDENT FORUM</h1>
+      <div class="tagline">Your campus. Your voice.</div>
+    </div>
+    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+  </div>
+
+  <div class="discussion-grid">
+    <div>
+      <!-- Post Card will be injected here -->
+      <div id="postCard"></div>
+
+      <!-- Comments Section -->
+      <div class="comments-header">
+        <h3>💬 Comments (<span id="commentCount">0</span>)</h3>
+        <select id="commentSort" class="comment-sort">
+          <option value="best">Best (Top upvoted)</option>
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+        </select>
+      </div>
+      <div id="commentsContainer"></div>
+
+      <!-- New Comment Form -->
+      <div class="new-comment-form">
+        <textarea id="newCommentInput" rows="3" placeholder="Write your comment... Be respectful and helpful!"></textarea>
+        <button id="submitCommentBtn" class="btn-primary" style="margin-top: 0.8rem;">Post Comment</button>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <div class="sidebar-card">
+        <h3>🔥 Similar Discussions</h3>
+        <div id="similarPosts"></div>
+      </div>
+      <div class="sidebar-card">
+        <h3>📌 About OP</h3>
+        <div id="authorSidebarInfo"></div>
+      </div>
+      <div class="sidebar-card">
+        <h3>💡 Forum Guidelines</h3>
+        <ul style="font-size: 0.8rem; list-style: none;">
+          <li>✓ Be respectful</li>
+          <li>✓ Stay on topic</li>
+          <li>✓ No spam or self-promotion</li>
+          <li>✓ Upvote helpful answers</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ==================== MOCK POST DATA ====================
+  const postData = {
+    id: 1,
+    title: "How do I survive Quantitative Methods?",
+    category: "Academic Help",
+    author: "Sipho M.",
+    authorBadge: "2nd Year • 4.2k pts",
+    authorAvatar: "SM",
+    timeAgo: "3h ago",
+    body: "I'm really struggling with QM (Quantitative Methods). The statistics part is overwhelming and I feel like I'm falling behind. Any study tips, resources, or strategies from those who've been through it? Would really appreciate any advice! 🙏",
+    votes: 327
+  };
+
+  // ==================== MOCK COMMENTS WITH NESTED REPLIES ====================
+  let commentsData = [
+    {
+      id: 101,
+      author: "Thando M.",
+      authorBadge: "3rd Year Engineering • Tutor",
+      timeAgo: "2h ago",
+      body: "Practice past papers every day! Focus on understanding formulas rather than memorizing. The textbook exercises are key. Also, form a study group - that saved me last semester.",
+      votes: 45,
+      replies: [
+        { id: 1011, author: "Sipho M.", authorBadge: "OP", timeAgo: "1h ago", body: "Thanks Thando! Any specific past papers you'd recommend?", votes: 12 },
+        { id: 1012, author: "Thando M.", authorBadge: "Tutor", timeAgo: "45m ago", body: "Start with 2019-2023 papers. The exam structure is similar each year.", votes: 8 }
+      ]
+    },
+    {
+      id: 102,
+      author: "Lerato K.",
+      authorBadge: "4th Year • Peer Tutor",
+      timeAgo: "2h ago",
+      body: "YouTube is your best friend! Channels like 'StatQuest' and 'Khan Academy' break down tough concepts. Also, don't skip consultation hours - lecturers actually help.",
+      votes: 32,
+      replies: []
+    },
+    {
+      id: 103,
+      author: "Aisha B.",
+      authorBadge: "Graduate Assistant",
+      timeAgo: "1h ago",
+      body: "Create a formula sheet and update it weekly. Practice with a timer to simulate exam conditions. You've got this! 💪",
+      votes: 28,
+      replies: [
+        { id: 1031, author: "Anonymous", authorBadge: "Student", timeAgo: "30m ago", body: "The timer idea is brilliant! Going to try that tomorrow.", votes: 5 }
+      ]
+    }
+  ];
+
+  let postVotes = postData.votes;
+
+  // Similar posts
+  const similarPosts = [
+    { id: 2, title: "Best budget laptops for Computer Science students?", votes: 283 },
+    { id: 3, title: "Is internship worth it in first year?", votes: 33 },
+    { id: 4, title: "Past papers for Financial Accounting II", votes: 35 }
+  ];
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  // Render main post
+  function renderPost() {
+    const container = document.getElementById('postCard');
+    container.innerHTML = `
+      <div class="post-card">
+        <div class="post-header">
+          <h1 class="post-title">${escapeHtml(postData.title)}</h1>
+          <span class="category-badge">${escapeHtml(postData.category)}</span>
+        </div>
+        <div class="post-meta">
+          <div class="author-info">
+            <div class="author-avatar-small">${escapeHtml(postData.authorAvatar)}</div>
+            <span><strong>${escapeHtml(postData.author)}</strong> • ${escapeHtml(postData.authorBadge)}</span>
+          </div>
+          <span>🕒 ${postData.timeAgo}</span>
+        </div>
+        <div class="post-body">
+          ${escapeHtml(postData.body)}
+        </div>
+        <div class="vote-section">
+          <div class="vote-buttons">
+            <button class="vote-btn" id="upvotePost">▲</button>
+            <span class="vote-count" id="postVoteCount">${postVotes}</span>
+            <button class="vote-btn" id="downvotePost">▼</button>
+          </div>
+          <span class="btn-outline" id="sharePost" style="font-size:0.8rem;">🔗 Share</span>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('upvotePost')?.addEventListener('click', () => {
+      postVotes++;
+      document.getElementById('postVoteCount').innerText = postVotes;
+    });
+    document.getElementById('downvotePost')?.addEventListener('click', () => {
+      postVotes--;
+      document.getElementById('postVoteCount').innerText = postVotes;
+    });
+    document.getElementById('sharePost')?.addEventListener('click', () => {
+      alert('🔗 Link copied to clipboard (simulated)');
+    });
+  }
+
+  // Recursive function to render comment threads
+  function renderComments(comments, level = 0) {
+    if (!comments || comments.length === 0) return '';
+    
+    return comments.map(comment => `
+      <div class="comment-card" data-comment-id="${comment.id}" style="margin-left: ${level * 1.5}rem;">
+        <div class="comment-header">
+          <div class="comment-author">
+            <span class="comment-author-name">${escapeHtml(comment.author)}</span>
+            <span class="author-badge">${escapeHtml(comment.authorBadge)}</span>
+          </div>
+          <span class="comment-time">${comment.timeAgo}</span>
+        </div>
+        <div class="comment-body">${escapeHtml(comment.body)}</div>
+        <div class="comment-actions">
+          <button class="comment-vote-btn" data-id="${comment.id}">▲ <span class="comment-vote-count-${comment.id}">${comment.votes}</span></button>
+          <button class="reply-btn" data-id="${comment.id}">💬 Reply</button>
+        </div>
+        <div class="reply-form" id="replyForm-${comment.id}">
+          <textarea class="reply-input" placeholder="Write your reply..." rows="2"></textarea>
+          <button class="btn-outline submit-reply" data-id="${comment.id}" style="margin-top: 0.4rem;">Post Reply</button>
+        </div>
+        <div class="replies-container" id="replies-${comment.id}">
+          ${comment.replies && comment.replies.length > 0 ? renderComments(comment.replies, level + 1) : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function updateCommentCount() {
+    let total = 0;
+    function countReplies(comments) {
+      comments.forEach(c => {
+        total++;
+        if (c.replies) countReplies(c.replies);
+      });
+    }
+    countReplies(commentsData);
+    document.getElementById('commentCount').innerText = total;
+  }
+
+  function getSortedComments() {
+    const sortType = document.getElementById('commentSort').value;
+    const sorted = [...commentsData];
+    if (sortType === 'best') {
+      sorted.sort((a, b) => b.votes - a.votes);
+      sorted.forEach(c => {
+        if (c.replies) c.replies.sort((a, b) => b.votes - a.votes);
+      });
+    } else if (sortType === 'newest') {
+      // mock: just keep original order for demo, but reverse
+      sorted.reverse();
+    }
+    return sorted;
+  }
+
+  function renderFullComments() {
+    const sortedComments = getSortedComments();
+    const container = document.getElementById('commentsContainer');
+    if (!sortedComments.length) {
+      container.innerHTML = '<div class="empty-comments">No comments yet. Be the first to reply!</div>';
+      updateCommentCount();
+      return;
+    }
+    container.innerHTML = renderComments(sortedComments, 0);
+    updateCommentCount();
+
+    // Attach upvote handlers for comments
+    document.querySelectorAll('.comment-vote-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const commentId = parseInt(btn.getAttribute('data-id'));
+        // Find and increment vote
+        function findAndVote(comments) {
+          for (let c of comments) {
+            if (c.id === commentId) {
+              c.votes++;
+              const span = document.querySelector(`.comment-vote-count-${commentId}`);
+              if (span) span.innerText = c.votes;
+              return true;
+            }
+            if (c.replies && findAndVote(c.replies)) return true;
+          }
+          return false;
+        }
+        findAndVote(commentsData);
+      });
+    });
+
+    // Reply toggle handlers
+    document.querySelectorAll('.reply-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const commentId = parseInt(btn.getAttribute('data-id'));
+        const form = document.getElementById(`replyForm-${commentId}`);
+        if (form) form.classList.toggle('active');
+      });
+    });
+
+    // Submit reply handlers
+    document.querySelectorAll('.submit-reply').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const parentId = parseInt(btn.getAttribute('data-id'));
+        const formDiv = document.getElementById(`replyForm-${parentId}`);
+        const textarea = formDiv.querySelector('.reply-input');
+        const replyText = textarea.value.trim();
+        if (!replyText) return;
+
+        const newReply = {
+          id: Date.now(),
+          author: "You (Verified Student)",
+          authorBadge: "Current User",
+          timeAgo: "Just now",
+          body: replyText,
+          votes: 0,
+          replies: []
+        };
+
+        function addReplyToComment(comments) {
+          for (let c of comments) {
+            if (c.id === parentId) {
+              if (!c.replies) c.replies = [];
+              c.replies.push(newReply);
+              return true;
+            }
+            if (c.replies && addReplyToComment(c.replies)) return true;
+          }
+          return false;
+        }
+        addReplyToComment(commentsData);
+        renderFullComments();
+      });
+    });
+  }
+
+  // Add new top-level comment
+  function addNewComment() {
+    const input = document.getElementById('newCommentInput');
+    const text = input.value.trim();
+    if (!text) {
+      alert('Please write a comment before posting.');
+      return;
+    }
+    const newComment = {
+      id: Date.now(),
+      author: "You (Verified Student)",
+      authorBadge: "Current User",
+      timeAgo: "Just now",
+      body: text,
+      votes: 0,
+      replies: []
+    };
+    commentsData.push(newComment);
+    renderFullComments();
+    input.value = '';
+    // Scroll to new comment
+    setTimeout(() => {
+      document.querySelector('.comments-header').scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+
+  // Render similar posts sidebar
+  function renderSimilarPosts() {
+    const container = document.getElementById('similarPosts');
+    container.innerHTML = similarPosts.map(post => `
+      <div class="similar-post" data-id="${post.id}">
+        <div class="similar-title">📄 ${escapeHtml(post.title)}</div>
+        <div style="font-size:0.7rem; color:#6c7e8c;">▲ ${post.votes} upvotes</div>
+      </div>
+    `).join('');
+    document.querySelectorAll('.similar-post').forEach(el => {
+      el.addEventListener('click', () => {
+        alert('🔁 Similar discussion (simulated navigation)');
+      });
+    });
+  }
+
+  // Render author sidebar info
+  function renderAuthorSidebar() {
+    const container = document.getElementById('authorSidebarInfo');
+    container.innerHTML = `
+      <div style="text-align: center;">
+        <div class="author-avatar-small" style="width: 60px; height: 60px; font-size: 1.5rem; margin: 0 auto 0.5rem;">${postData.authorAvatar}</div>
+        <strong>${escapeHtml(postData.author)}</strong>
+        <p style="font-size: 0.8rem; color: #6c7e8c;">${escapeHtml(postData.authorBadge)}</p>
+        <button class="btn-outline" style="margin-top: 0.5rem; width:100%;">✉️ Message</button>
+      </div>
+    `;
+  }
+
+  // Event listeners
+  document.getElementById('backToForum')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('← Returning to homepage (simulated navigation)');
+  });
+  document.getElementById('submitCommentBtn')?.addEventListener('click', addNewComment);
+  document.getElementById('commentSort')?.addEventListener('change', () => renderFullComments());
+
+  // Initialize
+  renderPost();
+  renderFullComments();
+  renderSimilarPosts();
+  renderAuthorSidebar();
+</script>
+</body>
+</html>
+

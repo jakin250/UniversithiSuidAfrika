@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Tracking | Student Secondhand Bookstore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f7f9fc;
+            color: #1a2a3a;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: #0f3b2c;
+            letter-spacing: -0.3px;
+        }
+
+        .logo p {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+        }
+
+        .trust-badges {
+            display: flex;
+            gap: 24px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #2c5f4a;
+        }
+
+        .badge::before {
+            content: "✓";
+            background: #0f3b2c;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #1a2a3a;
+            font-weight: 500;
+        }
+
+        /* Tracking Layout */
+        .tracking-container {
+            margin: 40px 0;
+        }
+
+        /* Order Header */
+        .order-header {
+            background: white;
+            border-radius: 20px;
+            padding: 24px 32px;
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .order-id h2 {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .order-id p {
+            color: #5a6e7c;
+            font-size: 0.85rem;
+        }
+
+        .order-status {
+            text-align: right;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-shipped {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-delivered {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-completed {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        /* Progress Timeline */
+        .timeline-section {
+            background: white;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .timeline-title {
+            font-size: 1.2rem;
+            margin-bottom: 24px;
+        }
+
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 35px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .timeline-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            min-width: 100px;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 3px solid #e2e8f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 1.3rem;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .timeline-step.completed .step-icon {
+            background: #0f3b2c;
+            border-color: #0f3b2c;
+            color: white;
+        }
+
+        .timeline-step.active .step-icon {
+            border-color: #0f3b2c;
+            background: #e9f5ef;
+            color: #0f3b2c;
+            border-width: 3px;
+        }
+
+        .step-label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+
+        .step-date {
+            font-size: 0.7rem;
+            color: #5a6e7c;
+        }
+
+        /* Order Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .info-card h3 {
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eef2f5;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #5a6e7c;
+        }
+
+        .info-value {
+            color: #1a2a3a;
+        }
+
+        .book-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .book-cover {
+            width: 60px;
+            height: 80px;
+            background: #eef2f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .book-details h4 {
+            margin-bottom: 4px;
+        }
+
+        .book-details p {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+        }
+
+        /* Action Buttons */
+        .action-section {
+            background: #e9f5ef;
+            border-radius: 20px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .action-section h3 {
+            margin-bottom: 12px;
+        }
+
+        .action-section p {
+            margin-bottom: 20px;
+            color: #5a6e7c;
+        }
+
+        .btn-confirm {
+            background: #0f3b2c;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-confirm:hover {
+            background: #1e5a45;
+        }
+
+        .btn-dispute {
+            background: white;
+            border: 2px solid #dc2626;
+            color: #dc2626;
+            padding: 14px 32px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-dispute:hover {
+            background: #fee2e2;
+        }
+
+        .btn-chat {
+            background: white;
+            border: 2px solid #0f3b2c;
+            color: #0f3b2c;
+            padding: 14px 32px;
+            border-radius: 40px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 0 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-chat:hover {
+            background: #e9f5ef;
+        }
+
+        /* Tracking Info */
+        .tracking-info {
+            background: #f0f4f8;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: #5a6e7c;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+            .timeline {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .timeline::before {
+                display: none;
+            }
+            .order-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .order-status {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <h1>📚 STUDENT SECONDHAND BOOKSTORE</h1>
+                <p>Buy, sell and exchange textbooks with students on your campus.</p>
+            </div>
+            <div class="trust-badges">
+                <span class="badge">Student verified</span>
+                <span class="badge">Safe Payments</span>
+                <span class="badge">Better Prices</span>
+            </div>
+            <nav>
+                <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Browse</a>
+                <a href="my-listings-student-secondhand-bookstore.html">My Listings</a>
+                <a href="sell-your-books-student-secondhand-bookstore.html">Sell</a>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="tracking-container" id="trackingContainer">
+        <!-- Dynamic content loaded via JS -->
+    </div>
+</div>
+
+<footer>
+    <p>Student Secondhand Bookstore — Buy wisely, sell easily, exchange fairly.</p>
+</footer>
+
+<script src="../public/api-client.js"></script>
+<script>
+    function getOrderFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('id');
+    }
+    
+    let order = null;
+    
+    // Format date
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-ZA', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+    
+    // Get status badge class
+    function getStatusClass(status) {
+        const statusMap = {
+            'payment_pending': 'status-pending',
+            'payment_held': 'status-pending',
+            'seller_notified': 'status-pending',
+            'shipped': 'status-shipped',
+            'delivered': 'status-delivered',
+            'completed': 'status-completed'
+        };
+        return statusMap[status] || 'status-pending';
+    }
+    
+    // Get status display text
+    function getStatusText(status) {
+        const statusMap = {
+            'payment_pending': 'Awaiting Payment',
+            'payment_held': 'Payment Held in Escrow',
+            'seller_notified': 'Seller Notified',
+            'shipped': 'Shipped / Ready for Pickup',
+            'delivered': 'Delivered - Awaiting Confirmation',
+            'completed': 'Completed - Payment Released'
+        };
+        return statusMap[status] || status;
+    }
+    
+    // Determine current timeline step
+    function getCurrentStep(orderStatus) {
+        const steps = ['order_placed', 'payment_held', 'shipped', 'delivered', 'completed'];
+        const statusMap = {
+            'payment_pending': 'order_placed',
+            'payment_held': 'payment_held',
+            'seller_notified': 'payment_held',
+            'shipped': 'shipped',
+            'delivered': 'delivered',
+            'completed': 'completed'
+        };
+        return statusMap[orderStatus] || 'order_placed';
+    }
+    
+    // Render timeline
+    function renderTimeline() {
+        const steps = [
+            { key: 'order_placed', icon: '🛒', label: 'Order Placed', desc: 'Payment held in escrow' },
+            { key: 'payment_held', icon: '🔒', label: 'Payment Secured', desc: 'Funds in escrow' },
+            { key: 'shipped', icon: '📦', label: 'Shipped', desc: 'On its way' },
+            { key: 'delivered', icon: '✅', label: 'Delivered', desc: 'Confirm receipt' },
+            { key: 'completed', icon: '💰', label: 'Completed', desc: 'Payment released' }
+        ];
+        
+        const currentStep = getCurrentStep(order.status);
+        const trackingEvents = order.trackingEvents || [];
+        
+        return `
+            <div class="timeline-section">
+                <h3 class="timeline-title">📅 Order Timeline</h3>
+                <div class="timeline">
+                    ${steps.map((step, index) => {
+                        const isCompleted = trackingEvents.some(e => e.status === step.key) || 
+                                           (steps.findIndex(s => s.key === currentStep) >= index);
+                        const isActive = step.key === currentStep;
+                        const event = trackingEvents.find(e => e.status === step.key);
+                        
+                        return `
+                            <div class="timeline-step ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}">
+                                <div class="step-icon">${step.icon}</div>
+                                <div class="step-label">${step.label}</div>
+                                <div class="step-desc" style="font-size:0.7rem; color:#5a6e7c;">${step.desc}</div>
+                                ${event ? `<div class="step-date">${formatDate(event.date)}</div>` : ''}
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        `;
+    }
+    
+    // Render action buttons based on status
+    function renderActions() {
+        if (order.status === 'shipped' || order.status === 'delivered') {
+            return `
+                <div class="action-section">
+                    <h3>📦 Have you received the book?</h3>
+                    <p>Confirm delivery to release payment from escrow to the seller.</p>
+                    <button class="btn-confirm" onclick="confirmDelivery()">✅ Confirm Delivery & Release Payment</button>
+                    <button class="btn-dispute" onclick="openDispute()">⚠️ Report an Issue</button>
+                    <button class="btn-chat" onclick="chatWithSeller()">💬 Message Seller</button>
+                </div>
+            `;
+        } else if (order.status === 'completed') {
+            return `
+                <div class="action-section" style="background:#d4edda;">
+                    <h3>🎉 Transaction Complete!</h3>
+                    <p>Payment has been released to the seller. Thank you for using Student Secondhand Bookstore!</p>
+                    <button class="btn-chat" onclick="rateSeller()">⭐ Rate Your Experience</button>
+                    <button class="btn-chat" onclick="viewReceipt()">📄 View Receipt</button>
+                </div>
+            `;
+        } else {
+            return `
+                <div class="action-section">
+                    <h3>⏳ Waiting for Seller</h3>
+                    <p>The seller has been notified and will prepare your book. You can message them for updates.</p>
+                    <button class="btn-chat" onclick="chatWithSeller()">💬 Message Seller</button>
+                    <button class="btn-dispute" onclick="openDispute()">⚠️ Need Help?</button>
+                </div>
+            `;
+        }
+    }
+    
+    // Render tracking info
+    function renderTrackingInfo() {
+        if (order.trackingId) {
+            return `
+                <div class="tracking-info">
+                    <strong>🔢 Tracking ID:</strong> ${order.trackingId}<br>
+                    <strong>📮 Delivery Method:</strong> ${order.buyer.address?.includes('pickup') ? 'Campus Pickup' : 'Seller Delivery'}<br>
+                    <strong>📅 Estimated Timeline:</strong> 2-5 business days
+                </div>
+            `;
+        }
+        return '';
+    }
+    
+    // Render full page
+    function renderPage() {
+        if (!order) {
+            document.getElementById('trackingContainer').innerHTML = '<p style="padding:2rem; text-align:center;">Order not found.</p>';
+            return;
+        }
+        const container = document.getElementById('trackingContainer');
+        
+        container.innerHTML = `
+            <div class="order-header">
+                <div class="order-id">
+                    <h2>Order #${order.orderId}</h2>
+                    <p>Placed on ${formatDate(order.orderDate)}</p>
+                </div>
+                <div class="order-status">
+                    <span class="status-badge ${getStatusClass(order.status)}">${getStatusText(order.status)}</span>
+                    <p style="font-size:0.8rem; margin-top:8px;">🔒 ${order.escrowStatus === 'payment_held' ? 'Funds held in escrow' : 'Payment completed'}</p>
+                </div>
+            </div>
+            
+            ${renderTimeline()}
+            
+            <div class="details-grid">
+                <div class="info-card">
+                    <h3>📖 Book Details</h3>
+                    <div class="book-item">
+                        <div class="book-cover">${order.book.cover}</div>
+                        <div class="book-details">
+                            <h4>${order.book.title}</h4>
+                            <p>${order.book.author} • ${order.book.edition}</p>
+                            <p>📌 Condition: ${order.book.condition}</p>
+                            <p><strong>Price: R${order.book.price}</strong></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3>👤 Seller Information</h3>
+                    <div class="info-row">
+                        <span class="info-label">Name:</span>
+                        <span class="info-value">${order.book.seller}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">University:</span>
+                        <span class="info-value">${order.book.university}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value">${order.book.sellerEmail || 'seller@student.ac.za'}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Phone:</span>
+                        <span class="info-value">${order.book.sellerPhone || '+27 71 234 5678'}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="details-grid">
+                <div class="info-card">
+                    <h3>💰 Payment Summary</h3>
+                    <div class="info-row">
+                        <span class="info-label">Book Price:</span>
+                        <span class="info-value">R${order.book.price}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Platform Fee:</span>
+                        <span class="info-value">R${order.platformFee}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Total Paid:</span>
+                        <span class="info-value"><strong>R${order.amount}</strong></span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Payment Method:</span>
+                        <span class="info-value">${order.paymentMethod === 'card' ? '💳 Credit Card' : order.paymentMethod === 'paypal' ? '📱 PayPal' : '💵 Cash'}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Escrow Status:</span>
+                        <span class="info-value">🔒 ${order.escrowStatus === 'payment_held' ? 'Funds Held Securely' : 'Released to Seller'}</span>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h3>🚚 Delivery Information</h3>
+                    <div class="info-row">
+                        <span class="info-label">Buyer Name:</span>
+                        <span class="info-value">${order.buyer.name}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Email:</span>
+                        <span class="info-value">${order.buyer.email}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Phone:</span>
+                        <span class="info-value">${order.buyer.phone}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Address/Pickup:</span>
+                        <span class="info-value">${order.buyer.address || 'Campus pickup'}</span>
+                    </div>
+                    ${order.buyer.notes ? `<div class="info-row">
+                        <span class="info-label">Notes:</span>
+                        <span class="info-value">${order.buyer.notes}</span>
+                    </div>` : ''}
+                </div>
+            </div>
+            
+            ${renderTrackingInfo()}
+            
+            ${renderActions()}
+        `;
+    }
+    
+    // Action functions
+    window.confirmDelivery = () => {
+        if (confirm('Have you received the book and confirmed it\'s in the described condition?\n\n⚠️ Once confirmed, payment will be released to the seller and cannot be reversed.')) {
+            order.status = 'completed';
+            order.escrowStatus = 'released';
+            if (!order.trackingEvents) order.trackingEvents = [];
+            order.trackingEvents.push({
+                status: 'completed',
+                date: new Date().toISOString(),
+                description: 'Buyer confirmed delivery, payment released to seller'
+            });
+            
+            alert('✅ Thank you for confirming!\n\nPayment has been released to the seller.\n\nYou will now be redirected to rate your experience.');
+            window.location.href = `rate-review-student-secondhand-bookstore.html?order=${order.orderId}`;
+        }
+    };
+    
+    window.openDispute = () => {
+        alert('⚠️ Dispute Resolution\n\nIf you have an issue with your order:\n1. First message the seller to resolve\n2. If unresolved, our team will review\n3. Escrow protection ensures your money is safe\n\nOur support team has been notified and will contact you within 24 hours.');
+    };
+    
+    window.chatWithSeller = () => {
+        alert(`💬 Opening chat with ${order.book.seller}\n\n(Next page: chat-student-secondhand-bookstore.html?order=${order.orderId}&seller=${order.book.seller})`);
+        // window.location.href = `chat-student-secondhand-bookstore.html?order=${order.orderId}&seller=${order.book.seller}`;
+    };
+    
+    window.rateSeller = () => {
+        window.location.href = `rate-review-student-secondhand-bookstore.html?order=${order.orderId}`;
+    };
+    
+    window.viewReceipt = () => {
+        alert(`📄 Order Receipt\n\nOrder #: ${order.orderId}\nDate: ${formatDate(order.orderDate)}\nBook: ${order.book.title}\nTotal: R${order.amount}\n\nA receipt has been sent to ${order.buyer.email}`);
+    };
+    
+    async function loadOrder() {
+        try {
+            const orderId = getOrderFromURL();
+            const orders = await apiClient.get('../api/bookstore/orders');
+            order = orders.find(item => String(item.id) === String(orderId) || String(item.orderId) === String(orderId)) || orders[0] || null;
+        } catch (error) {
+            console.error(error);
+        }
+        renderPage();
+    }
+
+    // Initialize
+    loadOrder();
+</script>
+</body>
+</html>
+
+

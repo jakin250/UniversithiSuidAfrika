@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Create Listing | Student Marketplace</title>
+  <!-- Tailwind + Fonts + Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f3f4f6; }
+    .form-step {
+      transition: all 0.2s ease;
+    }
+    .image-upload-area {
+      border: 2px dashed #cbd5e1;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .image-upload-area:hover {
+      border-color: #4f46e5;
+      background: #eef2ff;
+    }
+    .condition-badge {
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .condition-badge.selected {
+      background: #4f46e5;
+      color: white;
+      border-color: #4f46e5;
+    }
+    .preview-image {
+      position: relative;
+      display: inline-block;
+    }
+    .remove-image {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="window.location.href='student-marketplace-buy-sell-trade-on-campus.html'">
+          <i class="fas fa-graduation-cap text-indigo-600 text-2xl"></i>
+          <span class="font-bold text-xl text-gray-800">Student<span class="text-indigo-600">Marketplace</span></span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+          <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+          <a href="messages-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium"><i class="far fa-comment-dots mr-1"></i>Messages</a>
+          <div class="relative group">
+            <button class="flex items-center space-x-1 text-gray-700 hover:text-indigo-600">
+              <i class="far fa-user-circle text-xl"></i>
+              <span>Account</span>
+              <i class="fas fa-chevron-down text-xs"></i>
+            </button>
+            <div class="absolute right-0 w-48 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 hidden group-hover:block py-2 z-20">
+              <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+              <a href="saved-items-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Saved items</a>
+              <hr class="my-1">
+              <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+            </div>
+          </div>
+        </div>
+        <button id="mobileMenuBtn" class="md:hidden text-gray-600">
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden bg-white border-t px-4 py-2">
+      <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+      <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+      <a href="messages-student-marketplace.html" class="block py-2 text-gray-700">Messages</a>
+      <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+      <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+    </div>
+  </nav>
+
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Create a new listing</h1>
+      <p class="text-gray-500 mt-1">Sell textbooks, electronics, furniture, and more to students on your campus</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-md border border-gray-200 overflow-hidden">
+      <form id="listingForm" class="p-6 md:p-8 space-y-8">
+        
+        <!-- STEP 1: Basic Info -->
+        <div>
+          <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-info-circle text-indigo-500"></i> Basic information</h2>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Listing title *</label>
+              <input type="text" id="title" required placeholder="e.g., Calculus: Early Transcendentals 9th Edition" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                <select id="category" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-indigo-500">
+                  <option value="">Select category</option>
+                  <option value="Textbooks">📚 Textbooks</option>
+                  <option value="Electronics">💻 Electronics</option>
+                  <option value="Furniture">🪑 Furniture</option>
+                  <option value="Books">📖 Books</option>
+                  <option value="Clothing">👕 Clothing</option>
+                  <option value="Bikes">🚲 Bikes</option>
+                  <option value="Other">📦 Other</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Price (USD) *</label>
+                <input type="number" id="price" placeholder="0.00" step="0.01" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-indigo-500">
+              </div>
+            </div>
+
+            <!-- Conditional fields: Course Code & ISBN (for Textbooks/Books) -->
+            <div id="academicFields" class="grid grid-cols-1 md:grid-cols-2 gap-4 hidden">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Course code</label>
+                <input type="text" id="courseCode" placeholder="e.g., MATH 101, CS50" class="w-full border border-gray-300 rounded-xl px-4 py-3">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">ISBN</label>
+                <input type="text" id="isbn" placeholder="978-1234567890" class="w-full border border-gray-300 rounded-xl px-4 py-3">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+              <textarea id="description" rows="4" placeholder="Describe your item: condition details, included accessories, reason for selling, pickup instructions..." class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-indigo-500"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: Condition Checklist (with photo requirement) -->
+        <div>
+          <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-clipboard-list text-indigo-500"></i> Condition & photos</h2>
+          
+          <!-- Condition badges -->
+          <label class="block text-sm font-medium text-gray-700 mb-2">Condition *</label>
+          <div class="flex flex-wrap gap-3 mb-5">
+            <div class="condition-badge px-4 py-2 border rounded-full text-sm cursor-pointer" data-condition="New">🆕 New</div>
+            <div class="condition-badge px-4 py-2 border rounded-full text-sm cursor-pointer" data-condition="Like New">✨ Like New</div>
+            <div class="condition-badge px-4 py-2 border rounded-full text-sm cursor-pointer" data-condition="Good">👍 Good</div>
+            <div class="condition-badge px-4 py-2 border rounded-full text-sm cursor-pointer" data-condition="Acceptable">⚠️ Acceptable</div>
+          </div>
+          <input type="hidden" id="condition" value="">
+
+          <!-- Photo upload with requirement notice -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Photos * <span class="text-red-500">(at least 1 photo required)</span></label>
+            <div id="imageUploadArea" class="image-upload-area rounded-xl p-6 text-center">
+              <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+              <p class="text-sm text-gray-500">Click or drag to upload photos</p>
+              <p class="text-xs text-gray-400 mt-1">JPG, PNG up to 5MB each</p>
+              <input type="file" id="imageInput" accept="image/*" multiple class="hidden">
+            </div>
+            <div id="imagePreviewContainer" class="flex flex-wrap gap-3 mt-4"></div>
+            <p class="text-xs text-amber-600 mt-2" id="photoWarning hidden"><i class="fas fa-exclamation-triangle"></i> Please upload at least one photo of the item</p>
+          </div>
+
+          <!-- Condition checklist details -->
+          <div class="mt-5 bg-gray-50 p-4 rounded-xl">
+            <p class="text-sm font-medium text-gray-700 mb-2">📋 Condition checklist (honor system + photo proof)</p>
+            <ul class="text-xs text-gray-600 space-y-1 list-disc list-inside">
+              <li>Textbooks: No missing pages, no water damage, highlight amount?</li>
+              <li>Electronics: Working condition, charger included, screen scratches?</li>
+              <li>Furniture: Structural integrity, stains, scratches visible in photos.</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- STEP 3: Trading & Pickup -->
+        <div>
+          <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2"><i class="fas fa-exchange-alt text-indigo-500"></i> Trade & delivery</h2>
+          <div class="space-y-4">
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" id="tradeOption" class="w-5 h-5 text-indigo-600">
+              <span class="text-gray-700">✅ Accept trade offers (exchange items instead of cash)</span>
+            </label>
+            <label class="flex items-center gap-3 cursor-pointer">
+              <input type="checkbox" id="campusPickupOnly" checked class="w-5 h-5 text-indigo-600">
+              <span class="text-gray-700">📍 Campus pickup only (recommended for safety)</span>
+            </label>
+            <div id="pickupLocationDiv">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Pickup location details</label>
+              <input type="text" id="pickupLocation" placeholder="e.g., Student Union: Table area, Library entrance" class="w-full border border-gray-300 rounded-xl px-4 py-3">
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit & Preview Buttons -->
+        <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t">
+          <button type="button" id="previewBtn" class="flex-1 border border-indigo-600 text-indigo-600 hover:bg-indigo-50 font-semibold py-3 rounded-xl transition"><i class="fas fa-eye"></i> Preview listing</button>
+          <button type="submit" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition shadow-md"><i class="fas fa-rocket"></i> Publish listing</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Preview Modal -->
+    <div id="previewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+          <h3 class="font-bold text-lg">Listing preview</h3>
+          <button id="closePreviewBtn" class="text-gray-500"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <div class="p-5" id="previewContent"></div>
+        <div class="p-4 border-t bg-gray-50 flex justify-end">
+          <button id="closePreviewFooterBtn" class="px-5 py-2 bg-gray-200 rounded-lg">Close</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t bg-white mt-12 py-6 text-center text-gray-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4">Student Marketplace — Honest listings build trust. Include clear photos and accurate condition.</div>
+  </footer>
+
+  <script src="../public/api-client.js"></script>
+  <script>
+    // Mobile menu
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if(mobileBtn) mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+    // Show/hide academic fields based on category
+    const categorySelect = document.getElementById('category');
+    const academicFields = document.getElementById('academicFields');
+    categorySelect.addEventListener('change', () => {
+      const val = categorySelect.value;
+      if(val === 'Textbooks' || val === 'Books') {
+        academicFields.classList.remove('hidden');
+      } else {
+        academicFields.classList.add('hidden');
+      }
+    });
+
+    // Condition selection
+    const conditionBadges = document.querySelectorAll('.condition-badge');
+    const conditionHidden = document.getElementById('condition');
+    conditionBadges.forEach(badge => {
+      badge.addEventListener('click', () => {
+        conditionBadges.forEach(b => b.classList.remove('selected', 'bg-indigo-600', 'text-white'));
+        badge.classList.add('selected', 'bg-indigo-600', 'text-white');
+        conditionHidden.value = badge.getAttribute('data-condition');
+      });
+    });
+
+    // Image upload handling
+    const imageInput = document.getElementById('imageInput');
+    const uploadArea = document.getElementById('imageUploadArea');
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    let uploadedFiles = [];
+
+    uploadArea.addEventListener('click', () => imageInput.click());
+    uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.style.borderColor = '#4f46e5'; });
+    uploadArea.addEventListener('dragleave', () => uploadArea.style.borderColor = '#cbd5e1');
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const files = Array.from(e.dataTransfer.files);
+      handleFiles(files);
+    });
+    imageInput.addEventListener('change', (e) => handleFiles(Array.from(e.target.files)));
+
+    function handleFiles(files) {
+      files.forEach(file => {
+        if(file.type.startsWith('image/')) {
+          uploadedFiles.push(file);
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'preview-image relative';
+            previewDiv.innerHTML = `
+              <img src="${event.target.result}" class="w-20 h-20 object-cover rounded-lg border">
+              <div class="remove-image" data-filename="${file.name}"><i class="fas fa-times-circle text-red-500 text-sm"></i></div>
+            `;
+            previewContainer.appendChild(previewDiv);
+            previewDiv.querySelector('.remove-image').addEventListener('click', () => {
+              uploadedFiles = uploadedFiles.filter(f => f.name !== file.name);
+              previewDiv.remove();
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // Preview modal logic
+    const previewModal = document.getElementById('previewModal');
+    const previewBtn = document.getElementById('previewBtn');
+    const closePreview = () => previewModal.classList.add('hidden');
+    document.getElementById('closePreviewBtn')?.addEventListener('click', closePreview);
+    document.getElementById('closePreviewFooterBtn')?.addEventListener('click', closePreview);
+    previewModal?.addEventListener('click', (e) => { if(e.target === previewModal) closePreview(); });
+
+    previewBtn?.addEventListener('click', () => {
+      const title = document.getElementById('title').value || 'Untitled';
+      const category = categorySelect.value || 'Uncategorized';
+      const price = document.getElementById('price').value || '0';
+      const description = document.getElementById('description').value || 'No description provided.';
+      const condition = conditionHidden.value || 'Not specified';
+      const tradeOption = document.getElementById('tradeOption').checked;
+      const campusPickup = document.getElementById('campusPickupOnly').checked;
+      const courseCode = document.getElementById('courseCode').value;
+      const isbn = document.getElementById('isbn').value;
+      const photoCount = uploadedFiles.length;
+
+      const previewHTML = `
+        <div class="space-y-3">
+          <div class="bg-gray-100 h-40 rounded-lg flex items-center justify-center"><i class="fas fa-image text-3xl text-gray-400"></i><span class="ml-2 text-sm">${photoCount} photo(s)</span></div>
+          <h2 class="text-xl font-bold">${title}</h2>
+          <div class="flex gap-2 flex-wrap"><span class="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs">${category}</span><span class="bg-gray-100 px-2 py-1 rounded-full text-xs">${condition}</span></div>
+          <p class="text-2xl font-bold text-indigo-600">$${price}</p>
+          <p class="text-gray-600 text-sm">${description.substring(0, 150)}${description.length > 150 ? '...' : ''}</p>
+          ${courseCode ? `<p class="text-sm"><strong>Course code:</strong> ${courseCode}</p>` : ''}
+          ${isbn ? `<p class="text-sm"><strong>ISBN:</strong> ${isbn}</p>` : ''}
+          <p class="text-sm"><strong>🔄 Trade:</strong> ${tradeOption ? 'Yes, accept trade offers' : 'No trades'}</p>
+          <p class="text-sm"><strong>📍 Pickup:</strong> ${campusPickup ? 'Campus pickup only' : 'Delivery available'}</p>
+          ${photoCount === 0 ? '<p class="text-red-500 text-xs">⚠️ Missing photos — buyers expect at least one image.</p>' : ''}
+        </div>
+      `;
+      document.getElementById('previewContent').innerHTML = previewHTML;
+      previewModal.classList.remove('hidden');
+    });
+
+    // Form submission
+    const form = document.getElementById('listingForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = document.getElementById('title').value;
+      const category = categorySelect.value;
+      const price = document.getElementById('price').value;
+      const description = document.getElementById('description').value;
+      const condition = conditionHidden.value;
+      const photoCount = uploadedFiles.length;
+      
+      if(!title || !category || !price || !description || !condition) {
+        alert('Please fill in all required fields (title, category, price, description, condition).');
+        return;
+      }
+      if(photoCount === 0) {
+        alert('Please upload at least one photo of your item. Photos build trust!');
+        return;
+      }
+      
+      try {
+        await apiClient.post('../api/marketplace/listings', {
+          title,
+          category,
+          price: Number(price),
+          condition,
+          courseCode: document.getElementById('courseCode').value,
+          isbn: document.getElementById('isbn').value,
+          description,
+          pickupLocation: document.getElementById('pickupLocation').value,
+          seller: 'You',
+          images: uploadedFiles
+        });
+        alert(`✅ Listing "${title}" published successfully!\n\nIt will appear in browse listings. Other students can now view, chat, and purchase via escrow.`);
+        form.reset();
+        previewContainer.innerHTML = '';
+        uploadedFiles = [];
+        conditionHidden.value = '';
+        conditionBadges.forEach(b => b.classList.remove('selected', 'bg-indigo-600', 'text-white'));
+      } catch (error) {
+        console.error(error);
+        alert('Could not publish listing. Please try again.');
+      }
+    });
+  </script>
+</body>
+</html>
+

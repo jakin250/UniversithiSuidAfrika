@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Secure Checkout | Student Marketplace</title>
+  <!-- Tailwind + Fonts + Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f3f4f6; }
+    .payment-card {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .payment-card.selected {
+      border-color: #4f46e5;
+      background-color: #eef2ff;
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.1);
+    }
+    .escrow-badge {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+    input:focus, select:focus {
+      ring: 2px solid #4f46e5;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="window.location.href='student-marketplace-buy-sell-trade-on-campus.html'">
+          <i class="fas fa-graduation-cap text-indigo-600 text-2xl"></i>
+          <span class="font-bold text-xl text-gray-800">Student<span class="text-indigo-600">Marketplace</span></span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+          <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+          <a href="messages-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium"><i class="far fa-comment-dots mr-1"></i>Messages</a>
+          <div class="relative group">
+            <button class="flex items-center space-x-1 text-gray-700 hover:text-indigo-600">
+              <i class="far fa-user-circle text-xl"></i>
+              <span>Account</span>
+              <i class="fas fa-chevron-down text-xs"></i>
+            </button>
+            <div class="absolute right-0 w-48 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 hidden group-hover:block py-2 z-20">
+              <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+              <a href="saved-items-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Saved items</a>
+              <hr class="my-1">
+              <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+            </div>
+          </div>
+        </div>
+        <button id="mobileMenuBtn" class="md:hidden text-gray-600">
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden bg-white border-t px-4 py-2">
+      <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+      <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+      <a href="messages-student-marketplace.html" class="block py-2 text-gray-700">Messages</a>
+      <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+      <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <!-- Checkout Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Secure Checkout</h1>
+      <p class="text-gray-500 text-sm mt-1"><i class="fas fa-lock text-green-600 mr-1"></i> Escrow protected payment — you only confirm after receiving the item</p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+      
+      <!-- LEFT COLUMN: Billing & Pickup Info -->
+      <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Campus Pickup / Delivery Section -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <h2 class="font-bold text-lg flex items-center gap-2 mb-4"><i class="fas fa-map-marker-alt text-indigo-500"></i> Pickup & Delivery</h2>
+          <div class="space-y-3">
+            <label class="flex items-start gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition" id="pickupOption">
+              <input type="radio" name="deliveryMethod" value="campus" checked class="mt-1 text-indigo-600">
+              <div>
+                <span class="font-medium">📦 Campus pickup (Student Union)</span>
+                <p class="text-xs text-gray-500">Meet at designated pickup zone — free, no shipping cost</p>
+              </div>
+            </label>
+            <label class="flex items-start gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition" id="deliveryOption">
+              <input type="radio" name="deliveryMethod" value="delivery" class="mt-1 text-indigo-600">
+              <div>
+                <span class="font-medium">🚚 Local delivery (within 3 miles)</span>
+                <p class="text-xs text-gray-500">$5.00 fee — delivered to your dorm or apartment</p>
+              </div>
+            </label>
+          </div>
+          <div id="deliveryAddressBox" class="hidden mt-4 p-3 bg-gray-50 rounded-lg">
+            <label class="text-sm font-medium">Delivery address</label>
+            <input type="text" placeholder="Street, Dorm name, Room #" class="w-full mt-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+
+        <!-- Payment Method (Flutterwave simulation) -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 md:p-6">
+          <h2 class="font-bold text-lg flex items-center gap-2 mb-4"><i class="fas fa-credit-card text-indigo-500"></i> Payment method</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-5">
+            <div class="payment-card border rounded-xl p-3 flex items-center gap-3" data-method="card">
+              <i class="fab fa-cc-visa text-2xl text-blue-800"></i>
+              <span class="font-medium text-sm">Credit / Debit card</span>
+            </div>
+            <div class="payment-card border rounded-xl p-3 flex items-center gap-3" data-method="bank">
+              <i class="fas fa-university text-2xl text-green-700"></i>
+              <span class="font-medium text-sm">Bank transfer</span>
+            </div>
+            <div class="payment-card border rounded-xl p-3 flex items-center gap-3" data-method="mobile">
+              <i class="fas fa-mobile-alt text-2xl text-purple-600"></i>
+              <span class="font-medium text-sm">Mobile money</span>
+            </div>
+          </div>
+          <div id="cardDetails" class="space-y-3">
+            <input type="text" placeholder="Card number" class="w-full border rounded-lg px-4 py-2 text-sm">
+            <div class="grid grid-cols-2 gap-3">
+              <input type="text" placeholder="MM/YY" class="border rounded-lg px-4 py-2 text-sm">
+              <input type="text" placeholder="CVC" class="border rounded-lg px-4 py-2 text-sm">
+            </div>
+            <input type="text" placeholder="Cardholder name" class="w-full border rounded-lg px-4 py-2 text-sm">
+          </div>
+          <p class="text-xs text-gray-400 mt-3 flex items-center gap-1"><i class="fas fa-shield-alt text-indigo-500"></i> Payments processed via Flutterwave (PCI compliant)</p>
+        </div>
+
+        <!-- Escrow Disclosure Block -->
+        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-4 flex items-start gap-3">
+          <i class="fas fa-hand-holding-usd text-indigo-600 text-xl mt-0.5"></i>
+          <div class="text-sm">
+            <p class="font-semibold text-indigo-900">🛡️ Escrow Protection — You're covered</p>
+            <p class="text-indigo-800">Your payment will be held securely until you <strong>confirm delivery</strong>. Seller only gets paid after you're satisfied.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Order Summary -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-5 md:p-6 sticky top-24">
+          <h2 class="font-bold text-lg border-b pb-3 mb-4">Order summary</h2>
+          
+          <!-- Item details -->
+          <div class="flex gap-3 mb-4 pb-3 border-b">
+            <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center"><i class="fas fa-book-open text-gray-500 text-2xl"></i></div>
+            <div class="flex-1">
+              <p class="font-semibold text-gray-800">Calculus: Early Transcendentals</p>
+              <p class="text-xs text-gray-500">Condition: Good • Seller: Alex J.</p>
+              <p class="text-indigo-600 font-bold mt-1">$45.00</p>
+            </div>
+          </div>
+          
+          <!-- Pricing breakdown -->
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between"><span>Subtotal</span><span>$45.00</span></div>
+            <div class="flex justify-between" id="deliveryFeeRow"><span>Delivery fee</span><span id="deliveryFeeAmount">$0.00</span></div>
+            <div class="flex justify-between font-bold pt-2 border-t mt-2 text-base"><span>Total</span><span id="totalAmount">$45.00</span></div>
+          </div>
+
+          <!-- Additional campus note -->
+          <div class="mt-4 text-xs text-green-700 bg-green-50 p-2 rounded-lg">
+            <i class="fas fa-university"></i> Campus pickup is free. Only verified students.
+          </div>
+
+          <!-- Confirm & Pay Button -->
+          <button id="confirmPayBtn" class="w-full mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition shadow-md flex items-center justify-center gap-2">
+            <i class="fas fa-lock"></i> Confirm & Pay — $<span id="payAmount">45.00</span>
+          </button>
+          <p class="text-xs text-center text-gray-400 mt-3">By clicking you agree to our <a href="authentication-student-marketplace.html" class="text-indigo-500">Terms</a> and escrow policy.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t bg-white mt-16 py-6 text-center text-gray-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4">Student Marketplace — Secure payments via Flutterwave | Escrow protection on every transaction</div>
+  </footer>
+
+  <script src="../public/api-client.js"></script>
+  <script>
+    // Mobile menu toggle
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (mobileBtn) {
+      mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    }
+
+    // Delivery / Pickup logic
+    const pickupRadio = document.querySelector('input[value="campus"]');
+    const deliveryRadio = document.querySelector('input[value="delivery"]');
+    const deliveryAddressBox = document.getElementById('deliveryAddressBox');
+    const deliveryFeeRow = document.getElementById('deliveryFeeRow');
+    const deliveryFeeSpan = document.getElementById('deliveryFeeAmount');
+    const totalSpan = document.getElementById('totalAmount');
+    const payBtnSpan = document.getElementById('payAmount');
+    let currentTotal = 45;
+
+    function updateTotal() {
+      let deliveryFee = 0;
+      if (deliveryRadio && deliveryRadio.checked) {
+        deliveryFee = 5;
+        if(deliveryAddressBox) deliveryAddressBox.classList.remove('hidden');
+      } else {
+        if(deliveryAddressBox) deliveryAddressBox.classList.add('hidden');
+      }
+      deliveryFeeSpan.innerText = `$${deliveryFee}.00`;
+      const newTotal = 45 + deliveryFee;
+      currentTotal = newTotal;
+      totalSpan.innerText = `$${newTotal}.00`;
+      payBtnSpan.innerText = `${newTotal}.00`;
+    }
+
+    if(pickupRadio) pickupRadio.addEventListener('change', updateTotal);
+    if(deliveryRadio) deliveryRadio.addEventListener('change', updateTotal);
+    updateTotal();
+
+    // Payment method selection UI
+    const paymentCards = document.querySelectorAll('.payment-card');
+    const cardDetailsDiv = document.getElementById('cardDetails');
+    
+    paymentCards.forEach(card => {
+      card.addEventListener('click', function() {
+        paymentCards.forEach(c => c.classList.remove('selected', 'border-indigo-500', 'bg-indigo-50'));
+        this.classList.add('selected', 'border-indigo-500', 'bg-indigo-50');
+        const method = this.getAttribute('data-method');
+        // For simplicity show card details always but we can adapt
+        if (method === 'bank') {
+          cardDetailsDiv.innerHTML = `<div class="p-3 bg-gray-50 rounded text-sm"><i class="fas fa-university"></i> You'll be redirected to your bank's secure portal after clicking pay.</div>`;
+        } else if (method === 'mobile') {
+          cardDetailsDiv.innerHTML = `<div class="p-3 bg-gray-50 rounded text-sm"><i class="fas fa-mobile-alt"></i> Enter mobile number: <input type="tel" placeholder="+1234567890" class="border rounded w-full mt-2 p-2"></div>`;
+        } else {
+          cardDetailsDiv.innerHTML = `<div class="space-y-3">
+            <input type="text" placeholder="Card number" class="w-full border rounded-lg px-4 py-2 text-sm">
+            <div class="grid grid-cols-2 gap-3"><input type="text" placeholder="MM/YY"><input type="text" placeholder="CVC"></div>
+            <input type="text" placeholder="Cardholder name" class="w-full border rounded-lg px-4 py-2 text-sm">
+          </div>`;
+        }
+      });
+    });
+    // default select first card
+    if(paymentCards[0]) paymentCards[0].classList.add('selected', 'border-indigo-500', 'bg-indigo-50');
+    
+    // Confirm & Pay Action (simulate escrow payment)
+    const confirmBtn = document.getElementById('confirmPayBtn');
+    if(confirmBtn) {
+      confirmBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // validate delivery if needed
+        let deliveryMethod = pickupRadio.checked ? 'Campus pickup' : 'Local delivery';
+        let methodSelected = document.querySelector('.payment-card.selected')?.getAttribute('data-method') || 'card';
+        apiClient.post('../api/marketplace/orders', {
+          title: 'Marketplace order',
+          total: currentTotal,
+          paymentMethod: methodSelected,
+          status: 'processing'
+        }).then(order => {
+          alert(`✅ Payment initiated: $${currentTotal} via ${methodSelected}.\n\n🛡️ ESCROW ACTIVE: Your money is held securely. Seller will be notified to prepare your item.\n\nYou can track your order and confirm delivery once you receive the item.\n\n📦 Order #${order.id} created.`);
+          window.location.href = `order-tracking-student-marketplace.html?id=${order.id}`;
+        });
+      });
+    }
+    
+    // If user clicks on "Campus pickup" delivery row
+    document.querySelectorAll('label').forEach(label => {
+      label.addEventListener('click', (e) => {
+        // just re-trigger update
+        setTimeout(updateTotal, 10);
+      });
+    });
+  </script>
+</body>
+</html>
+

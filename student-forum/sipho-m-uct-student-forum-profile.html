@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Sipho M. - UCT Student Forum Profile</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f7fc;
+      color: #0a2b3e;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #dce5ec;
+    }
+
+    .logo-area h1 {
+      font-size: 1.8rem;
+      color: #0a2b3e;
+    }
+
+    .logo-area .tagline {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+    }
+
+    .back-link {
+      color: #0f5b8c;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      transition: background 0.2s;
+    }
+
+    .back-link:hover {
+      background: #eef2f7;
+    }
+
+    .btn-primary {
+      background: #0f5b8c;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #0a4368;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #0f5b8c;
+      color: #0f5b8c;
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-outline:hover {
+      background: #e6f0f8;
+    }
+
+    /* Profile Grid */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 2rem;
+    }
+
+    /* Profile Sidebar */
+    .profile-sidebar {
+      background: white;
+      border-radius: 28px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      height: fit-content;
+      position: sticky;
+      top: 1.5rem;
+    }
+
+    .avatar {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, #0f5b8c, #1e7fb0);
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      color: white;
+    }
+
+    .display-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .user-badge {
+      display: inline-block;
+      background: #eef2f7;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      margin: 0.5rem 0;
+      color: #0f5b8c;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-around;
+      margin: 1.5rem 0;
+      padding: 1rem 0;
+      border-top: 1px solid #e9eef3;
+      border-bottom: 1px solid #e9eef3;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0a2b3e;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: #6c7e8c;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .bio-section {
+      text-align: left;
+      margin-top: 1rem;
+    }
+
+    .bio-section h4 {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      color: #2c5779;
+    }
+
+    .bio-text {
+      font-size: 0.85rem;
+      color: #4a627a;
+      line-height: 1.5;
+    }
+
+    .contact-icons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    /* Main Content Tabs */
+    .profile-content {
+      background: white;
+      border-radius: 28px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid #e9eef3;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #6c7e8c;
+      cursor: pointer;
+      transition: 0.2s;
+      border-radius: 40px;
+    }
+
+    .tab-btn:hover {
+      background: #eef2f7;
+      color: #0a2b3e;
+    }
+
+    .tab-btn.active {
+      background: #0f5b8c;
+      color: white;
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    /* Post/comment cards */
+    .activity-item {
+      padding: 1rem 0;
+      border-bottom: 1px solid #edf2f6;
+    }
+
+    .activity-title {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+      font-size: 1rem;
+    }
+
+    .activity-meta {
+      font-size: 0.75rem;
+      color: #6c7e8c;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.4rem;
+    }
+
+    .activity-excerpt {
+      font-size: 0.85rem;
+      color: #4a627a;
+    }
+
+    .badge-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .badge {
+      background: #f0f4fa;
+      padding: 0.3rem 0.9rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .badge-gold {
+      background: #fef3c7;
+      color: #b45309;
+    }
+
+    @media (max-width: 850px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+      .profile-sidebar {
+        position: static;
+      }
+      .container {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <div class="logo-area">
+      <h1>STUDENT FORUM</h1>
+      <div class="tagline">Your campus. Your voice.</div>
+    </div>
+    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+  </div>
+
+  <div class="profile-grid">
+    <!-- LEFT SIDEBAR - USER INFO -->
+    <div class="profile-sidebar" id="profileSidebar">
+      <!-- dynamic content -->
+    </div>
+
+    <!-- RIGHT MAIN CONTENT -->
+    <div class="profile-content">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="posts">📝 Latest Posts</button>
+        <button class="tab-btn" data-tab="comments">💬 Recent Comments</button>
+        <button class="tab-btn" data-tab="badges">🏅 Achievements</button>
+        <button class="tab-btn" data-tab="about">ℹ️ About</button>
+      </div>
+
+      <div id="postsTab" class="tab-pane active">
+        <div id="userPostsContainer"></div>
+      </div>
+      <div id="commentsTab" class="tab-pane">
+        <div id="userCommentsContainer"></div>
+      </div>
+      <div id="badgesTab" class="tab-pane">
+        <div id="badgesContainer"></div>
+      </div>
+      <div id="aboutTab" class="tab-pane">
+        <div id="aboutContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // MOCK USER DATA (Sipho M. - Top Contributor)
+  const userProfile = {
+    id: 101,
+    name: "Sipho M.",
+    fullName: "Sipho Mkhize",
+    email: "sipho.m@uct.ac.za",
+    joinDate: "February 2024",
+    points: 4250,
+    rank: "Top Contributor #1",
+    badge: "Verified Student",
+    year: "2nd Year",
+    faculty: "Commerce",
+    bio: "📊 Quantitative Methods enthusiast & peer tutor. I love helping fellow students navigate stats and data analysis. Ask me anything about QM!",
+    avatarInitials: "SM",
+    socialLinks: {
+      twitter: "@sipho_m",
+      github: "sipho-dev"
+    },
+    stats: {
+      posts: 47,
+      replies: 312,
+      upvotesReceived: 894,
+      helpfulVotes: 156
+    },
+    recentPosts: [
+      { id: 1, title: "How do I survive Quantitative Methods?", category: "Academic Help", timeAgo: "3h ago", excerpt: "I'm really struggling with QM... any study tips?", upvotes: 327, replies: 24 },
+      { id: 12, title: "Best free resources for learning Python", category: "Tech & Gadgets", timeAgo: "2d ago", excerpt: "Here's a curated list of free Python resources for beginners.", upvotes: 89, replies: 12 },
+      { id: 19, title: "Time blocking method saved my semester", category: "Academic Help", timeAgo: "1w ago", excerpt: "I want to share a technique that helped me balance 5 courses.", upvotes: 210, replies: 34 }
+    ],
+    recentComments: [
+      { id: 201, postTitle: "Best budget laptops for Computer Science students?", content: "I recommend the Acer Swift 3 or refurbished ThinkPad. Great value!", timeAgo: "5h ago", upvotes: 45 },
+      { id: 202, postTitle: "Past papers for Financial Accounting II", content: "Check out the library’s online repository – they have 2018-2023 papers.", timeAgo: "1d ago", upvotes: 32 },
+      { id: 203, postTitle: "Where can I find free parking on campus?", content: "Upper campus parking behind the sports center is free after 4pm.", timeAgo: "3d ago", upvotes: 28 }
+    ],
+    badges: [
+      { name: "🌟 Top Contributor", type: "gold", icon: "🏆", description: "Ranked in top 5 of forum" },
+      { name: "📚 Homework Hero", type: "silver", icon: "📖", description: "50+ helpful answers in Academic Help" },
+      { name: "💡 Rising Star", type: "bronze", icon: "⭐", description: "Joined less than 6 months, 100+ upvotes" },
+      { name: "🤝 Community Builder", type: "silver", icon: "👥", description: "Started 10+ engaging discussions" }
+    ]
+  };
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function renderSidebar() {
+    const sidebar = document.getElementById('profileSidebar');
+    sidebar.innerHTML = `
+      <div class="avatar">${userProfile.avatarInitials}</div>
+      <div class="display-name">${escapeHtml(userProfile.name)}</div>
+      <div class="user-badge">${escapeHtml(userProfile.badge)} • ${escapeHtml(userProfile.year)}</div>
+      <div class="stat-row">
+        <div class="stat-item">
+          <div class="stat-number">${userProfile.points.toLocaleString()}</div>
+          <div class="stat-label">Reputation</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">${userProfile.stats.upvotesReceived}</div>
+          <div class="stat-label">Upvotes</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">${userProfile.stats.helpfulVotes}</div>
+          <div class="stat-label">Helpful</div>
+        </div>
+      </div>
+      <div class="bio-section">
+        <h4>📌 Faculty</h4>
+        <div class="bio-text">${escapeHtml(userProfile.faculty)}</div>
+        <h4 style="margin-top: 0.8rem;">📖 Bio</h4>
+        <div class="bio-text">${escapeHtml(userProfile.bio)}</div>
+        <h4 style="margin-top: 0.8rem;">📅 Joined</h4>
+        <div class="bio-text">${escapeHtml(userProfile.joinDate)}</div>
+      </div>
+      <div class="contact-icons">
+        <button class="btn-outline" id="messageBtn">✉️ Message</button>
+        <button class="btn-outline" id="followBtn">➕ Follow</button>
+      </div>
+    `;
+    document.getElementById('messageBtn')?.addEventListener('click', () => alert(`💬 Messaging ${userProfile.name} (demo: chat feature coming soon)`));
+    document.getElementById('followBtn')?.addEventListener('click', (e) => {
+      e.target.innerText = e.target.innerText === '➕ Follow' ? '✓ Following' : '➕ Follow';
+      alert(`You are now ${e.target.innerText === '✓ Following' ? 'following' : 'unfollowed'} ${userProfile.name}`);
+    });
+  }
+
+  function renderPosts() {
+    const container = document.getElementById('userPostsContainer');
+    if (!userProfile.recentPosts.length) {
+      container.innerHTML = '<p style="color:#7c93a8;">No posts yet.</p>';
+      return;
+    }
+    container.innerHTML = userProfile.recentPosts.map(post => `
+      <div class="activity-item">
+        <div class="activity-title">📄 ${escapeHtml(post.title)}</div>
+        <div class="activity-meta">
+          <span>📂 ${escapeHtml(post.category)}</span>
+          <span>🕒 ${post.timeAgo}</span>
+          <span>▲ ${post.upvotes} upvotes</span>
+          <span>💬 ${post.replies} replies</span>
+        </div>
+        <div class="activity-excerpt">${escapeHtml(post.excerpt.substring(0, 120))}${post.excerpt.length > 120 ? '…' : ''}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderComments() {
+    const container = document.getElementById('userCommentsContainer');
+    if (!userProfile.recentComments.length) {
+      container.innerHTML = '<p style="color:#7c93a8;">No comments yet.</p>';
+      return;
+    }
+    container.innerHTML = userProfile.recentComments.map(comment => `
+      <div class="activity-item">
+        <div class="activity-title">💬 Replied to "${escapeHtml(comment.postTitle)}"</div>
+        <div class="activity-meta">
+          <span>🕒 ${comment.timeAgo}</span>
+          <span>👍 ${comment.upvotes} upvotes</span>
+        </div>
+        <div class="activity-excerpt">${escapeHtml(comment.content.substring(0, 140))}${comment.content.length > 140 ? '…' : ''}</div>
+      </div>
+    `).join('');
+  }
+
+  function renderBadges() {
+    const container = document.getElementById('badgesContainer');
+    container.innerHTML = `
+      <div class="badge-list">
+        ${userProfile.badges.map(b => `
+          <div class="badge ${b.type === 'gold' ? 'badge-gold' : ''}">
+            ${b.icon} ${escapeHtml(b.name)} 
+            <span style="font-size:0.7rem; color:#6c7e8c;">— ${escapeHtml(b.description)}</span>
+          </div>
+        `).join('')}
+      </div>
+      <p style="margin-top: 1.5rem; font-size: 0.85rem;">🏅 ${userProfile.name} has earned ${userProfile.badges.length} achievements.</p>
+    `;
+  }
+
+  function renderAbout() {
+    const container = document.getElementById('aboutContainer');
+    container.innerHTML = `
+      <div style="line-height: 1.7;">
+        <p><strong>Full name:</strong> ${escapeHtml(userProfile.fullName)}</p>
+        <p><strong>Email:</strong> ${escapeHtml(userProfile.email)} (verified UCT email)</p>
+        <p><strong>Member since:</strong> ${userProfile.joinDate}</p>
+        <p><strong>Total activity:</strong> ${userProfile.stats.posts} posts · ${userProfile.stats.replies} replies</p>
+        <p><strong>Favorite categories:</strong> Academic Help, Tech & Gadgets</p>
+        <hr style="margin: 1rem 0; border-color: #e9eef3;">
+        <p>🌐 <strong>Social / links:</strong> ${userProfile.socialLinks.twitter ? `Twitter: ${escapeHtml(userProfile.socialLinks.twitter)}` : ''} ${userProfile.socialLinks.github ? `GitHub: ${escapeHtml(userProfile.socialLinks.github)}` : ''}</p>
+        <button class="btn-outline" id="reportProfileBtn" style="margin-top: 1rem;">🚩 Report Profile</button>
+      </div>
+    `;
+    document.getElementById('reportProfileBtn')?.addEventListener('click', () => alert('Report submitted to moderators. Thank you for keeping the community safe.'));
+  }
+
+  // TABS LOGIC
+  function initTabs() {
+    const tabs = document.querySelectorAll('.tab-btn');
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.getAttribute('data-tab');
+        // remove active from all buttons and panes
+        tabs.forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+        btn.classList.add('active');
+        const activePaneId = tabId + 'Tab';
+        const activePane = document.getElementById(activePaneId);
+        if (activePane) activePane.classList.add('active');
+      });
+    });
+  }
+
+  // Simulate back to forum navigation
+  document.getElementById('backToForum')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('← Returning to homepage (simulated navigation)');
+  });
+
+  renderSidebar();
+  renderPosts();
+  renderComments();
+  renderBadges();
+  renderAbout();
+  initTabs();
+</script>
+</body>
+</html>
+

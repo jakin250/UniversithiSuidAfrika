@@ -1,14 +1,19 @@
 {
   "name": "universithi-suid-afrika",
+  "version": "1.0.0",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
-    "dev": "vercel dev",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "dependencies": {
-    "@vercel/kv": "^1.0.0",
-    "bcryptjs": "^2.4.3",
-    "nanoid": "^5.1.5"
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.10.0",
+    "compression": "^1.8.1",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.2",
+    "express-session": "^1.19.0",
+    "helmet": "^8.2.0"
   }
 }

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Item Details | Student Marketplace</title>
+  <!-- Tailwind + Fonts + Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f9fafb; }
+    .main-image {
+      transition: transform 0.2s ease;
+    }
+    .thumbnail {
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .thumbnail:hover {
+      transform: scale(1.05);
+      border-color: #4f46e5;
+    }
+    .thumbnail-active {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 2px #4f46e5;
+    }
+    .escrow-badge {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    .condition-tag {
+      background: #fef3c7;
+      color: #b45309;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="window.location.href='student-marketplace-buy-sell-trade-on-campus.html'">
+          <i class="fas fa-graduation-cap text-indigo-600 text-2xl"></i>
+          <span class="font-bold text-xl text-gray-800">Student<span class="text-indigo-600">Marketplace</span></span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+          <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+          <a href="messages-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium"><i class="far fa-comment-dots mr-1"></i>Messages</a>
+          <div class="relative group">
+            <button class="flex items-center space-x-1 text-gray-700 hover:text-indigo-600">
+              <i class="far fa-user-circle text-xl"></i>
+              <span>Account</span>
+              <i class="fas fa-chevron-down text-xs"></i>
+            </button>
+            <div class="absolute right-0 w-48 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 hidden group-hover:block py-2 z-20">
+              <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+              <a href="saved-items-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Saved items</a>
+              <hr class="my-1">
+              <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+            </div>
+          </div>
+        </div>
+        <button id="mobileMenuBtn" class="md:hidden text-gray-600">
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden bg-white border-t px-4 py-2">
+      <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+      <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+      <a href="messages-student-marketplace.html" class="block py-2 text-gray-700">Messages</a>
+      <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+      <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <!-- Breadcrumb (subtle) -->
+    <div class="text-sm text-gray-500 mb-6">
+      <a href="browse-listings-student-marketplace.html" class="hover:text-indigo-600">Browse</a> / <span class="text-gray-800">Calculus: Early Transcendentals</span>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8 lg:gap-12">
+      
+      <!-- LEFT COLUMN: IMAGE GALLERY -->
+      <div>
+        <div class="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-200">
+          <div class="relative">
+            <img id="mainImage" src="https://placehold.co/600x500/e2e8f0/475569?text=Textbook+Cover" alt="Main product" class="main-image w-full h-80 md:h-96 object-cover">
+            <div class="absolute top-4 left-4 bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md">
+              <i class="fas fa-shield-alt mr-1"></i> Escrow protected
+            </div>
+          </div>
+          <!-- Thumbnails -->
+          <div class="flex gap-3 p-4 border-t border-gray-100 overflow-x-auto">
+            <img src="https://placehold.co/100x100/e2e8f0/475569?text=Front" class="thumbnail w-20 h-20 rounded-lg object-cover border-2 border-gray-300" data-img="https://placehold.co/600x500/e2e8f0/475569?text=Front+Cover">
+            <img src="https://placehold.co/100x100/e2e8f0/475569?text=Back" class="thumbnail w-20 h-20 rounded-lg object-cover border-2 border-gray-300" data-img="https://placehold.co/600x500/e2e8f0/475569?text=Back+Cover+Sample">
+            <img src="https://placehold.co/100x100/e2e8f0/475569?text=Condition" class="thumbnail w-20 h-20 rounded-lg object-cover border-2 border-gray-300" data-img="https://placehold.co/600x500/e2e8f0/475569?text=Condition+Photo">
+            <img src="https://placehold.co/100x100/e2e8f0/475569?text=Highlight" class="thumbnail w-20 h-20 rounded-lg object-cover border-2 border-gray-300" data-img="https://placehold.co/600x500/e2e8f0/475569?text=Notes+Highlight">
+          </div>
+        </div>
+        <!-- Condition checklist notice -->
+        <div class="flex items-center gap-2 mt-4 text-xs text-gray-500 bg-white p-3 rounded-xl border">
+          <i class="fas fa-clipboard-list text-indigo-500"></i>
+          <span>Condition verified: photos match "Good" standard — no missing pages, minor wear only.</span>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: ITEM INFO + SELLER + ACTIONS -->
+      <div>
+        <!-- Title & price row -->
+        <div class="flex justify-between items-start flex-wrap gap-3">
+          <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Calculus: Early Transcendentals (9th Edition)</h1>
+          <div class="text-3xl font-bold text-indigo-600">$45</div>
+        </div>
+        
+        <!-- Meta badges -->
+        <div class="flex flex-wrap gap-2 mt-3">
+          <span class="condition-tag text-xs px-3 py-1 rounded-full font-medium"><i class="fas fa-check-circle mr-1"></i> Good condition</span>
+          <span class="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full"><i class="fas fa-book-open"></i> Textbooks</span>
+          <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full"><i class="fas fa-university"></i> Campus pickup only</span>
+        </div>
+
+        <!-- Course & ISBN details -->
+        <div class="mt-5 bg-gray-50 p-4 rounded-xl">
+          <div class="grid grid-cols-2 gap-2 text-sm">
+            <div><span class="text-gray-500">Course code:</span> <span class="font-medium">MATH 101 / Calculus I</span></div>
+            <div><span class="text-gray-500">ISBN:</span> <span class="font-mono text-xs">978-1-234-56789-0</span></div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="mt-5">
+          <h3 class="font-semibold text-gray-800 mb-2">Description</h3>
+          <p class="text-gray-600 text-sm leading-relaxed">Includes all chapters, no highlights on main pages. Minor cover wear. Access code not included. Perfect for Math 101/102. Local pickup near student union.</p>
+        </div>
+
+        <!-- Seller Info Card -->
+        <div class="mt-6 bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold text-lg">AJ</div>
+              <div>
+                <p class="font-bold text-gray-800">Alex Johnson <i class="fas fa-check-circle text-indigo-500 text-sm ml-1"></i></p>
+                <div class="flex items-center gap-2 text-sm text-gray-500">
+                  <span><i class="fas fa-star text-yellow-400"></i> 4.8 (24 reviews)</span>
+                  <span>•</span>
+                  <span><i class="fas fa-graduation-cap"></i> Verified student</span>
+                </div>
+                <p class="text-xs text-gray-400 mt-1">Member since Sep 2024</p>
+              </div>
+            </div>
+            <button id="msgSellerBtn" class="text-indigo-600 border border-indigo-300 px-4 py-2 rounded-lg text-sm hover:bg-indigo-50 transition flex items-center gap-1"><i class="far fa-comment-dots"></i> Chat</button>
+          </div>
+        </div>
+
+        <!-- Escrow protection explainer -->
+        <div class="mt-5 escrow-badge text-white rounded-xl p-3 flex items-center gap-3 text-sm">
+          <i class="fas fa-lock text-xl"></i>
+          <div><strong>Secure Escrow</strong> — Payment held safely until you confirm delivery. <a href="secure-checkout-student-marketplace.html" class="underline text-white text-xs">Learn how it works</a></div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <button id="buyNowBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-md transition flex-1 flex items-center justify-center gap-2"><i class="fas fa-shopping-cart"></i> Buy now — $45</button>
+          <button id="saveItemBtn" class="border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-5 rounded-xl transition flex items-center justify-center gap-2"><i class="far fa-bookmark"></i> Save</button>
+          <button id="tradeOfferBtn" class="border border-indigo-200 bg-indigo-50 text-indigo-700 font-semibold py-3 px-5 rounded-xl transition flex items-center justify-center gap-2"><i class="fas fa-exchange-alt"></i> Trade</button>
+        </div>
+
+        <!-- Report link -->
+        <div class="mt-4 text-right">
+          <button id="reportBtn" class="text-xs text-gray-400 hover:text-red-500 transition"><i class="fas fa-flag"></i> Report this item</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT PREVIEW / QUICK CONFIRM (mock, direct from chat idea) -->
+    <div class="mt-12 bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+      <div class="flex items-center gap-3">
+        <i class="fas fa-comment-dots text-indigo-500 text-xl"></i>
+        <h3 class="font-bold text-gray-800">Chat with seller</h3>
+        <span class="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full">Usually replies within 2h</span>
+      </div>
+      <div class="mt-3 bg-gray-50 p-3 rounded-xl text-sm italic text-gray-600 border-l-4 border-indigo-300">
+        <i class="fas fa-info-circle text-indigo-400 mr-1"></i> "Have you received your item and are you happy with it? Once you confirm, the payment will be released to the seller."
+      </div>
+      <div class="flex mt-3 gap-2">
+        <input type="text" placeholder="Ask about condition, pickup time..." class="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-indigo-500">
+        <button class="bg-indigo-600 text-white px-4 rounded-lg text-sm hover:bg-indigo-700 transition"><i class="fab fa-telegram-plane"></i> Send</button>
+      </div>
+    </div>
+
+    <!-- Similar items section (optional but good UX) -->
+    <div class="mt-12">
+      <h3 class="font-bold text-xl mb-4">📚 More from Textbooks</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-xl p-3 border hover:shadow-md cursor-pointer transition">
+          <div class="h-24 bg-gray-100 rounded flex items-center justify-center"><i class="fas fa-book text-2xl text-gray-400"></i></div>
+          <p class="font-medium text-sm mt-2 truncate">Linear Algebra & Applications</p>
+          <p class="text-indigo-600 font-bold text-sm">$38</p>
+        </div>
+        <div class="bg-white rounded-xl p-3 border hover:shadow-md cursor-pointer transition">
+          <div class="h-24 bg-gray-100 rounded flex items-center justify-center"><i class="fas fa-flask text-2xl text-gray-400"></i></div>
+          <p class="font-medium text-sm mt-2 truncate">Chemistry: Central Science</p>
+          <p class="text-indigo-600 font-bold text-sm">$62</p>
+        </div>
+        <div class="bg-white rounded-xl p-3 border hover:shadow-md cursor-pointer transition">
+          <div class="h-24 bg-gray-100 rounded flex items-center justify-center"><i class="fas fa-code text-2xl text-gray-400"></i></div>
+          <p class="font-medium text-sm mt-2 truncate">JavaScript: The Good Parts</p>
+          <p class="text-indigo-600 font-bold text-sm">$22</p>
+        </div>
+        <div class="bg-white rounded-xl p-3 border hover:shadow-md cursor-pointer transition">
+          <div class="h-24 bg-gray-100 rounded flex items-center justify-center"><i class="fas fa-chart-line text-2xl text-gray-400"></i></div>
+          <p class="font-medium text-sm mt-2 truncate">Statistics for Business</p>
+          <p class="text-indigo-600 font-bold text-sm">$50</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER (minimal) -->
+  <footer class="border-t bg-white mt-16 py-6 text-center text-gray-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4">Student Marketplace — Safe campus trade, escrow secured, verified community.</div>
+  </footer>
+
+  <script>
+    // Image gallery thumbnail swap
+    const mainImg = document.getElementById('mainImage');
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    
+    thumbnails.forEach(thumb => {
+      thumb.addEventListener('click', function() {
+        const newSrc = this.getAttribute('data-img');
+        if (newSrc) mainImg.src = newSrc;
+        thumbnails.forEach(t => t.classList.remove('thumbnail-active'));
+        this.classList.add('thumbnail-active');
+      });
+      // Set first thumb as active
+      if(thumb === thumbnails[0]) thumb.classList.add('thumbnail-active');
+    });
+    
+    // Action button alerts (simulate navigation / modals)
+    const buyBtn = document.getElementById('buyNowBtn');
+    const saveBtn = document.getElementById('saveItemBtn');
+    const tradeBtn = document.getElementById('tradeOfferBtn');
+    const reportBtn = document.getElementById('reportBtn');
+    const msgSeller = document.getElementById('msgSellerBtn');
+    
+    if(buyBtn) {
+      buyBtn.addEventListener('click', () => {
+        alert('✅ Proceeding to secure checkout. Escrow will protect your payment until you confirm delivery.\n(Checkout page coming next)');
+      });
+    }
+    if(saveBtn) {
+      saveBtn.addEventListener('click', () => {
+        alert('📌 Item saved! You will receive price drop alerts.');
+        saveBtn.innerHTML = '<i class="fas fa-bookmark"></i> Saved';
+        saveBtn.disabled = true;
+        saveBtn.classList.add('opacity-50');
+      });
+    }
+    if(tradeBtn) {
+      tradeBtn.addEventListener('click', () => {
+        alert('🔄 Trade request feature: You can offer one of your items. Seller will be notified.');
+      });
+    }
+    if(reportBtn) {
+      reportBtn.addEventListener('click', () => {
+        alert('🚩 Report submitted to moderation team. We review all listings.');
+      });
+    }
+    if(msgSeller) {
+      msgSeller.addEventListener('click', () => {
+        alert('💬 Chat with Alex Johnson. Ask about condition, pickup time, or confirm delivery.');
+      });
+    }
+    
+    // Mobile menu toggle
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if(mobileBtn && mobileMenu) {
+      mobileBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+    
+    // Simulate "Similar items" click
+    document.querySelectorAll('.grid.grid-cols-2.sm\\:grid-cols-3.lg\\:grid-cols-4 .bg-white').forEach(card => {
+      card.addEventListener('click', () => {
+        alert('🔁 Navigate to similar item details (escrow & student-verified)');
+      });
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Announcements - UCT Student Forum</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f7fc;
+      color: #0a2b3e;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #dce5ec;
+    }
+
+    .logo-area h1 {
+      font-size: 1.8rem;
+      color: #0a2b3e;
+    }
+
+    .logo-area .tagline {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+    }
+
+    .back-link {
+      color: #0f5b8c;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      transition: background 0.2s;
+    }
+
+    .back-link:hover {
+      background: #eef2f7;
+    }
+
+    /* Hero */
+    .announcement-hero {
+      background: linear-gradient(135deg, #0f5b8c 0%, #1a6d9e 100%);
+      border-radius: 28px;
+      padding: 2rem 2rem;
+      margin-bottom: 2rem;
+      color: white;
+    }
+
+    .announcement-hero h2 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .announcement-hero p {
+      opacity: 0.9;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      background: white;
+      padding: 1rem 1.5rem;
+      border-radius: 20px;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      padding: 0.4rem 1.2rem;
+      border-radius: 40px;
+      background: #eef2f7;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: 0.2s;
+    }
+
+    .filter-chip.active {
+      background: #0f5b8c;
+      color: white;
+    }
+
+    .filter-chip:hover:not(.active) {
+      background: #dce5ec;
+    }
+
+    /* Announcements Grid */
+    .announcements-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .announcement-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      border-left: 5px solid #0f5b8c;
+    }
+
+    .announcement-card.urgent {
+      border-left-color: #dc2626;
+      background: #fffaf5;
+    }
+
+    .announcement-card.event {
+      border-left-color: #10b981;
+    }
+
+    .announcement-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .announcement-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #0a2b3e;
+    }
+
+    .announcement-badge {
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .badge-urgent {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .badge-event {
+      background: #d1fae5;
+      color: #059669;
+    }
+
+    .badge-update {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+
+    .announcement-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.8rem;
+      color: #6c7e8c;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .announcement-excerpt {
+      color: #4a627a;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .read-more {
+      color: #0f5b8c;
+      font-weight: 500;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    /* Sidebar */
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+    }
+
+    .sidebar-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      position: sticky;
+      top: 1.5rem;
+    }
+
+    .sidebar-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #0f5b8c;
+      padding-left: 0.7rem;
+    }
+
+    .upcoming-item {
+      padding: 0.8rem 0;
+      border-bottom: 1px solid #eef2f6;
+    }
+
+    .upcoming-date {
+      font-size: 0.7rem;
+      color: #0f5b8c;
+      font-weight: 600;
+    }
+
+    .upcoming-title {
+      font-size: 0.85rem;
+      margin-top: 0.2rem;
+    }
+
+    @media (max-width: 800px) {
+      .two-column {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 1rem;
+      }
+      .sidebar-card {
+        position: static;
+      }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background: white;
+      border-radius: 24px;
+      color: #7c93a8;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .page-btn {
+      padding: 0.4rem 0.8rem;
+      border: 1px solid #cddfe8;
+      background: white;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+
+    .page-btn.active {
+      background: #0f5b8c;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <div class="logo-area">
+      <h1>STUDENT FORUM</h1>
+      <div class="tagline">Your campus. Your voice.</div>
+    </div>
+    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+  </div>
+
+  <div class="announcement-hero">
+    <h2>📢 Announcements</h2>
+    <p>Official updates, campus news, exam schedules, and forum announcements — all in one place.</p>
+  </div>
+
+  <div class="two-column">
+    <!-- Main Content -->
+    <div>
+      <div class="filter-bar">
+        <div class="filter-group" id="filterGroup">
+          <div class="filter-chip active" data-filter="all">All</div>
+          <div class="filter-chip" data-filter="urgent">⚠️ Urgent</div>
+          <div class="filter-chip" data-filter="event">🎉 Events</div>
+          <div class="filter-chip" data-filter="update">🔄 Forum Updates</div>
+        </div>
+      </div>
+
+      <div id="announcementsContainer" class="announcements-grid"></div>
+      <div id="paginationContainer" class="pagination"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <div class="sidebar-card">
+        <h3>📅 Upcoming Deadlines</h3>
+        <div id="upcomingContainer"></div>
+      </div>
+      <div class="sidebar-card">
+        <h3>📌 Important Links</h3>
+        <ul style="list-style: none;">
+          <li style="margin: 0.6rem 0;">📘 <a href="uct-student-forum-your-campus-your-voice.html" style="color:#0f5b8c;">Exam Timetable</a></li>
+          <li style="margin: 0.6rem 0;">🏛️ <a href="uct-student-forum-your-campus-your-voice.html" style="color:#0f5b8c;">Library Hours</a></li>
+          <li style="margin: 0.6rem 0;">💻 <a href="uct-student-forum-your-campus-your-voice.html" style="color:#0f5b8c;">IT Support Portal</a></li>
+          <li style="margin: 0.6rem 0;">📝 <a href="uct-student-forum-your-campus-your-voice.html" style="color:#0f5b8c;">Registration Forms</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Mock announcements data
+  let allAnnouncements = [
+    {
+      id: 1,
+      title: "📚 Exam Season Support Hub Now Open",
+      type: "urgent",
+      category: "Academics",
+      date: "May 15, 2026",
+      timeAgo: "2d ago",
+      excerpt: "Free tutoring, past papers, and mental health resources available at the Exam Support Hub in the library. Extended hours until 10pm.",
+      fullContent: "The Exam Support Hub offers daily workshops, peer tutoring, and wellness sessions. Visit the 2nd floor of Main Library.",
+      author: "Academic Affairs",
+      pinned: true
+    },
+    {
+      id: 2,
+      title: "New: Study Group Feature Launched",
+      type: "update",
+      category: "Forum",
+      date: "May 12, 2026",
+      timeAgo: "5d ago",
+      excerpt: "You can now create and join study groups directly on the forum. Collaborate with classmates and share resources!",
+      fullContent: "Click on 'Study Groups' in the navigation to get started. Create a group for any course and invite peers.",
+      author: "Forum Team",
+      pinned: false
+    },
+    {
+      id: 3,
+      title: "🎓 Career Fair 2026 - Register Now",
+      type: "event",
+      category: "Careers",
+      date: "June 5, 2026",
+      timeAgo: "1w ago",
+      excerpt: "Annual UCT Career Fair featuring 50+ employers. Free registration for all students. Don't miss this opportunity!",
+      fullContent: "Date: June 10-12, 2026. Location: Sports Centre. Bring your CV and meet top employers.",
+      author: "Career Services",
+      pinned: false
+    },
+    {
+      id: 4,
+      title: "Forum Guidelines Update - Please Review",
+      type: "update",
+      category: "Forum",
+      date: "May 8, 2026",
+      timeAgo: "1w ago",
+      excerpt: "We've updated our community guidelines to ensure a safe and respectful environment for all students.",
+      fullContent: "Key changes: No hate speech, proper citation of sources, and respectful disagreement. Violations may lead to temporary suspension.",
+      author: "Moderator Team",
+      pinned: true
+    },
+    {
+      id: 5,
+      title: "⚠️ Campus Power Outage Scheduled",
+      type: "urgent",
+      category: "Facilities",
+      date: "May 20, 2026",
+      timeAgo: "3h ago",
+      excerpt: "Planned power maintenance on May 22 from 8am-12pm. Library and computer labs will have backup generators.",
+      fullContent: "Affected buildings: Kramer, Tugwell, and New Lecture Theatres. Please plan your study sessions accordingly.",
+      author: "Facilities Management",
+      pinned: false
+    },
+    {
+      id: 6,
+      title: "🏆 Student Leadership Nominations Open",
+      type: "event",
+      category: "Student Life",
+      date: "May 25, 2026",
+      timeAgo: "4d ago",
+      excerpt: "Nominate yourself or a peer for SRC positions. Deadline: June 10, 2026.",
+      fullContent: "Positions available: President, Academic Officer, and more. Submit your nomination via the SRC portal.",
+      author: "SRC",
+      pinned: false
+    },
+    {
+      id: 7,
+      title: "Mental Health Awareness Week",
+      type: "event",
+      category: "Wellness",
+      date: "May 18, 2026",
+      timeAgo: "5d ago",
+      excerpt: "Join daily workshops, meditation sessions, and peer support groups. Free coffee and snacks!",
+      fullContent: "Location: Student Wellness Centre. See schedule on the notice board.",
+      author: "Wellness Office",
+      pinned: false
+    },
+    {
+      id: 8,
+      title: "New Past Papers Uploaded",
+      type: "update",
+      category: "Study Resources",
+      date: "May 10, 2026",
+      timeAgo: "1w ago",
+      excerpt: "2019-2025 exam papers for 30+ courses now available in the Study Resources section.",
+      fullContent: "Access via the 'Study Resources' category or search by course code.",
+      author: "Library Team",
+      pinned: false
+    }
+  ];
+
+  let currentFilter = "all";
+  let currentPage = 1;
+  const itemsPerPage = 5;
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function getFilteredAnnouncements() {
+    if (currentFilter === "all") return [...allAnnouncements];
+    return allAnnouncements.filter(a => a.type === currentFilter);
+  }
+
+  function renderAnnouncements() {
+    let filtered = getFilteredAnnouncements();
+    // Sort pinned first, then by date (newest first - mock by id descending)
+    filtered.sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || b.id - a.id);
+    
+    const totalItems = filtered.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const start = (currentPage - 1) * itemsPerPage;
+    const paginated = filtered.slice(start, start + itemsPerPage);
+    
+    const container = document.getElementById('announcementsContainer');
+    if (paginated.length === 0) {
+      container.innerHTML = `<div class="empty-state">📭 No announcements found.</div>`;
+      document.getElementById('paginationContainer').innerHTML = '';
+      return;
+    }
+
+    container.innerHTML = paginated.map(ann => {
+      let badgeClass = "";
+      let badgeText = "";
+      if (ann.type === "urgent") { badgeClass = "badge-urgent"; badgeText = "⚠️ Urgent"; }
+      else if (ann.type === "event") { badgeClass = "badge-event"; badgeText = "🎉 Event"; }
+      else { badgeClass = "badge-update"; badgeText = "🔄 Update"; }
+      
+      return `
+        <div class="announcement-card ${ann.type === 'urgent' ? 'urgent' : (ann.type === 'event' ? 'event' : '')}" data-id="${ann.id}">
+          <div class="announcement-header">
+            <span class="announcement-title">${escapeHtml(ann.title)}</span>
+            <span class="announcement-badge ${badgeClass}">${badgeText}</span>
+          </div>
+          <div class="announcement-meta">
+            <span>📅 ${escapeHtml(ann.date)} • ${ann.timeAgo}</span>
+            <span>👤 ${escapeHtml(ann.author)}</span>
+            ${ann.pinned ? '<span>📌 Pinned</span>' : ''}
+          </div>
+          <div class="announcement-excerpt">
+            ${escapeHtml(ann.excerpt)}
+          </div>
+          <div class="read-more" data-id="${ann.id}">Read more →</div>
+        </div>
+      `;
+    }).join('');
+
+    // Add click handlers for "Read more"
+    document.querySelectorAll('.read-more').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const id = parseInt(el.getAttribute('data-id'));
+        const ann = allAnnouncements.find(a => a.id === id);
+        if (ann) {
+          alert(`📢 ${ann.title}\n\n${ann.fullContent}\n\n— ${ann.author}, ${ann.date}`);
+        }
+      });
+    });
+
+    // Card click for details
+    document.querySelectorAll('.announcement-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.classList.contains('read-more')) return;
+        const id = parseInt(card.getAttribute('data-id'));
+        const ann = allAnnouncements.find(a => a.id === id);
+        if (ann) {
+          alert(`📢 ${ann.title}\n\n${ann.fullContent || ann.excerpt}\n\nPosted: ${ann.date} by ${ann.author}`);
+        }
+      });
+    });
+
+    // Render pagination
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    const container = document.getElementById('paginationContainer');
+    if (totalPages <= 1) {
+      container.innerHTML = '';
+      return;
+    }
+    let buttons = '';
+    for (let i = 1; i <= totalPages; i++) {
+      buttons += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+    }
+    container.innerHTML = buttons;
+    document.querySelectorAll('.page-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentPage = parseInt(btn.getAttribute('data-page'));
+        renderAnnouncements();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  }
+
+  // Upcoming deadlines / events (hardcoded upcoming items)
+  function renderUpcoming() {
+    const upcomingItems = [
+      { date: "May 22, 2026", title: "Power Outage (Campus)" },
+      { date: "May 25, 2026", title: "SRC Nominations Close" },
+      { date: "June 5, 2026", title: "Career Fair Registration Deadline" },
+      { date: "June 10, 2026", title: "Exam Period Begins" },
+      { date: "June 15, 2026", title: "Last Day to Withdraw" }
+    ];
+    const container = document.getElementById('upcomingContainer');
+    container.innerHTML = upcomingItems.map(item => `
+      <div class="upcoming-item">
+        <div class="upcoming-date">📅 ${escapeHtml(item.date)}</div>
+        <div class="upcoming-title">${escapeHtml(item.title)}</div>
+      </div>
+    `).join('');
+  }
+
+  // Filter chips logic
+  function initFilters() {
+    const chips = document.querySelectorAll('.filter-chip');
+    chips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        chips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentFilter = chip.getAttribute('data-filter');
+        currentPage = 1;
+        renderAnnouncements();
+      });
+    });
+  }
+
+  // Back button
+  document.getElementById('backToForum')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('← Returning to homepage (simulated navigation)');
+  });
+
+  renderUpcoming();
+  initFilters();
+  renderAnnouncements();
+</script>
+</body>
+</html>
+
+

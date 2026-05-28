@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Browse Listings | Student Marketplace</title>
+  <!-- Tailwind + Fonts + Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f9fafb; }
+    .filter-sidebar {
+      transition: all 0.2s ease;
+    }
+    .listing-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .listing-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.15);
+    }
+    /* Custom scroll for filters */
+    .custom-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-scroll::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+    .mobile-filter-panel {
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    .mobile-filter-panel.open {
+      transform: translateX(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAVBAR (same style as homepage, consistent) ==================== -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="window.location.href='student-marketplace-buy-sell-trade-on-campus.html'">
+          <i class="fas fa-graduation-cap text-indigo-600 text-2xl"></i>
+          <span class="font-bold text-xl text-gray-800">Student<span class="text-indigo-600">Marketplace</span></span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+          <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+          <a href="messages-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium"><i class="far fa-comment-dots mr-1"></i>Messages</a>
+          <div class="relative group">
+            <button class="flex items-center space-x-1 text-gray-700 hover:text-indigo-600">
+              <i class="far fa-user-circle text-xl"></i>
+              <span>Account</span>
+              <i class="fas fa-chevron-down text-xs"></i>
+            </button>
+            <div class="absolute right-0 w-48 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 hidden group-hover:block py-2 z-20">
+              <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+              <a href="saved-items-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Saved items</a>
+              <hr class="my-1">
+              <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+            </div>
+          </div>
+        </div>
+        <button id="mobileFilterToggle" class="md:hidden text-gray-600 focus:outline-none border border-gray-300 rounded-lg px-3 py-1 text-sm">
+          <i class="fas fa-filter"></i> Filters
+        </button>
+        <button id="mobileMenuBtn" class="md:hidden text-gray-600">
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden bg-white border-t px-4 py-2">
+      <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+      <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+      <a href="messages-student-marketplace.html" class="block py-2 text-gray-700">Messages</a>
+      <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+      <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+    </div>
+  </nav>
+
+  <!-- Mobile filter drawer overlay -->
+  <div id="mobileFilterOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden transition-all"></div>
+  <div id="mobileFilterDrawer" class="fixed top-0 left-0 h-full w-80 bg-white z-50 shadow-xl p-5 overflow-y-auto mobile-filter-panel">
+    <div class="flex justify-between items-center mb-5">
+      <h3 class="font-bold text-xl">Filters</h3>
+      <button id="closeMobileFilter" class="text-gray-500"><i class="fas fa-times text-xl"></i></button>
+    </div>
+    <!-- Same filter content as desktop (will be filled via JS injection but we'll copy structure) -->
+    <div id="mobileFilterContent"></div>
+  </div>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
+    
+    <!-- Search + Sort Bar -->
+    <div class="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center mb-8">
+      <div class="relative w-full md:w-96">
+        <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+        <input type="text" id="searchInput" placeholder="Search by keyword, course code, or ISBN..." class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm">
+      </div>
+      <div class="flex gap-3 w-full md:w-auto">
+        <select id="sortSelect" class="border border-gray-300 rounded-xl px-4 py-3 bg-white text-gray-700 focus:ring-indigo-500 shadow-sm">
+          <option value="relevance">Sort by: Relevance</option>
+          <option value="price_low">Price: Low to High</option>
+          <option value="price_high">Price: High to Low</option>
+          <option value="newest">Newest first</option>
+        </select>
+        <button id="desktopFilterBtn" class="hidden md:flex items-center gap-2 border border-gray-300 rounded-xl px-5 py-3 bg-white hover:bg-gray-50"><i class="fas fa-sliders-h"></i> Filters</button>
+      </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-8">
+      <!-- DESKTOP FILTER SIDEBAR (hidden on mobile but visible on md+) -->
+      <aside id="desktopSidebar" class="hidden md:block w-72 shrink-0 bg-white rounded-2xl shadow-sm border border-gray-200 p-5 h-fit sticky top-24 custom-scroll overflow-y-auto max-h-[calc(100vh-120px)]">
+        <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg">Filters</h3><button id="clearFilters" class="text-xs text-indigo-600 hover:underline">Clear all</button></div>
+        
+        <div class="mb-6">
+          <label class="font-medium block mb-2">Category</label>
+          <div class="space-y-2" id="categoryFilter">
+            <label class="flex items-center"><input type="checkbox" value="Textbooks" class="category-cb mr-2 rounded"> Textbooks</label>
+            <label class="flex items-center"><input type="checkbox" value="Electronics" class="category-cb mr-2 rounded"> Electronics</label>
+            <label class="flex items-center"><input type="checkbox" value="Furniture" class="category-cb mr-2 rounded"> Furniture</label>
+            <label class="flex items-center"><input type="checkbox" value="Books" class="category-cb mr-2 rounded"> Books</label>
+            <label class="flex items-center"><input type="checkbox" value="Clothing" class="category-cb mr-2 rounded"> Clothing</label>
+            <label class="flex items-center"><input type="checkbox" value="Bikes" class="category-cb mr-2 rounded"> Bikes</label>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="font-medium block mb-2">Price range</label>
+          <div class="flex gap-2 items-center">
+            <input type="number" id="minPrice" placeholder="Min" class="w-full border rounded-lg px-3 py-2 text-sm">
+            <span>-</span>
+            <input type="number" id="maxPrice" placeholder="Max" class="w-full border rounded-lg px-3 py-2 text-sm">
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <label class="font-medium block mb-2">Condition</label>
+          <div class="space-y-1">
+            <label class="flex items-center"><input type="checkbox" value="New" class="condition-cb mr-2"> New</label>
+            <label class="flex items-center"><input type="checkbox" value="Like New" class="condition-cb mr-2"> Like New</label>
+            <label class="flex items-center"><input type="checkbox" value="Good" class="condition-cb mr-2"> Good</label>
+            <label class="flex items-center"><input type="checkbox" value="Acceptable" class="condition-cb mr-2"> Acceptable</label>
+          </div>
+        </div>
+        <div>
+          <label class="flex items-center"><input type="checkbox" id="campusOnly" class="mr-2"> Campus pickup only</label>
+        </div>
+      </aside>
+
+      <!-- Products Grid -->
+      <div class="flex-1">
+        <div class="mb-3 text-sm text-gray-500" id="resultCount">Showing <span id="itemCount">0</span> items</div>
+        <div id="listingsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Dynamic cards injected by JS -->
+        </div>
+        <div id="noResults" class="text-center py-12 hidden">
+          <i class="fas fa-search text-4xl text-gray-300 mb-3"></i>
+          <p class="text-gray-500">No listings match your filters. Try adjusting your criteria.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="../public/api-client.js"></script>
+  <script>
+    let listingsData = [];
+
+    // DOM elements
+    const listingsGrid = document.getElementById('listingsGrid');
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const minPriceEl = document.getElementById('minPrice');
+    const maxPriceEl = document.getElementById('maxPrice');
+    const campusOnlyCheck = document.getElementById('campusOnly');
+    const clearFiltersBtn = document.getElementById('clearFilters');
+    const resultCountSpan = document.getElementById('itemCount');
+    const noResultsDiv = document.getElementById('noResults');
+    const desktopFilterBtn = document.getElementById('desktopFilterBtn');
+    const desktopSidebar = document.getElementById('desktopSidebar');
+
+    let currentListings = [];
+
+    // Helper: render cards
+    function renderCards(items) {
+      if (items.length === 0) {
+        listingsGrid.innerHTML = '';
+        noResultsDiv.classList.remove('hidden');
+        resultCountSpan.innerText = '0';
+        return;
+      }
+      noResultsDiv.classList.add('hidden');
+      resultCountSpan.innerText = items.length;
+      
+      listingsGrid.innerHTML = items.map(item => `
+        <div class="listing-card bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 cursor-pointer" data-id="${item.id}">
+          <div class="h-40 bg-gradient-to-br from-gray-100 to-gray-200 relative flex items-center justify-center">
+            <i class="fas ${item.imageIcon || 'fa-box'} text-4xl text-gray-500"></i>
+            <span class="absolute top-2 right-2 bg-white/80 text-xs px-2 py-1 rounded-full shadow">⭐ ${item.rating}</span>
+          </div>
+          <div class="p-4">
+            <div class="flex justify-between items-start">
+              <h3 class="font-bold text-gray-800 text-lg truncate">${item.title}</h3>
+              <span class="text-indigo-600 font-bold text-md">$${item.price}</span>
+            </div>
+            <p class="text-sm text-gray-500 mt-1">${item.category} • ${item.condition}</p>
+            <div class="flex justify-between items-center mt-3 text-xs">
+              <span class="text-gray-500"><i class="far fa-user"></i> ${item.seller}</span>
+              ${item.campusPickup ? '<span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full"><i class="fas fa-university"></i> Campus pickup</span>' : '<span class="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">Delivery only</span>'}
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Attach click event to each card
+      document.querySelectorAll('.listing-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          const id = parseInt(card.dataset.id);
+          const item = items.find(i => i.id === id);
+          alert(`🔍 Item Details: ${item.title}\nPrice: $${item.price}\nCondition: ${item.condition}\nSeller: ${item.seller}\n\n✔️ Escrow protected checkout & chat with seller.`);
+        });
+      });
+    }
+
+    // Filter logic
+    function filterAndSort() {
+      let filtered = [...listingsData];
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      const selectedCategories = Array.from(document.querySelectorAll('.category-cb:checked')).map(cb => cb.value);
+      const selectedConditions = Array.from(document.querySelectorAll('.condition-cb:checked')).map(cb => cb.value);
+      const minPrice = parseFloat(minPriceEl.value);
+      const maxPrice = parseFloat(maxPriceEl.value);
+      const campusOnly = campusOnlyCheck.checked;
+
+      if (searchTerm) {
+        filtered = filtered.filter(item =>
+          (item.title || '').toLowerCase().includes(searchTerm) ||
+          (item.courseCode || '').toLowerCase().includes(searchTerm) ||
+          (item.isbn || '').includes(searchTerm) ||
+          (item.description || '').toLowerCase().includes(searchTerm)
+        );
+      }
+
+      if (selectedCategories.length) {
+        filtered = filtered.filter(item => selectedCategories.includes(item.category));
+      }
+      if (selectedConditions.length) {
+        filtered = filtered.filter(item => selectedConditions.includes(item.condition));
+      }
+      if (!isNaN(minPrice)) {
+        filtered = filtered.filter(item => item.price >= minPrice);
+      }
+      if (!isNaN(maxPrice)) {
+        filtered = filtered.filter(item => item.price <= maxPrice);
+      }
+      if (campusOnly) {
+        filtered = filtered.filter(item => item.campusPickup === true);
+      }
+
+      // Sorting
+      const sortType = sortSelect.value;
+      if (sortType === 'price_low') filtered.sort((a,b) => a.price - b.price);
+      else if (sortType === 'price_high') filtered.sort((a,b) => b.price - a.price);
+      else if (sortType === 'newest') filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
+      else filtered.sort((a,b) => a.id - b.id);
+
+      currentListings = filtered;
+      renderCards(currentListings);
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', filterAndSort);
+    sortSelect.addEventListener('change', filterAndSort);
+    minPriceEl.addEventListener('input', filterAndSort);
+    maxPriceEl.addEventListener('input', filterAndSort);
+    campusOnlyCheck.addEventListener('change', filterAndSort);
+    document.querySelectorAll('.category-cb, .condition-cb').forEach(cb => cb.addEventListener('change', filterAndSort));
+    if (clearFiltersBtn) {
+      clearFiltersBtn.addEventListener('click', () => {
+        document.querySelectorAll('.category-cb').forEach(cb => cb.checked = false);
+        document.querySelectorAll('.condition-cb').forEach(cb => cb.checked = false);
+        minPriceEl.value = '';
+        maxPriceEl.value = '';
+        campusOnlyCheck.checked = false;
+        searchInput.value = '';
+        sortSelect.value = 'relevance';
+        filterAndSort();
+      });
+    }
+
+    // Desktop sidebar toggle (just show/hide)
+    if (desktopFilterBtn) {
+      desktopFilterBtn.addEventListener('click', () => {
+        desktopSidebar.classList.toggle('hidden');
+      });
+    }
+
+    // ----- MOBILE FILTER DRAWER LOGIC -----
+    const mobileFilterToggle = document.getElementById('mobileFilterToggle');
+    const mobileDrawer = document.getElementById('mobileFilterDrawer');
+    const mobileOverlay = document.getElementById('mobileFilterOverlay');
+    const closeMobileFilter = document.getElementById('closeMobileFilter');
+    
+    function syncMobileFilters() {
+      const mobileContainer = document.getElementById('mobileFilterContent');
+      if (mobileContainer) {
+        // clone desktop sidebar content into mobile drawer
+        const desktopFiltersClone = desktopSidebar.cloneNode(true);
+        desktopFiltersClone.id = 'mobileFilterClone';
+        desktopFiltersClone.classList.remove('hidden', 'sticky');
+        desktopFiltersClone.style.position = 'relative';
+        desktopFiltersClone.style.top = 'auto';
+        // Remove any extra toggles inside clone
+        mobileContainer.innerHTML = '';
+        mobileContainer.appendChild(desktopFiltersClone);
+        // reattach events for cloned checkboxes
+        document.querySelectorAll('#mobileFilterClone .category-cb, #mobileFilterClone .condition-cb').forEach(cb => {
+          cb.addEventListener('change', () => { filterAndSort(); });
+        });
+        const clearBtnClone = document.querySelector('#mobileFilterClone #clearFilters');
+        if (clearBtnClone) {
+          const newClear = clearBtnClone.cloneNode(true);
+          clearBtnClone.parentNode.replaceChild(newClear, clearBtnClone);
+          newClear.addEventListener('click', () => {
+            document.querySelectorAll('#mobileFilterClone .category-cb, #mobileFilterClone .condition-cb').forEach(cb => cb.checked = false);
+            if(document.querySelector('#mobileFilterClone #minPrice')) document.querySelector('#mobileFilterClone #minPrice').value = '';
+            if(document.querySelector('#mobileFilterClone #maxPrice')) document.querySelector('#mobileFilterClone #maxPrice').value = '';
+            if(document.querySelector('#mobileFilterClone #campusOnly')) document.querySelector('#mobileFilterClone #campusOnly').checked = false;
+            filterAndSort();
+            // also sync original filters
+            document.querySelectorAll('.category-cb, .condition-cb').forEach(cb => cb.checked = false);
+            minPriceEl.value = ''; maxPriceEl.value = ''; campusOnlyCheck.checked = false;
+          });
+        }
+        // add listeners for price and campus from clone
+        const clonedMin = document.querySelector('#mobileFilterClone #minPrice');
+        const clonedMax = document.querySelector('#mobileFilterClone #maxPrice');
+        const clonedCampus = document.querySelector('#mobileFilterClone #campusOnly');
+        if(clonedMin) clonedMin.addEventListener('input', () => { minPriceEl.value = clonedMin.value; filterAndSort(); });
+        if(clonedMax) clonedMax.addEventListener('input', () => { maxPriceEl.value = clonedMax.value; filterAndSort(); });
+        if(clonedCampus) clonedCampus.addEventListener('change', () => { campusOnlyCheck.checked = clonedCampus.checked; filterAndSort(); });
+      }
+    }
+
+    if (mobileFilterToggle) {
+      mobileFilterToggle.addEventListener('click', () => {
+        syncMobileFilters();
+        mobileDrawer.classList.add('open');
+        mobileOverlay.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      });
+    }
+    function closeDrawer() {
+      mobileDrawer.classList.remove('open');
+      mobileOverlay.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+    if (closeMobileFilter) closeMobileFilter.addEventListener('click', closeDrawer);
+    if (mobileOverlay) mobileOverlay.addEventListener('click', closeDrawer);
+    
+    async function loadListings() {
+      try {
+        const remote = await apiClient.get('../api/marketplace/listings');
+        listingsData = remote.map(item => ({
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          category: item.category || 'Textbooks',
+          condition: item.condition || 'Good',
+          campusPickup: item.pickupLocation ? true : true,
+          rating: item.rating || 4.8,
+          imageIcon: item.imageIcon || 'fa-book',
+          courseCode: item.courseCode || '',
+          isbn: item.isbn || '',
+          seller: item.seller || 'Campus Seller',
+          date: item.createdAt || new Date().toISOString(),
+          description: item.description || ''
+        }));
+        currentListings = [...listingsData];
+        filterAndSort();
+      } catch (error) {
+        console.error(error);
+        listingsData = [];
+        currentListings = [];
+        filterAndSort();
+      }
+    }
+
+    // initial render
+    loadListings();
+    // mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if(mobileMenuBtn) mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+  </script>
+  <!-- Extra style to make mobile drawer visible -->
+  <style>
+    .mobile-filter-panel { transition: transform 0.3s ease-in-out; }
+    .mobile-filter-panel.open { transform: translateX(0); }
+    @media (max-width: 767px) {
+      .filter-sidebar { display: block; }
+    }
+  </style>
+</body>
+</html>
+

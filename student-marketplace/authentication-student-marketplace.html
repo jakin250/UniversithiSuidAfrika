@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Authentication | Student Marketplace</title>
+  <!-- Tailwind + Fonts + Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    .auth-card {
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+    .input-group {
+      transition: all 0.2s ease;
+    }
+    .input-group:focus-within {
+      transform: translateX(4px);
+    }
+    .password-strength {
+      height: 4px;
+      transition: width 0.3s ease, background-color 0.3s ease;
+    }
+    .verification-code-input {
+      letter-spacing: 0.5rem;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeIn 0.3s ease-out;
+    }
+  </style>
+  </head>
+  <body class="flex items-center justify-center p-4">
+
+  <!-- Main Container -->
+  <div class="w-full max-w-md">
+    
+    <!-- Logo / Brand -->
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full">
+        <i class="fas fa-graduation-cap text-white text-2xl"></i>
+        <span class="font-bold text-xl text-white">Student<span class="text-indigo-200">Marketplace</span></span>
+      </div>
+      <p class="text-white/80 text-sm mt-3">Safe. Trusted. Student verified.</p>
+    </div>
+
+    <!-- Auth Card (Login / Signup Toggle) -->
+    <div class="bg-white rounded-2xl shadow-2xl overflow-hidden auth-card">
+      
+      <!-- Tab Headers -->
+      <div class="flex border-b border-gray-200">
+        <button id="loginTabBtn" class="flex-1 py-4 text-center font-semibold transition-all duration-200 bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600">
+          <i class="fas fa-sign-in-alt mr-2"></i> Login
+        </button>
+        <button id="signupTabBtn" class="flex-1 py-4 text-center font-semibold transition-all duration-200 text-gray-500 hover:text-gray-700">
+          <i class="fas fa-user-plus mr-2"></i> Sign Up
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginForm" class="p-6 md:p-8 fade-in">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome back</h2>
+        <p class="text-gray-500 text-sm mb-6">Sign in to access your campus marketplace</p>
+        
+        <form id="loginFormElement" class="space-y-5">
+          <div class="input-group">
+            <label class="block text-sm font-medium text-gray-700 mb-1">University email</label>
+            <div class="relative">
+              <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input type="email" id="loginEmail" required placeholder="student@university.edu" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+          </div>
+          
+          <div class="input-group">
+            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <div class="relative">
+              <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500">
+              <button type="button" class="toggle-password absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <i class="far fa-eye-slash"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="flex justify-between items-center text-sm">
+            <label class="flex items-center gap-2">
+              <input type="checkbox" class="rounded text-indigo-600"> Remember me
+            </label>
+            <a href="authentication-student-marketplace.html" id="forgotPasswordLink" class="text-indigo-600 hover:underline">Forgot password?</a>
+          </div>
+          
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition shadow-md">
+            <i class="fas fa-arrow-right"></i> Sign In
+          </button>
+        </form>
+        
+        <div class="mt-6 text-center text-xs text-gray-400">
+          <i class="fas fa-shield-alt"></i> Protected by university email verification
+        </div>
+      </div>
+
+      <!-- Sign Up Form (hidden by default) -->
+      <div id="signupForm" class="p-6 md:p-8 hidden fade-in">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Create account</h2>
+        <p class="text-gray-500 text-sm mb-6">Join your campus trading community</p>
+        
+        <form id="signupFormElement" class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">First name</label>
+              <input type="text" id="firstName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Last name</label>
+              <input type="text" id="lastName" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500">
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">University email *</label>
+            <div class="relative">
+              <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input type="email" id="signupEmail" required placeholder="name@university.edu" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-indigo-500">
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Must be a valid .edu email or university domain</p>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <div class="relative">
+              <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input type="password" id="signupPassword" required class="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-indigo-500">
+              <button type="button" class="toggle-password-signup absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                <i class="far fa-eye-slash"></i>
+              </button>
+            </div>
+            <div class="mt-2">
+              <div class="password-strength bg-gray-200 rounded-full w-full h-1"></div>
+              <p class="text-xs text-gray-400 mt-1" id="passwordStrengthText">Weak</p>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Confirm password</label>
+            <div class="relative">
+              <i class="fas fa-check-circle absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input type="password" id="confirmPassword" required class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-indigo-500">
+            </div>
+          </div>
+          
+          <label class="flex items-start gap-3 text-sm">
+            <input type="checkbox" id="termsCheckbox" required class="mt-0.5">
+            <span class="text-gray-600">I agree to the <a href="authentication-student-marketplace.html" class="text-indigo-600">Terms of Service</a> and <a href="authentication-student-marketplace.html" class="text-indigo-600">Community Guidelines</a></span>
+          </label>
+          
+          <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition shadow-md">
+            <i class="fas fa-user-check"></i> Sign Up
+          </button>
+        </form>
+        
+        <div class="mt-6 text-center text-xs text-gray-400">
+          <i class="fas fa-envelope"></i> Verification email will be sent to your university address
+        </div>
+      </div>
+    </div>
+
+    <!-- Verification Modal (sent after signup) -->
+    <div id="verificationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-2xl max-w-md w-full mx-4 p-6 transform transition-all">
+        <div class="text-center mb-4">
+          <i class="fas fa-envelope-open-text text-5xl text-indigo-500 mb-3"></i>
+          <h3 class="text-xl font-bold text-gray-800">Verify your email</h3>
+          <p class="text-sm text-gray-500 mt-2">We've sent a verification code to <span id="verificationEmailDisplay" class="font-medium text-indigo-600"></span></p>
+        </div>
+        
+        <div class="mb-5">
+          <label class="block text-sm font-medium text-gray-700 mb-2 text-center">Enter verification code</label>
+          <input type="text" id="verificationCode" maxlength="6" placeholder="000000" class="verification-code-input w-full text-center text-2xl tracking-widest border border-gray-300 rounded-xl py-3 focus:ring-indigo-500">
+        </div>
+        
+        <div class="flex gap-3">
+          <button id="resendCodeBtn" class="flex-1 border border-gray-300 py-2 rounded-lg text-sm hover:bg-gray-50">Resend code</button>
+          <button id="verifyCodeBtn" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700">Verify</button>
+        </div>
+        
+        <p class="text-center text-xs text-gray-400 mt-4">Check your spam folder if you don't see the email</p>
+      </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+      <div class="bg-white rounded-2xl max-w-md w-full mx-4 p-6">
+        <div class="text-center mb-4">
+          <i class="fas fa-key text-4xl text-amber-500 mb-3"></i>
+          <h3 class="text-xl font-bold text-gray-800">Reset password</h3>
+          <p class="text-sm text-gray-500 mt-2">Enter your university email to receive reset instructions</p>
+        </div>
+        <input type="email" id="resetEmail" placeholder="student@university.edu" class="w-full border border-gray-300 rounded-xl px-4 py-3 mb-4">
+        <div class="flex gap-3">
+          <button id="closeForgotBtn" class="flex-1 border py-2 rounded-lg">Cancel</button>
+          <button id="sendResetBtn" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg">Send reset link</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../public/api-client.js"></script>
+  <script>
+    // Tab Switching
+    const loginTab = document.getElementById('loginTabBtn');
+    const signupTab = document.getElementById('signupTabBtn');
+    const loginFormDiv = document.getElementById('loginForm');
+    const signupFormDiv = document.getElementById('signupForm');
+    
+    function switchToLogin() {
+      loginFormDiv.classList.remove('hidden');
+      signupFormDiv.classList.add('hidden');
+      loginTab.classList.add('bg-indigo-50', 'text-indigo-600', 'border-b-2', 'border-indigo-600');
+      loginTab.classList.remove('text-gray-500');
+      signupTab.classList.remove('bg-indigo-50', 'text-indigo-600', 'border-b-2', 'border-indigo-600');
+      signupTab.classList.add('text-gray-500');
+    }
+    
+    function switchToSignup() {
+      signupFormDiv.classList.remove('hidden');
+      loginFormDiv.classList.add('hidden');
+      signupTab.classList.add('bg-indigo-50', 'text-indigo-600', 'border-b-2', 'border-indigo-600');
+      signupTab.classList.remove('text-gray-500');
+      loginTab.classList.remove('bg-indigo-50', 'text-indigo-600', 'border-b-2', 'border-indigo-600');
+      loginTab.classList.add('text-gray-500');
+    }
+    
+    loginTab.addEventListener('click', switchToLogin);
+    signupTab.addEventListener('click', switchToSignup);
+    
+    // Toggle password visibility (Login)
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const input = this.closest('.relative').querySelector('input');
+        const icon = this.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        } else {
+          input.type = 'password';
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        }
+      });
+    });
+    
+    // Toggle password for signup
+    document.querySelectorAll('.toggle-password-signup').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const input = this.closest('.relative').querySelector('input');
+        const icon = this.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        } else {
+          input.type = 'password';
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        }
+      });
+    });
+    
+    // Password strength meter
+    const signupPassword = document.getElementById('signupPassword');
+    const strengthBar = document.querySelector('.password-strength');
+    const strengthText = document.getElementById('passwordStrengthText');
+    
+    signupPassword?.addEventListener('input', function() {
+      const password = this.value;
+      let strength = 0;
+      if (password.length >= 6) strength++;
+      if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+      if (password.match(/[0-9]/)) strength++;
+      if (password.match(/[^a-zA-Z0-9]/)) strength++;
+      
+      const width = (strength / 4) * 100;
+      strengthBar.style.width = width + '%';
+      
+      if (strength <= 1) {
+        strengthBar.style.backgroundColor = '#ef4444';
+        strengthText.innerText = 'Weak';
+      } else if (strength <= 2) {
+        strengthBar.style.backgroundColor = '#f59e0b';
+        strengthText.innerText = 'Fair';
+      } else if (strength <= 3) {
+        strengthBar.style.backgroundColor = '#10b981';
+        strengthText.innerText = 'Good';
+      } else {
+        strengthBar.style.backgroundColor = '#059669';
+        strengthText.innerText = 'Strong';
+      }
+    });
+    
+    // Login Form Submit
+    const loginForm = document.getElementById('loginFormElement');
+    loginForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      if (!email.endsWith('.edu') && !email.includes('university')) {
+        alert('⚠️ Please use a valid university email address (.edu or university domain)');
+        return;
+      }
+      
+      try {
+        await apiClient.post('../api/auth/login', { email, password });
+        window.location.href = "my-dashboard-student-marketplace.html";
+      } catch (error) {
+        alert(error.message || 'Login failed');
+      }
+    });
+    
+    // Signup Form Submit
+    const signupFormElem = document.getElementById('signupFormElement');
+    const verificationModal = document.getElementById('verificationModal');
+    const verificationEmailDisplay = document.getElementById('verificationEmailDisplay');
+    let pendingSignupEmail = '';
+    
+    signupFormElem?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const firstName = document.getElementById('firstName').value;
+      const lastName = document.getElementById('lastName').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      const terms = document.getElementById('termsCheckbox').checked;
+      
+      if (!email.endsWith('.edu') && !email.includes('university')) {
+        alert('⚠️ Must use a valid university email address (.edu or university domain)');
+        return;
+      }
+      
+      if (password !== confirm) {
+        alert('❌ Passwords do not match');
+        return;
+      }
+      
+      if (password.length < 6) {
+        alert('❌ Password must be at least 6 characters');
+        return;
+      }
+      
+      if (!terms) {
+        alert('Please accept the Terms of Service');
+        return;
+      }
+      
+      pendingSignupEmail = email;
+
+      try {
+        await apiClient.post('../api/auth/register', {
+          name: `${firstName} ${lastName}`.trim(),
+          email,
+          password
+        });
+        verificationModal.querySelector('h3').innerText = 'Account created';
+        verificationModal.querySelector('p').innerHTML = `Your account is now active for <span class="font-medium text-indigo-600">${email}</span>.`;
+        verificationCode.value = '';
+        verificationModal.classList.remove('hidden');
+        switchToLogin();
+        signupFormElem.reset();
+        strengthBar.style.width = '0%';
+      } catch (error) {
+        alert(error.message || 'Signup failed');
+      }
+    });
+    
+    // Verify Code
+    const verifyBtn = document.getElementById('verifyCodeBtn');
+    const verificationCode = document.getElementById('verificationCode');
+    
+    verifyBtn?.addEventListener('click', () => {
+      verificationModal.classList.add('hidden');
+    });
+    
+    // Resend code simulation
+    document.getElementById('resendCodeBtn')?.addEventListener('click', () => {
+      alert(`📧 New verification code sent to ${pendingSignupEmail}`);
+    });
+    
+    // Forgot password modal
+    const forgotLink = document.getElementById('forgotPasswordLink');
+    const forgotModal = document.getElementById('forgotModal');
+    const closeForgotBtn = document.getElementById('closeForgotBtn');
+    const sendResetBtn = document.getElementById('sendResetBtn');
+    
+    forgotLink?.addEventListener('click', (e) => {
+      e.preventDefault();
+      forgotModal.classList.remove('hidden');
+    });
+    
+    closeForgotBtn?.addEventListener('click', () => {
+      forgotModal.classList.add('hidden');
+    });
+    
+    sendResetBtn?.addEventListener('click', () => {
+      const resetEmail = document.getElementById('resetEmail').value;
+      if (resetEmail) {
+        alert(`📧 Password reset link sent to ${resetEmail}\n\nCheck your inbox (and spam folder) to reset your password.`);
+        forgotModal.classList.add('hidden');
+      } else {
+        alert('Please enter your university email');
+      }
+    });
+    
+    // Close modals by clicking backdrop
+    verificationModal?.addEventListener('click', (e) => {
+      if (e.target === verificationModal) verificationModal.classList.add('hidden');
+    });
+    forgotModal?.addEventListener('click', (e) => {
+      if (e.target === forgotModal) forgotModal.classList.add('hidden');
+    });
+  </script>
+</body>
+</html>
+

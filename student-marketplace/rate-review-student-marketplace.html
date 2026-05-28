@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Rate & Review | Student Marketplace</title>
+  <!-- Tailwind + Fonts + Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f3f4f6; }
+    .star-rating i {
+      cursor: pointer;
+      transition: transform 0.1s ease, color 0.1s;
+    }
+    .star-rating i:hover {
+      transform: scale(1.1);
+    }
+    .review-card {
+      transition: all 0.2s;
+    }
+    .review-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    .tag-pill {
+      background: #f3f4f6;
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .tag-pill.selected {
+      background: #4f46e5;
+      color: white;
+    }
+    .submit-btn {
+      transition: all 0.2s;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="window.location.href='student-marketplace-buy-sell-trade-on-campus.html'">
+          <i class="fas fa-graduation-cap text-indigo-600 text-2xl"></i>
+          <span class="font-bold text-xl text-gray-800">Student<span class="text-indigo-600">Marketplace</span></span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+          <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+          <a href="messages-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium"><i class="far fa-comment-dots mr-1"></i>Messages</a>
+          <div class="relative group">
+            <button class="flex items-center space-x-1 text-gray-700 hover:text-indigo-600">
+              <i class="far fa-user-circle text-xl"></i>
+              <span>Account</span>
+              <i class="fas fa-chevron-down text-xs"></i>
+            </button>
+            <div class="absolute right-0 w-48 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 hidden group-hover:block py-2 z-20">
+              <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+              <a href="saved-items-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Saved items</a>
+              <hr class="my-1">
+              <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+            </div>
+          </div>
+        </div>
+        <button id="mobileMenuBtn" class="md:hidden text-gray-600">
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden bg-white border-t px-4 py-2">
+      <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+      <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+      <a href="messages-student-marketplace.html" class="block py-2 text-gray-700">Messages</a>
+      <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+      <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+    </div>
+  </nav>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <!-- Header with breadcrumb -->
+    <div class="mb-6">
+      <div class="text-sm text-gray-500 mb-2">
+        <a href="my-dashboard-student-marketplace.html" class="hover:text-indigo-600">Dashboard</a> / <a href="order-tracking-student-marketplace.html" class="hover:text-indigo-600">Orders</a> / <span class="text-gray-800">Rate & Review</span>
+      </div>
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Share your experience</h1>
+      <p class="text-gray-500 mt-1">Your feedback helps build trust in our student community</p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+      
+      <!-- LEFT COLUMN: Transaction Summary & Rating Form -->
+      <div class="lg:col-span-2 space-y-6">
+        
+        <!-- Order info card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 flex items-center gap-4 flex-wrap">
+          <div class="w-16 h-16 bg-indigo-50 rounded-xl flex items-center justify-center"><i class="fas fa-book-open text-indigo-500 text-2xl"></i></div>
+          <div class="flex-1">
+            <p class="font-bold text-gray-800">Calculus: Early Transcendentals (9th Edition)</p>
+            <p class="text-sm text-gray-500">Order #SMP-4829 • Completed on May 13, 2026</p>
+            <div class="flex gap-3 mt-1 text-xs">
+              <span class="text-green-600"><i class="fas fa-check-circle"></i> Payment released</span>
+              <span><i class="fas fa-user-graduate"></i> Seller: Alex Johnson</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-indigo-600 font-bold">$45.00</p>
+          </div>
+        </div>
+
+        <!-- Rating form -->
+        <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-6">
+          <h2 class="font-bold text-lg mb-4">Rate your transaction</h2>
+          
+          <!-- Star rating component -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Your rating for Alex Johnson</label>
+            <div class="star-rating flex gap-2 text-3xl text-gray-300" id="starRating">
+              <i class="far fa-star" data-value="1"></i>
+              <i class="far fa-star" data-value="2"></i>
+              <i class="far fa-star" data-value="3"></i>
+              <i class="far fa-star" data-value="4"></i>
+              <i class="far fa-star" data-value="5"></i>
+            </div>
+            <p class="text-xs text-gray-400 mt-1" id="ratingFeedback">Click to rate (1 = poor, 5 = excellent)</p>
+          </div>
+
+          <!-- Review text -->
+          <div class="mb-5">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Write a review (optional)</label>
+            <textarea id="reviewText" rows="4" placeholder="Share details about your experience... Was the item as described? Communication? Pickup/delivery smooth?" class="w-full border border-gray-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+          </div>
+
+          <!-- Quick tags (condition, communication, etc) -->
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Highlight what went well (select tags)</label>
+            <div class="flex flex-wrap gap-2" id="tagContainer">
+              <span class="tag-pill" data-tag="Fast delivery">🚚 Fast delivery</span>
+              <span class="tag-pill" data-tag="Great condition">📦 Great condition</span>
+              <span class="tag-pill" data-tag="Clear communication">💬 Clear communication</span>
+              <span class="tag-pill" data-tag="Accurate description">✅ Accurate description</span>
+              <span class="tag-pill" data-tag="Friendly seller">😊 Friendly seller</span>
+              <span class="tag-pill" data-tag="Smooth pickup">📍 Smooth pickup</span>
+            </div>
+            <div class="hidden text-xs text-indigo-600 mt-1" id="selectedTagsPreview"></div>
+          </div>
+
+          <!-- Submit button -->
+          <button id="submitReviewBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition submit-btn flex items-center justify-center gap-2">
+            <i class="fas fa-pen-fancy"></i> Submit review & rating
+          </button>
+          <p class="text-xs text-gray-400 text-center mt-3">Reviews help other students shop with confidence</p>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Seller's Reputation & Existing Reviews -->
+      <div class="space-y-6">
+        <!-- Seller summary card -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5 text-center">
+          <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-2xl font-bold mx-auto">AJ</div>
+          <h3 class="font-bold mt-3">Alex Johnson</h3>
+          <div class="flex justify-center items-center gap-1 mt-1">
+            <i class="fas fa-star text-yellow-400"></i>
+            <span class="font-semibold">4.8</span>
+            <span class="text-gray-400 text-sm">(24 reviews)</span>
+            <i class="fas fa-check-circle text-indigo-500 ml-1 text-sm"></i>
+          </div>
+          <p class="text-xs text-gray-500 mt-2"><i class="fas fa-graduation-cap"></i> Verified • Member since Sep 2024</p>
+          <div class="mt-3 text-xs text-gray-500">
+            <span class="inline-block bg-green-100 text-green-700 px-2 py-1 rounded-full">⭐ Top rated seller</span>
+          </div>
+        </div>
+
+        <!-- Recent reviews from others -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-5">
+          <h3 class="font-bold mb-3 flex items-center gap-2"><i class="fas fa-star text-yellow-500"></i> What others say</h3>
+          <div class="space-y-4 max-h-96 overflow-y-auto pr-1 custom-scroll">
+            <!-- Review 1 -->
+            <div class="review-card border-b pb-3">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium text-sm">Emma Watson</p>
+                  <div class="flex text-yellow-400 text-xs mt-1">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                  </div>
+                </div>
+                <span class="text-xs text-gray-400">2 weeks ago</span>
+              </div>
+              <p class="text-sm text-gray-600 mt-2">Textbook was in perfect condition as described. Seller was super responsive and met me on time. Would buy again!</p>
+              <div class="flex gap-1 mt-2 text-xs text-indigo-600"><span>#Fast delivery</span><span>#Great condition</span></div>
+            </div>
+            <!-- Review 2 -->
+            <div class="review-card border-b pb-3">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium text-sm">Michael Chen</p>
+                  <div class="flex text-yellow-400 text-xs mt-1">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                  </div>
+                </div>
+                <span class="text-xs text-gray-400">1 month ago</span>
+              </div>
+              <p class="text-sm text-gray-600 mt-2">Good price, minor wear but exactly as shown in photos. Trustworthy seller.</p>
+              <div class="flex gap-1 mt-2 text-xs text-indigo-600"><span>#Accurate description</span><span>#Smooth pickup</span></div>
+            </div>
+            <!-- Review 3 -->
+            <div class="review-card pb-2">
+              <div class="flex justify-between items-start">
+                <div>
+                  <p class="font-medium text-sm">Sophia Rodriguez</p>
+                  <div class="flex text-yellow-400 text-xs mt-1">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                  </div>
+                </div>
+                <span class="text-xs text-gray-400">3 months ago</span>
+              </div>
+              <p class="text-sm text-gray-600 mt-2">Alex was kind and even gave me study tips for the course. Highly recommend!</p>
+              <div class="flex gap-1 mt-2 text-xs text-indigo-600"><span>#Friendly seller</span><span>#Clear communication</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Campus trust badge -->
+        <div class="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-4 border border-indigo-100 text-center">
+          <i class="fas fa-hand-peace text-indigo-600 text-2xl"></i>
+          <p class="text-xs text-gray-600 mt-2">Your honest review builds a safer campus marketplace</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t bg-white mt-16 py-6 text-center text-gray-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4">Student marketplace — Reviews are verified from real transactions</div>
+  </footer>
+
+  <script src="../public/api-client.js"></script>
+  <script>
+    // Mobile menu toggle
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if(mobileBtn) mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+    // ---------- STAR RATING LOGIC ----------
+    let currentRating = 0;
+    const stars = document.querySelectorAll('#starRating i');
+    const ratingFeedback = document.getElementById('ratingFeedback');
+
+    function updateStars(rating) {
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.classList.remove('far', 'fa-star');
+          star.classList.add('fas', 'fa-star', 'text-yellow-400');
+        } else {
+          star.classList.remove('fas', 'fa-star', 'text-yellow-400');
+          star.classList.add('far', 'fa-star');
+        }
+      });
+    }
+
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        const value = parseInt(star.getAttribute('data-value'));
+        currentRating = value;
+        updateStars(currentRating);
+        if(currentRating === 5) ratingFeedback.innerHTML = "🌟 Excellent! You're very satisfied.";
+        else if(currentRating === 4) ratingFeedback.innerHTML = "😊 Great — solid experience.";
+        else if(currentRating === 3) ratingFeedback.innerHTML = "👍 Average — could be better.";
+        else if(currentRating === 2) ratingFeedback.innerHTML = "😕 Below average — let us know why.";
+        else if(currentRating === 1) ratingFeedback.innerHTML = "😞 Poor experience. Please share details.";
+      });
+      star.addEventListener('mouseenter', () => {
+        const val = parseInt(star.getAttribute('data-value'));
+        stars.forEach((s, idx) => {
+          if (idx < val) {
+            s.classList.remove('far');
+            s.classList.add('fas', 'text-yellow-300');
+          } else {
+            if(!s.classList.contains('text-yellow-400')) {
+              s.classList.remove('fas');
+              s.classList.add('far');
+            }
+          }
+        });
+      });
+      star.addEventListener('mouseleave', () => {
+        updateStars(currentRating);
+      });
+    });
+
+    // ---------- TAG SELECTION ----------
+    const tags = document.querySelectorAll('.tag-pill');
+    let selectedTags = [];
+    tags.forEach(tag => {
+      tag.addEventListener('click', () => {
+        const tagValue = tag.getAttribute('data-tag');
+        if(tag.classList.contains('selected')) {
+          tag.classList.remove('selected');
+          selectedTags = selectedTags.filter(t => t !== tagValue);
+        } else {
+          tag.classList.add('selected');
+          selectedTags.push(tagValue);
+        }
+        const previewSpan = document.getElementById('selectedTagsPreview');
+        if(selectedTags.length > 0) {
+          previewSpan.classList.remove('hidden');
+          previewSpan.innerHTML = `Selected: ${selectedTags.join(', ')}`;
+        } else {
+          previewSpan.classList.add('hidden');
+        }
+      });
+    });
+
+    // ---------- SUBMIT REVIEW ----------
+    const submitBtn = document.getElementById('submitReviewBtn');
+    const reviewTextArea = document.getElementById('reviewText');
+
+    submitBtn.addEventListener('click', () => {
+      if(currentRating === 0) {
+        alert("⭐ Please select a star rating before submitting.");
+        return;
+      }
+      const review = reviewTextArea.value.trim();
+      const confirmMsg = `Thank you for your review!\n\nRating: ${currentRating} star${currentRating > 1 ? 's' : ''}\nReview: ${review || "(no comment)"}\nTags: ${selectedTags.length ? selectedTags.join(', ') : 'none'}`;
+      alert(confirmMsg + "\n\n✅ Your review helps build trust in the campus community. It will appear on Alex Johnson's profile.");
+      
+      apiClient.post('../api/marketplace/reviews', {
+        rating: currentRating,
+        review: review || '',
+        seller: 'Alex Johnson',
+        tags: selectedTags
+      }).catch(console.error);
+
+      // In a real app, we'd send data to backend, disable form, show success
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Review submitted!';
+      submitBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+      submitBtn.classList.add('bg-green-600', 'cursor-default');
+      
+      // Simulate adding to "What others say" section dynamically (optional client-side demo)
+      const reviewsContainer = document.querySelector('.space-y-4.max-h-96');
+      const newReviewDiv = document.createElement('div');
+      newReviewDiv.className = 'review-card border-b pb-3';
+      const starsText = '★'.repeat(currentRating) + '☆'.repeat(5-currentRating);
+      newReviewDiv.innerHTML = `
+        <div class="flex justify-between items-start">
+          <div><p class="font-medium text-sm">You (verified buyer)</p>
+          <div class="text-yellow-400 text-xs mt-1">${starsText}</div></div>
+          <span class="text-xs text-gray-400">Just now</span>
+        </div>
+        <p class="text-sm text-gray-600 mt-2">${review || "Great transaction!"}</p>
+        <div class="flex gap-1 mt-2 text-xs text-indigo-600">${selectedTags.map(t => `#${t.replace(/ /g, '')}`).join(' ')}</div>
+      `;
+      if(reviewsContainer) reviewsContainer.prepend(newReviewDiv);
+    });
+    
+  </script>
+  <style>
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  </style>
+</body>
+</html>
+

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Dispute Resolution | Student Marketplace</title>
+  <!-- Tailwind + Fonts + Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f9fafb; }
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .status-pending { background: #fef3c7; color: #b45309; }
+    .status-in-review { background: #dbeafe; color: #1e40af; }
+    .status-resolved { background: #d1fae5; color: #065f46; }
+    .status-escalated { background: #fee2e2; color: #991b1b; }
+    .dispute-card {
+      transition: all 0.2s ease;
+    }
+    .dispute-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+    .evidence-preview {
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .evidence-preview:hover {
+      opacity: 0.8;
+      transform: scale(1.02);
+    }
+    .custom-scroll::-webkit-scrollbar { width: 4px; }
+    .custom-scroll::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+    .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== NAVBAR ==================== -->
+  <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="window.location.href='student-marketplace-buy-sell-trade-on-campus.html'">
+          <i class="fas fa-graduation-cap text-indigo-600 text-2xl"></i>
+          <span class="font-bold text-xl text-gray-800">Student<span class="text-indigo-600">Marketplace</span></span>
+        </div>
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+          <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+          <a href="messages-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium"><i class="far fa-comment-dots mr-1"></i>Messages</a>
+          <div class="relative group">
+            <button class="flex items-center space-x-1 text-gray-700 hover:text-indigo-600">
+              <i class="far fa-user-circle text-xl"></i>
+              <span>Account</span>
+              <i class="fas fa-chevron-down text-xs"></i>
+            </button>
+            <div class="absolute right-0 w-48 mt-2 bg-white rounded-lg shadow-lg border border-gray-100 hidden group-hover:block py-2 z-20">
+              <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
+              <a href="saved-items-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Saved items</a>
+              <a href="dispute-resolution-student-marketplace.html" class="block px-4 py-2 text-sm text-indigo-600 bg-indigo-50">Disputes</a>
+              <hr class="my-1">
+              <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+            </div>
+          </div>
+        </div>
+        <button id="mobileMenuBtn" class="md:hidden text-gray-600">
+          <i class="fas fa-bars text-2xl"></i>
+        </button>
+      </div>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden bg-white border-t px-4 py-2">
+      <a href="browse-listings-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Browse</a>
+      <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
+      <a href="messages-student-marketplace.html" class="block py-2 text-gray-700">Messages</a>
+      <a href="dispute-resolution-student-marketplace.html" class="block py-2 text-indigo-600 font-medium">Disputes</a>
+      <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+    </div>
+  </nav>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+    
+    <!-- Page Header -->
+    <div class="mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+        <i class="fas fa-gavel text-amber-600"></i> Dispute Resolution Center
+      </h1>
+      <p class="text-gray-500 mt-1">Fair and transparent resolution for all transactions — our team helps resolve issues within 48 hours</p>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm text-center">
+        <p class="text-2xl font-bold text-amber-600" id="openDisputesCount">0</p>
+        <p class="text-xs text-gray-500">Open disputes</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm text-center">
+        <p class="text-2xl font-bold text-green-600" id="resolvedCount">0</p>
+        <p class="text-xs text-gray-500">Resolved</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm text-center">
+        <p class="text-2xl font-bold text-blue-600" id="avgResolutionTime">0</p>
+        <p class="text-xs text-gray-500">Avg. resolution (hrs)</p>
+      </div>
+      <div class="bg-white rounded-xl p-4 border border-gray-200 shadow-sm text-center">
+        <p class="text-2xl font-bold text-indigo-600" id="buyerWins">0</p>
+        <p class="text-xs text-gray-500">Buyer favored</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="border-b border-gray-200 mb-6">
+      <div class="flex gap-6 overflow-x-auto">
+        <button class="tab-btn py-2 px-1 font-medium text-indigo-600 border-b-2 border-indigo-600" data-tab="my-disputes">📋 My disputes</button>
+        <button class="tab-btn py-2 px-1 font-medium text-gray-600 hover:text-indigo-600" data-tab="new-dispute">⚠️ Raise new dispute</button>
+        <button class="tab-btn py-2 px-1 font-medium text-gray-600 hover:text-indigo-600" data-tab="guidelines">📚 Guidelines & FAQ</button>
+      </div>
+    </div>
+
+    <!-- Tab: My Disputes -->
+    <div id="myDisputesTab" class="tab-content">
+      <div class="mb-4 flex justify-between items-center">
+        <p class="text-sm text-gray-500">View and track all your dispute cases</p>
+        <select id="disputeFilter" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm">
+          <option value="all">All disputes</option>
+          <option value="pending">Pending</option>
+          <option value="in-review">In review</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </div>
+      <div id="disputesList" class="space-y-4">
+        <!-- Dynamic dispute cards injected here -->
+      </div>
+      <div id="noDisputes" class="hidden text-center py-12 bg-white rounded-2xl border border-gray-200">
+        <i class="fas fa-hand-peace text-5xl text-gray-300 mb-3"></i>
+        <p class="text-gray-500">No disputes found. Keep up the great transactions!</p>
+      </div>
+    </div>
+
+    <!-- Tab: Raise New Dispute -->
+    <div id="newDisputeTab" class="tab-content hidden">
+      <div class="bg-white rounded-2xl shadow-md border border-gray-200 p-6 md:p-8">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">File a dispute</h2>
+        <p class="text-sm text-gray-500 mb-6">Use this form to report an issue with an order. Our team will investigate and respond within 48 hours.</p>
+        
+        <form id="disputeForm" class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Order ID *</label>
+            <select id="disputeOrderId" class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-2 focus:ring-indigo-500" required>
+              <option value="">Select an order</option>
+              <option value="SMP-4829">SMP-4829 - Calculus Textbook ($45) - Completed May 13</option>
+              <option value="SMP-4791">SMP-4791 - iPad Air ($320) - In transit</option>
+              <option value="SMP-4755">SMP-4755 - IKEA Desk ($75) - Delivered May 10</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Dispute reason *</label>
+            <select id="disputeReason" class="w-full border border-gray-300 rounded-xl px-4 py-3" required>
+              <option value="">Select reason</option>
+              <option value="not_received">Item not received</option>
+              <option value="not_as_described">Item not as described</option>
+              <option value="damaged">Item damaged</option>
+              <option value="wrong_item">Wrong item sent</option>
+              <option value="seller_unresponsive">Seller unresponsive</option>
+              <option value="other">Other issue</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+            <textarea id="disputeDescription" rows="4" placeholder="Please provide detailed information about the issue. Include what you expected vs. what happened, and any communication with the seller." class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:ring-indigo-500" required></textarea>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Upload evidence (photos, screenshots)</label>
+            <div id="evidenceUploadArea" class="border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:border-indigo-500 transition">
+              <i class="fas fa-cloud-upload-alt text-2xl text-gray-400 mb-2"></i>
+              <p class="text-sm text-gray-500">Click or drag to upload images</p>
+              <p class="text-xs text-gray-400">JPG, PNG up to 5MB each (max 5 files)</p>
+              <input type="file" id="evidenceInput" accept="image/*" multiple class="hidden">
+            </div>
+            <div id="evidencePreview" class="flex flex-wrap gap-2 mt-3"></div>
+          </div>
+          
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm">
+            <i class="fas fa-info-circle text-amber-600 mr-2"></i>
+            <span class="text-amber-800">By submitting a dispute, you agree to our dispute resolution process. Our team may contact both parties for additional information.</span>
+          </div>
+          
+          <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 rounded-xl transition shadow-md">
+            <i class="fas fa-paper-plane"></i> Submit dispute
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tab: Guidelines -->
+    <div id="guidelinesTab" class="tab-content hidden">
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-white rounded-2xl border border-gray-200 p-6">
+          <i class="fas fa-clock text-2xl text-indigo-500 mb-3"></i>
+          <h3 class="font-bold text-lg mb-2">Resolution timeline</h3>
+          <ul class="space-y-2 text-sm text-gray-600">
+            <li>• <strong>Step 1:</strong> Dispute filed → Status: Pending review (0-24 hrs)</li>
+            <li>• <strong>Step 2:</strong> Team investigates → Status: In review (24-48 hrs)</li>
+            <li>• <strong>Step 3:</strong> Resolution proposed → Both parties notified</li>
+            <li>• <strong>Step 4:</strong> Final decision → Escrow released accordingly</li>
+          </ul>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-200 p-6">
+          <i class="fas fa-shield-alt text-2xl text-green-500 mb-3"></i>
+          <h3 class="font-bold text-lg mb-2">Escrow protection</h3>
+          <p class="text-sm text-gray-600 mb-3">Funds are held securely until dispute is resolved. If buyer wins, payment is refunded. If seller wins, funds are released.</p>
+          <div class="bg-green-50 p-3 rounded-lg text-xs text-green-700">
+            <i class="fas fa-check-circle"></i> 94% of disputes resolved within 48 hours
+          </div>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-200 p-6">
+          <i class="fas fa-gavel text-2xl text-purple-500 mb-3"></i>
+          <h3 class="font-bold text-lg mb-2">What we review</h3>
+          <ul class="space-y-1 text-sm text-gray-600 list-disc list-inside">
+            <li>Chat history between buyer & seller</li>
+            <li>Item photos and condition checklist</li>
+            <li>Tracking / pickup confirmation</li>
+            <li>Previous dispute history</li>
+          </ul>
+        </div>
+        <div class="bg-white rounded-2xl border border-gray-200 p-6">
+          <i class="fas fa-question-circle text-2xl text-amber-500 mb-3"></i>
+          <h3 class="font-bold text-lg mb-2">FAQs</h3>
+          <div class="space-y-2 text-sm">
+            <details><summary class="cursor-pointer font-medium">Can I cancel a dispute?</summary><p class="text-gray-500 mt-1 text-xs">Yes, if both parties reach an agreement before resolution.</p></details>
+            <details><summary class="cursor-pointer font-medium mt-2">What if I disagree with the decision?</summary><p class="text-gray-500 mt-1 text-xs">You can appeal within 7 days with new evidence.</p></details>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t bg-white mt-12 py-6 text-center text-gray-400 text-xs">
+    <div class="max-w-7xl mx-auto px-4">Student Marketplace — Fair dispute resolution with escrow protection</div>
+  </footer>
+
+  <script>
+    // Mock dispute data
+    let disputes = [
+      {
+        id: "DSP-001",
+        orderId: "SMP-4755",
+        itemName: "IKEA Desk + Office Chair",
+        reason: "Item damaged",
+        description: "The desk arrived with a cracked leg that wasn't mentioned in photos.",
+        status: "resolved",
+        outcome: "buyer_favored",
+        resolution: "Partial refund of $30 issued. Seller compensated.",
+        filedDate: "May 11, 2026",
+        resolvedDate: "May 13, 2026",
+        evidence: ["📸 Damage photo 1", "📸 Damage photo 2"]
+      },
+      {
+        id: "DSP-002",
+        orderId: "SMP-4791",
+        itemName: "iPad Air 4th Gen + Pencil",
+        reason: "Item not received",
+        description: "Seller marked as delivered but I haven't received anything.",
+        status: "in-review",
+        outcome: null,
+        resolution: null,
+        filedDate: "May 14, 2026",
+        resolvedDate: null,
+        evidence: ["📸 Tracking screenshot"]
+      },
+      {
+        id: "DSP-003",
+        orderId: "SMP-4829",
+        itemName: "Calculus: Early Transcendentals",
+        reason: "Not as described",
+        description: "Textbook had heavy highlighting despite 'Good' condition claim.",
+        status: "pending",
+        outcome: null,
+        resolution: null,
+        filedDate: "May 15, 2026",
+        resolvedDate: null,
+        evidence: ["📸 Page highlights photo"]
+      }
+    ];
+
+    let evidenceFiles = [];
+
+    // DOM elements
+    const myDisputesTab = document.getElementById('myDisputesTab');
+    const newDisputeTab = document.getElementById('newDisputeTab');
+    const guidelinesTab = document.getElementById('guidelinesTab');
+    const disputesListDiv = document.getElementById('disputesList');
+    const noDisputesDiv = document.getElementById('noDisputes');
+    const disputeFilter = document.getElementById('disputeFilter');
+    const openDisputesSpan = document.getElementById('openDisputesCount');
+    const resolvedCountSpan = document.getElementById('resolvedCount');
+    const avgResolutionSpan = document.getElementById('avgResolutionTime');
+    const buyerWinsSpan = document.getElementById('buyerWins');
+
+    // Tab switching
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tabId = btn.getAttribute('data-tab');
+        // Hide all tabs
+        myDisputesTab.classList.add('hidden');
+        newDisputeTab.classList.add('hidden');
+        guidelinesTab.classList.add('hidden');
+        // Show selected
+        if (tabId === 'my-disputes') myDisputesTab.classList.remove('hidden');
+        else if (tabId === 'new-dispute') newDisputeTab.classList.remove('hidden');
+        else if (tabId === 'guidelines') guidelinesTab.classList.remove('hidden');
+        
+        // Update button styles
+        tabBtns.forEach(b => {
+          b.classList.remove('text-indigo-600', 'border-b-2', 'border-indigo-600');
+          b.classList.add('text-gray-600');
+        });
+        btn.classList.add('text-indigo-600', 'border-b-2', 'border-indigo-600');
+        btn.classList.remove('text-gray-600');
+      });
+    });
+
+    // Render disputes list
+    function renderDisputes() {
+      const filter = disputeFilter.value;
+      let filtered = disputes;
+      if (filter !== 'all') {
+        filtered = disputes.filter(d => d.status === filter);
+      }
+      
+      if (filtered.length === 0) {
+        disputesListDiv.innerHTML = '';
+        noDisputesDiv.classList.remove('hidden');
+        return;
+      }
+      
+      noDisputesDiv.classList.add('hidden');
+      
+      disputesListDiv.innerHTML = filtered.map(dispute => `
+        <div class="dispute-card bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-semibold text-gray-800">${dispute.itemName}</span>
+                <span class="text-xs text-gray-400">Order: ${dispute.orderId}</span>
+              </div>
+              <p class="text-sm text-gray-500 mt-1">Filed: ${dispute.filedDate} • Reason: ${dispute.reason}</p>
+            </div>
+            <div>
+              <span class="status-badge status-${dispute.status === 'pending' ? 'pending' : dispute.status === 'in-review' ? 'in-review' : 'resolved'}">
+                ${dispute.status === 'pending' ? '⏳ Pending' : dispute.status === 'in-review' ? '🔍 In review' : '✅ Resolved'}
+              </span>
+            </div>
+          </div>
+          <p class="text-sm text-gray-600 mb-3">${dispute.description.substring(0, 120)}${dispute.description.length > 120 ? '...' : ''}</p>
+          ${dispute.evidence ? `<div class="flex gap-2 mb-3"><span class="text-xs text-gray-400"><i class="fas fa-paperclip"></i> ${dispute.evidence.length} attachment(s)</span></div>` : ''}
+          ${dispute.status === 'resolved' && dispute.resolution ? `
+            <div class="bg-green-50 p-3 rounded-lg text-sm text-green-700">
+              <i class="fas fa-check-circle"></i> Resolution: ${dispute.resolution}
+            </div>
+          ` : ''}
+          ${dispute.status === 'in-review' ? `
+            <div class="bg-blue-50 p-3 rounded-lg text-sm text-blue-700">
+              <i class="fas fa-clock"></i> Our team is reviewing your case. Expected resolution within 24 hours.
+            </div>
+          ` : ''}
+          <div class="mt-3 flex gap-2">
+            <button class="view-dispute text-indigo-600 text-sm hover:underline" data-id="${dispute.id}">View details</button>
+            ${dispute.status !== 'resolved' ? `<button class="add-evidence text-amber-600 text-sm hover:underline" data-id="${dispute.id}">Add evidence</button>` : ''}
+          </div>
+        </div>
+      `).join('');
+      
+      // Update stats
+      const openDisputes = disputes.filter(d => d.status === 'pending' || d.status === 'in-review').length;
+      const resolvedDisputes = disputes.filter(d => d.status === 'resolved').length;
+      openDisputesSpan.innerText = openDisputes;
+      resolvedCountSpan.innerText = resolvedDisputes;
+      const buyerFavored = disputes.filter(d => d.outcome === 'buyer_favored').length;
+      buyerWinsSpan.innerText = buyerFavored;
+      avgResolutionSpan.innerText = Math.floor(Math.random() * 24 + 24); // mock avg
+    }
+    
+    disputeFilter.addEventListener('change', renderDisputes);
+    
+    // View dispute details
+    function viewDisputeDetails(id) {
+      const dispute = disputes.find(d => d.id === id);
+      if (dispute) {
+        alert(`📋 Dispute #${dispute.id}\n\nOrder: ${dispute.orderId}\nItem: ${dispute.itemName}\nReason: ${dispute.reason}\nStatus: ${dispute.status}\n\nDescription: ${dispute.description}\n\n${dispute.resolution ? `Resolution: ${dispute.resolution}` : 'Awaiting resolution. Our team will contact you.'}`);
+      }
+    }
+    
+    // Evidence upload handling
+    const evidenceUploadArea = document.getElementById('evidenceUploadArea');
+    const evidenceInput = document.getElementById('evidenceInput');
+    const evidencePreview = document.getElementById('evidencePreview');
+    
+    evidenceUploadArea.addEventListener('click', () => evidenceInput.click());
+    evidenceInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      handleEvidenceFiles(files);
+    });
+    
+    function handleEvidenceFiles(files) {
+      files.forEach(file => {
+        if (file.type.startsWith('image/')) {
+          evidenceFiles.push(file);
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const previewDiv = document.createElement('div');
+            previewDiv.className = 'relative inline-block';
+            previewDiv.innerHTML = `
+              <img src="${event.target.result}" class="w-16 h-16 object-cover rounded-lg border">
+              <button class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs remove-evidence">×</button>
+            `;
+            evidencePreview.appendChild(previewDiv);
+            previewDiv.querySelector('.remove-evidence').addEventListener('click', () => {
+              evidenceFiles = evidenceFiles.filter(f => f !== file);
+              previewDiv.remove();
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+    
+    // Submit dispute form
+    const disputeForm = document.getElementById('disputeForm');
+    disputeForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const orderId = document.getElementById('disputeOrderId').value;
+      const reason = document.getElementById('disputeReason').value;
+      const description = document.getElementById('disputeDescription').value;
+      
+      if (!orderId || !reason || !description) {
+        alert('Please fill in all required fields.');
+        return;
+      }
+      
+      const newDispute = {
+        id: `DSP-${Math.floor(Math.random() * 900 + 100)}`,
+        orderId: orderId.split(' - ')[0],
+        itemName: orderId.split(' - ')[1] || 'Unknown item',
+        reason: reason.replace('_', ' '),
+        description: description,
+        status: 'pending',
+        outcome: null,
+        resolution: null,
+        filedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+        resolvedDate: null,
+        evidence: evidenceFiles.map(() => "📸 Evidence")
+      };
+      
+      disputes.unshift(newDispute);
+      renderDisputes();
+      
+      alert(`✅ Dispute #${newDispute.id} filed successfully!\n\nOur team will review within 24-48 hours. You'll receive updates via email and notifications.`);
+      
+      // Reset form
+      disputeForm.reset();
+      evidencePreview.innerHTML = '';
+      evidenceFiles = [];
+      
+      // Switch to my disputes tab
+      document.querySelector('.tab-btn[data-tab="my-disputes"]').click();
+    });
+    
+    // Event delegation for dispute action buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('view-dispute') || e.target.parentElement.classList.contains('view-dispute')) {
+        const btn = e.target.classList.contains('view-dispute') ? e.target : e.target.parentElement;
+        const id = btn.getAttribute('data-id');
+        if (id) viewDisputeDetails(id);
+      }
+    });
+    
+    // Mobile menu
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if(mobileBtn) mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+    
+    // Initial render
+    renderDisputes();
+  </script>
+</body>
+</html>
+

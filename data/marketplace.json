@@ -1,0 +1,37 @@
+{
+  "listings": [
+    {
+      "id": 2,
+      "title": "Smoke listing",
+      "price": 99,
+      "condition": "Good",
+      "seller": "Tester",
+      "createdAt": "2026-05-28T13:42:36.140Z"
+    },
+    {
+      "id": 1,
+      "title": "Calculus: Early Transcendentals",
+      "price": 320,
+      "courseCode": "MATH 101",
+      "condition": "Very Good",
+      "location": "Campus Union",
+      "seller": "Jessica Davis"
+    }
+  ],
+  "messages": [
+    {
+      "id": 1,
+      "sellerName": "Tester",
+      "sellerInitials": "TE",
+      "itemTitle": "Test Item",
+      "itemPrice": 10,
+      "orderId": "ORD-TEST-2",
+      "text": "Hello",
+      "amount": 10,
+      "createdAt": "2026-05-28T18:08:06.401Z"
+    }
+  ],
+  "orders": [],
+  "reviews": [],
+  "users": []
+}

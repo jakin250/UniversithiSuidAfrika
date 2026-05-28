@@ -1,0 +1,29 @@
+{
+  "posts": [
+    {
+      "id": 2,
+      "title": "Smoke test post",
+      "category": "Academic Help",
+      "content": "Testing live API",
+      "tags": [
+        "test"
+      ],
+      "anonymous": false,
+      "disableReplies": false,
+      "author": "Tester",
+      "createdAt": "2026-05-28T13:42:35.107Z",
+      "votes": 0
+    },
+    {
+      "id": 1,
+      "title": "How do I survive Quantitative Methods?",
+      "category": "Academic Help",
+      "author": "Student",
+      "likes": 18,
+      "comments": 4
+    }
+  ],
+  "comments": [],
+  "groups": [],
+  "messages": []
+}

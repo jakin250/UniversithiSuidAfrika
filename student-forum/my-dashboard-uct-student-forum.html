@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>My Dashboard - UCT Student Forum</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f7fc;
+      color: #0a2b3e;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #dce5ec;
+    }
+
+    .logo-area h1 {
+      font-size: 1.8rem;
+      color: #0a2b3e;
+    }
+
+    .logo-area .tagline {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+    }
+
+    .back-link {
+      color: #0f5b8c;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      transition: background 0.2s;
+    }
+
+    .back-link:hover {
+      background: #eef2f7;
+    }
+
+    .btn-primary {
+      background: #0f5b8c;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #0a4368;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #0f5b8c;
+      color: #0f5b8c;
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 0.85rem;
+    }
+
+    .btn-outline:hover {
+      background: #e6f0f8;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* Dashboard Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 2rem;
+    }
+
+    /* Sidebar Profile Card */
+    .profile-card {
+      background: white;
+      border-radius: 28px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      position: sticky;
+      top: 1.5rem;
+    }
+
+    .avatar-large {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #0f5b8c, #1e7fb0);
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: white;
+    }
+
+    .display-name {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .user-email {
+      font-size: 0.8rem;
+      color: #6c7e8c;
+      margin: 0.25rem 0;
+    }
+
+    .user-badge {
+      display: inline-block;
+      background: #eef2f7;
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      margin: 0.5rem 0;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-around;
+      margin: 1.5rem 0;
+      padding: 1rem 0;
+      border-top: 1px solid #e9eef3;
+      border-bottom: 1px solid #e9eef3;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .nav-link {
+      padding: 0.7rem 1rem;
+      text-align: left;
+      background: none;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: 0.2s;
+      color: #4a627a;
+    }
+
+    .nav-link.active {
+      background: #0f5b8c;
+      color: white;
+    }
+
+    .nav-link:hover:not(.active) {
+      background: #eef2f7;
+    }
+
+    /* Main Content Area */
+    .dashboard-content {
+      background: white;
+      border-radius: 28px;
+      padding: 1.8rem;
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    .section-title {
+      font-size: 1.3rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #0f5b8c;
+      padding-left: 1rem;
+    }
+
+    /* Activity Items */
+    .activity-item {
+      padding: 1rem 0;
+      border-bottom: 1px solid #edf2f6;
+    }
+
+    .activity-title {
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .activity-meta {
+      font-size: 0.75rem;
+      color: #6c7e8c;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #8ba0b0;
+    }
+
+    /* Settings Form */
+    .settings-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .settings-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 0.3rem;
+    }
+
+    .settings-group input, .settings-group select {
+      width: 100%;
+      padding: 0.7rem;
+      border: 1.5px solid #e0e9f0;
+      border-radius: 16px;
+      font-family: inherit;
+    }
+
+    /* Saved items */
+    .saved-item {
+      padding: 0.8rem;
+      background: #f8fafd;
+      border-radius: 16px;
+      margin-bottom: 0.8rem;
+      cursor: pointer;
+    }
+
+    @media (max-width: 800px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 1rem;
+      }
+      .profile-card {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <div class="logo-area">
+      <h1>STUDENT FORUM</h1>
+      <div class="tagline">Your campus. Your voice.</div>
+    </div>
+    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- Sidebar Profile -->
+    <div class="profile-card">
+      <div class="avatar-large">👤</div>
+      <div class="display-name">Thando M.</div>
+      <div class="user-email">thando.m@uct.ac.za</div>
+      <div class="user-badge">⭐ Verified Student • 3rd Year Engineering</div>
+      <div class="stat-row">
+        <div class="stat-item">
+          <div class="stat-number">156</div>
+          <div class="stat-label">Reputation</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">23</div>
+          <div class="stat-label">Posts</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">89</div>
+          <div class="stat-label">Upvotes</div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <button class="nav-link active" data-tab="my-posts">📝 My Posts</button>
+        <button class="nav-link" data-tab="my-comments">💬 My Comments</button>
+        <button class="nav-link" data-tab="upvoted">👍 Upvoted Content</button>
+        <button class="nav-link" data-tab="saved">🔖 Saved Items</button>
+        <button class="nav-link" data-tab="settings">⚙️ Account Settings</button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-content">
+      <!-- My Posts Tab -->
+      <div id="my-posts" class="tab-pane active">
+        <h2 class="section-title">📝 My Recent Posts</h2>
+        <div id="myPostsContainer"></div>
+      </div>
+
+      <!-- My Comments Tab -->
+      <div id="my-comments" class="tab-pane">
+        <h2 class="section-title">💬 My Recent Comments</h2>
+        <div id="myCommentsContainer"></div>
+      </div>
+
+      <!-- Upvoted Tab -->
+      <div id="upvoted" class="tab-pane">
+        <h2 class="section-title">👍 Content I've Upvoted</h2>
+        <div id="upvotedContainer"></div>
+      </div>
+
+      <!-- Saved Tab -->
+      <div id="saved" class="tab-pane">
+        <h2 class="section-title">🔖 Saved for Later</h2>
+        <div id="savedContainer"></div>
+      </div>
+
+      <!-- Settings Tab -->
+      <div id="settings" class="tab-pane">
+        <h2 class="section-title">⚙️ Account Settings</h2>
+        <div class="settings-group">
+          <label>Display Name</label>
+          <input type="text" id="displayNameInput" value="Thando M.">
+        </div>
+        <div class="settings-group">
+          <label>Email (verified)</label>
+          <input type="email" id="emailInput" value="thando.m@uct.ac.za" disabled>
+          <small style="color:#6c7e8c;">Email cannot be changed (verified UCT account)</small>
+        </div>
+        <div class="settings-group">
+          <label>Faculty</label>
+          <select id="facultySelect">
+            <option>Engineering & Built Environment</option>
+            <option>Commerce</option>
+            <option>Humanities</option>
+            <option>Science</option>
+            <option>Law</option>
+          </select>
+        </div>
+        <div class="settings-group">
+          <label>Notification Preferences</label>
+          <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+            <label><input type="checkbox" id="notifyReplies" checked> Email me when someone replies</label>
+            <label><input type="checkbox" id="notifyUpvotes" checked> Email me when I get upvotes</label>
+          </div>
+        </div>
+        <div class="settings-group">
+          <label>Privacy</label>
+          <div><input type="checkbox" id="showEmail"> Show my email in profile (currently hidden)</div>
+        </div>
+        <button id="saveSettingsBtn" class="btn-primary">Save Changes</button>
+        <hr style="margin: 2rem 0 1rem;">
+        <button id="logoutBtn" class="btn-danger">🚪 Logout</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Mock user data for "Thando M." - current logged-in user
+  let userData = {
+    displayName: "Thando M.",
+    email: "thando.m@uct.ac.za",
+    faculty: "Engineering & Built Environment",
+    notifyReplies: true,
+    notifyUpvotes: true,
+    showEmail: false
+  };
+
+  // Mock user's posts
+  let myPosts = [
+    { id: 101, title: "Best ways to prepare for Engineering exams?", category: "Academic Help", date: "May 10, 2026", upvotes: 12, replies: 5, excerpt: "Looking for effective study strategies for finals..." },
+    { id: 102, title: "Study group for Thermodynamics", category: "Study Resources", date: "May 5, 2026", upvotes: 8, replies: 3, excerpt: "Anyone interested in forming a Thermo study group?" },
+    { id: 103, title: "Recommended laptop for CAD software", category: "Tech & Gadgets", date: "Apr 28, 2026", upvotes: 15, replies: 7, excerpt: "Need a laptop that can handle SolidWorks smoothly." }
+  ];
+
+  // Mock user's comments
+  let myComments = [
+    { id: 201, postTitle: "How do I survive Quantitative Methods?", content: "Practice past papers every day! Focus on understanding formulas...", date: "May 12, 2026", upvotes: 45 },
+    { id: 202, postTitle: "Best budget laptops for CS students?", content: "I recommend the Acer Swift 3 or refurbished ThinkPad.", date: "May 9, 2026", upvotes: 12 },
+    { id: 203, postTitle: "Past papers for Financial Accounting II", content: "Check the library's online repository - they have 2018-2023 papers.", date: "May 7, 2026", upvotes: 8 }
+  ];
+
+  // Mock upvoted content (posts the user has upvoted)
+  let upvotedContent = [
+    { type: "post", id: 1, title: "How do I survive Quantitative Methods?", author: "Sipho M.", upvotes: 327 },
+    { type: "post", id: 3, title: "Is internship worth it in first year?", author: "Jordan P.", upvotes: 33 },
+    { type: "comment", id: 103, postTitle: "How do I survive Quantitative Methods?", content: "Create a formula sheet and update it weekly...", author: "Aisha B." }
+  ];
+
+  // Mock saved items
+  let savedItems = [
+    { type: "post", id: 2, title: "Best budget laptops for Computer Science students?", savedAt: "May 11, 2026" },
+    { type: "announcement", id: 201, title: "Exam Season Support Hub Now Open", savedAt: "May 10, 2026" }
+  ];
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  // Render My Posts
+  function renderMyPosts() {
+    const container = document.getElementById('myPostsContainer');
+    if (myPosts.length === 0) {
+      container.innerHTML = '<div class="empty-state">📭 You haven\'t created any posts yet. Start a discussion!</div>';
+      return;
+    }
+    container.innerHTML = myPosts.map(post => `
+      <div class="activity-item">
+        <div class="activity-title">📄 ${escapeHtml(post.title)}</div>
+        <div class="activity-meta">
+          <span>📂 ${escapeHtml(post.category)}</span>
+          <span>📅 ${post.date}</span>
+          <span>▲ ${post.upvotes} upvotes</span>
+          <span>💬 ${post.replies} replies</span>
+        </div>
+        <div class="activity-excerpt" style="font-size:0.8rem; color:#4a627a;">${escapeHtml(post.excerpt)}</div>
+      </div>
+    `).join('');
+  }
+
+  // Render My Comments
+  function renderMyComments() {
+    const container = document.getElementById('myCommentsContainer');
+    if (myComments.length === 0) {
+      container.innerHTML = '<div class="empty-state">💬 You haven\'t commented yet. Join the conversation!</div>';
+      return;
+    }
+    container.innerHTML = myComments.map(comment => `
+      <div class="activity-item">
+        <div class="activity-title">💬 Replied to "${escapeHtml(comment.postTitle)}"</div>
+        <div class="activity-meta">
+          <span>📅 ${comment.date}</span>
+          <span>👍 ${comment.upvotes} upvotes</span>
+        </div>
+        <div style="font-size:0.85rem; color:#4a627a;">${escapeHtml(comment.content.substring(0, 120))}${comment.content.length > 120 ? '…' : ''}</div>
+      </div>
+    `).join('');
+  }
+
+  // Render Upvoted Content
+  function renderUpvoted() {
+    const container = document.getElementById('upvotedContainer');
+    if (upvotedContent.length === 0) {
+      container.innerHTML = '<div class="empty-state">👍 You haven\'t upvoted anything yet. Upvote helpful content!</div>';
+      return;
+    }
+    container.innerHTML = upvotedContent.map(item => {
+      if (item.type === 'post') {
+        return `
+          <div class="activity-item">
+            <div class="activity-title">📄 ${escapeHtml(item.title)}</div>
+            <div class="activity-meta">
+              <span>by ${escapeHtml(item.author)}</span>
+              <span>▲ ${item.upvotes} upvotes</span>
+            </div>
+          </div>
+        `;
+      } else {
+        return `
+          <div class="activity-item">
+            <div class="activity-title">💬 Comment on "${escapeHtml(item.postTitle)}"</div>
+            <div class="activity-meta">
+              <span>by ${escapeHtml(item.author)}</span>
+            </div>
+            <div style="font-size:0.8rem; color:#4a627a;">${escapeHtml(item.content.substring(0, 100))}…</div>
+          </div>
+        `;
+      }
+    }).join('');
+  }
+
+  // Render Saved Items
+  function renderSaved() {
+    const container = document.getElementById('savedContainer');
+    if (savedItems.length === 0) {
+      container.innerHTML = '<div class="empty-state">🔖 Save posts or announcements to read them later.</div>';
+      return;
+    }
+    container.innerHTML = savedItems.map(item => `
+      <div class="saved-item">
+        <div>📌 <strong>${escapeHtml(item.title)}</strong></div>
+        <div class="activity-meta">Saved on ${item.savedAt}</div>
+      </div>
+    `).join('');
+  }
+
+  // Settings handlers
+  function loadSettings() {
+    document.getElementById('displayNameInput').value = userData.displayName;
+    document.getElementById('facultySelect').value = userData.faculty;
+    document.getElementById('notifyReplies').checked = userData.notifyReplies;
+    document.getElementById('notifyUpvotes').checked = userData.notifyUpvotes;
+    document.getElementById('showEmail').checked = userData.showEmail;
+  }
+
+  function saveSettings() {
+    userData.displayName = document.getElementById('displayNameInput').value;
+    userData.faculty = document.getElementById('facultySelect').value;
+    userData.notifyReplies = document.getElementById('notifyReplies').checked;
+    userData.notifyUpvotes = document.getElementById('notifyUpvotes').checked;
+    userData.showEmail = document.getElementById('showEmail').checked;
+    
+    // Update sidebar display name
+    document.querySelector('.display-name').innerText = userData.displayName;
+    alert('✅ Settings saved successfully!');
+  }
+
+  // Tab navigation
+  function initTabs() {
+    const tabs = document.querySelectorAll('.nav-link');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabId = tab.getAttribute('data-tab');
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+  }
+
+  // Back button
+  document.getElementById('backToForum')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('← Returning to homepage (simulated navigation)');
+  });
+
+  document.getElementById('saveSettingsBtn')?.addEventListener('click', saveSettings);
+  document.getElementById('logoutBtn')?.addEventListener('click', () => {
+    alert('🚪 Logged out successfully (simulated)');
+  });
+
+  // Initialize all
+  renderMyPosts();
+  renderMyComments();
+  renderUpvoted();
+  renderSaved();
+  loadSettings();
+  initTabs();
+</script>
+</body>
+</html>
+

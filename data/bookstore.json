@@ -1,0 +1,47 @@
+{
+  "books": [
+    {
+      "id": 1,
+      "title": "Introduction to Microeconomics",
+      "author": "N. Gregory Mankiw",
+      "price": 280,
+      "condition": "Good",
+      "course": "ECON101",
+      "isbn": "978-0-13-123456-7",
+      "seller": "A. Naidoo"
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "orderId": "ORD-TEST-1",
+      "rating": 5,
+      "reviewText": "Great",
+      "sellerName": "Tester",
+      "createdAt": "2026-05-28T18:08:06.392Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "orderId": "ORD-TEST-1",
+      "book": {
+        "title": "Test Book",
+        "seller": "Tester"
+      },
+      "buyer": {
+        "name": "Buyer"
+      },
+      "paymentMethod": "card",
+      "amount": 100,
+      "platformFee": 10,
+      "sellerPayout": 90,
+      "status": "payment_pending",
+      "escrowStatus": "payment_held",
+      "orderDate": "2026-05-28T00:00:00Z",
+      "trackingId": "TRK-TEST",
+      "createdAt": "2026-05-28T18:08:06.328Z"
+    }
+  ],
+  "listings": []
+}

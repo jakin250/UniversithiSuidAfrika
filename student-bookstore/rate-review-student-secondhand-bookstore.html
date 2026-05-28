@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate & Review | Student Secondhand Bookstore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f7f9fc;
+            color: #1a2a3a;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: #0f3b2c;
+            letter-spacing: -0.3px;
+        }
+
+        .logo p {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+        }
+
+        .trust-badges {
+            display: flex;
+            gap: 24px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #2c5f4a;
+        }
+
+        .badge::before {
+            content: "✓";
+            background: #0f3b2c;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #1a2a3a;
+            font-weight: 500;
+        }
+
+        /* Review Container */
+        .review-container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .review-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .review-header h1 {
+            font-size: 2rem;
+            color: #0f3b2c;
+            margin-bottom: 8px;
+        }
+
+        .review-header p {
+            color: #5a6e7c;
+        }
+
+        /* Order Summary Card */
+        .order-summary-card {
+            background: #f7f9fc;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 32px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+            border: 1px solid #e2e8f0;
+        }
+
+        .book-cover-large {
+            width: 80px;
+            height: 100px;
+            background: #eef2f5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+
+        .order-info {
+            flex: 1;
+        }
+
+        .book-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .book-meta {
+            font-size: 0.85rem;
+            color: #5a6e7c;
+            margin-bottom: 8px;
+        }
+
+        .seller-name {
+            display: inline-block;
+            background: #e9f5ef;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #0f3b2c;
+        }
+
+        /* Star Rating */
+        .rating-section {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .rating-label {
+            font-weight: 600;
+            margin-bottom: 16px;
+            font-size: 1.1rem;
+        }
+
+        .stars {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .star {
+            font-size: 3rem;
+            cursor: pointer;
+            transition: transform 0.2s, color 0.2s;
+            color: #cbd5e1;
+        }
+
+        .star:hover {
+            transform: scale(1.1);
+        }
+
+        .star.active {
+            color: #f5a623;
+        }
+
+        .rating-text {
+            color: #5a6e7c;
+            font-size: 0.9rem;
+        }
+
+        /* Review Categories */
+        .categories-section {
+            margin-bottom: 32px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .category-item {
+            background: #f7f9fc;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .category-item.selected {
+            border-color: #0f3b2c;
+            background: #e9f5ef;
+        }
+
+        .category-item:hover {
+            border-color: #0f3b2c;
+        }
+
+        .category-emoji {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .category-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .category-desc {
+            font-size: 0.7rem;
+            color: #5a6e7c;
+        }
+
+        /* Review Text */
+        .review-text-section {
+            margin-bottom: 32px;
+        }
+
+        .review-text-section label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #0f3b2c;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.75rem;
+            color: #5a6e7c;
+            margin-top: 8px;
+        }
+
+        /* Photo Upload */
+        .photo-section {
+            margin-bottom: 32px;
+        }
+
+        .photo-section label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .photo-upload-area {
+            border: 2px dashed #cbd5e1;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f7f9fc;
+        }
+
+        .photo-upload-area:hover {
+            border-color: #0f3b2c;
+            background: #e9f5ef;
+        }
+
+        .photo-preview {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .preview-image {
+            width: 80px;
+            height: 80px;
+            background: #eef2f5;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            position: relative;
+            border: 1px solid #cbd5e1;
+        }
+
+        .remove-photo {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #dc2626;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        /* Anonymous Toggle */
+        .anonymous-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding: 16px;
+            background: #f7f9fc;
+            border-radius: 12px;
+        }
+
+        .anonymous-toggle input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            width: 100%;
+            background: #0f3b2c;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: #1e5a45;
+        }
+
+        /* Trust Info */
+        .trust-info {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: #5a6e7c;
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: #5a6e7c;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .review-container {
+                padding: 24px;
+                margin: 20px;
+            }
+            .star {
+                font-size: 2rem;
+            }
+            .category-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <h1>📚 STUDENT SECONDHAND BOOKSTORE</h1>
+                <p>Buy, sell and exchange textbooks with students on your campus.</p>
+            </div>
+            <div class="trust-badges">
+                <span class="badge">Student verified</span>
+                <span class="badge">Safe Payments</span>
+                <span class="badge">Better Prices</span>
+            </div>
+            <nav>
+                <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Browse</a>
+                <a href="my-listings-student-secondhand-bookstore.html">My Listings</a>
+                <a href="sell-your-books-student-secondhand-bookstore.html">Sell</a>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="review-container">
+        <div class="review-header">
+            <h1>⭐ Rate Your Experience</h1>
+            <p>Help other students make informed decisions by sharing your honest feedback</p>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="order-summary-card" id="orderSummary">
+            <!-- Dynamic order summary -->
+        </div>
+
+        <!-- Star Rating -->
+        <div class="rating-section">
+            <div class="rating-label">How would you rate this seller?</div>
+            <div class="stars" id="stars">
+                <span class="star" data-rating="1">★</span>
+                <span class="star" data-rating="2">★</span>
+                <span class="star" data-rating="3">★</span>
+                <span class="star" data-rating="4">★</span>
+                <span class="star" data-rating="5">★</span>
+            </div>
+            <div class="rating-text" id="ratingText">Select a rating</div>
+        </div>
+
+        <!-- Rating Categories -->
+        <div class="categories-section">
+            <div class="rating-label">What stood out? (Optional)</div>
+            <div class="category-grid" id="categoryGrid">
+                <div class="category-item" data-category="communication">
+                    <div class="category-emoji">💬</div>
+                    <div class="category-name">Great Communication</div>
+                    <div class="category-desc">Quick responses, clear updates</div>
+                </div>
+                <div class="category-item" data-category="condition">
+                    <div class="category-emoji">📖</div>
+                    <div class="category-name">Book as Described</div>
+                    <div class="category-desc">Condition matched listing</div>
+                </div>
+                <div class="category-item" data-category="delivery">
+                    <div class="category-emoji">🚚</div>
+                    <div class="category-name">Fast Delivery</div>
+                    <div class="category-desc">Shipped/meet promptly</div>
+                </div>
+                <div class="category-item" data-category="price">
+                    <div class="category-emoji">💰</div>
+                    <div class="category-name">Fair Price</div>
+                    <div class="category-desc">Good value for condition</div>
+                </div>
+                <div class="category-item" data-category="friendly">
+                    <div class="category-emoji">😊</div>
+                    <div class="category-name">Friendly Seller</div>
+                    <div class="category-desc">Pleasant experience</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Written Review -->
+        <div class="review-text-section">
+            <label>Write a review (Optional)</label>
+            <textarea id="reviewText" placeholder="Share your experience with this seller... Was the book in good condition? Was the seller responsive? Would you recommend them?"></textarea>
+            <div class="char-count"><span id="charCount">0</span>/500 characters</div>
+        </div>
+
+        <!-- Photo Upload -->
+        <div class="photo-section">
+            <label>Add photos of your book (Optional)</label>
+            <div class="photo-upload-area" id="photoUpload">
+                📸 Click to upload photos of the book you received
+                <input type="file" id="photoInput" multiple accept="image/*" style="display:none">
+            </div>
+            <div class="photo-preview" id="photoPreview"></div>
+        </div>
+
+        <!-- Anonymous Toggle -->
+        <div class="anonymous-toggle">
+            <input type="checkbox" id="anonymousCheckbox">
+            <label for="anonymousCheckbox">🌙 Post anonymously (your name won't be shown publicly)</label>
+        </div>
+
+        <!-- Submit Button -->
+        <button class="btn-submit" onclick="submitReview()">⭐ Submit Review & Earn Rewards</button>
+        
+        <div class="trust-info">
+            🔒 Your review helps build trust in our community. You'll earn +0.50 USD store credit for leaving a review!
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>Student Secondhand Bookstore — Buy wisely, sell easily, exchange fairly.</p>
+</footer>
+
+<script src="../public/api-client.js"></script>
+<script>
+    let order = null;
+    
+    // Render order summary
+    function renderOrderSummary() {
+        const container = document.getElementById('orderSummary');
+        container.innerHTML = `
+            <div class="book-cover-large">${order.book.cover}</div>
+            <div class="order-info">
+                <div class="book-title">${order.book.title}</div>
+                <div class="book-meta">${order.book.author} • ${order.book.edition}</div>
+                <div class="book-meta">Order #${order.orderId}</div>
+                <span class="seller-name">👤 Seller: ${order.seller.name} (${order.seller.university})</span>
+            </div>
+        `;
+    }
+    
+    // Star rating logic
+    let selectedRating = 0;
+    const stars = document.querySelectorAll('.star');
+    const ratingText = document.getElementById('ratingText');
+    
+    const ratingMessages = {
+        1: "😞 Poor - Not as described",
+        2: "😐 Fair - Could be better",
+        3: "👍 Good - Met expectations",
+        4: "😊 Great - Very satisfied",
+        5: "⭐ Excellent - Outstanding experience!"
+    };
+    
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            selectedRating = parseInt(star.getAttribute('data-rating'));
+            updateStars(selectedRating);
+            ratingText.textContent = ratingMessages[selectedRating];
+        });
+        
+        star.addEventListener('mouseenter', () => {
+            const hoverRating = parseInt(star.getAttribute('data-rating'));
+            updateStars(hoverRating);
+        });
+        
+        star.addEventListener('mouseleave', () => {
+            updateStars(selectedRating);
+        });
+    });
+    
+    function updateStars(rating) {
+        stars.forEach(star => {
+            const starRating = parseInt(star.getAttribute('data-rating'));
+            if (starRating <= rating) {
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+            }
+        });
+    }
+    
+    // Category selection
+    const selectedCategories = new Set();
+    const categoryItems = document.querySelectorAll('.category-item');
+    
+    categoryItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const category = item.getAttribute('data-category');
+            if (selectedCategories.has(category)) {
+                selectedCategories.delete(category);
+                item.classList.remove('selected');
+            } else {
+                selectedCategories.add(category);
+                item.classList.add('selected');
+            }
+        });
+    });
+    
+    // Character counter
+    const reviewText = document.getElementById('reviewText');
+    const charCount = document.getElementById('charCount');
+    
+    reviewText.addEventListener('input', () => {
+        const count = reviewText.value.length;
+        charCount.textContent = count;
+        if (count > 500) {
+            reviewText.value = reviewText.value.substring(0, 500);
+            charCount.textContent = 500;
+        }
+    });
+    
+    // Photo upload
+    let uploadedPhotos = [];
+    const photoUpload = document.getElementById('photoUpload');
+    const photoInput = document.getElementById('photoInput');
+    const photoPreview = document.getElementById('photoPreview');
+    
+    photoUpload.addEventListener('click', () => {
+        photoInput.click();
+    });
+    
+    photoInput.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files);
+        files.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                uploadedPhotos.push(event.target.result);
+                displayPhotos();
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+    
+    function displayPhotos() {
+        photoPreview.innerHTML = uploadedPhotos.map((photo, index) => `
+            <div class="preview-image">
+                <img src="${photo}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
+                <div class="remove-photo" onclick="removePhoto(${index})">×</div>
+            </div>
+        `).join('');
+    }
+    
+    window.removePhoto = (index) => {
+        uploadedPhotos.splice(index, 1);
+        displayPhotos();
+    };
+    
+    // Submit review
+    window.submitReview = () => {
+        if (selectedRating === 0) {
+            alert('⚠️ Please select a rating before submitting.');
+            return;
+        }
+        
+        const review = {
+            id: 'rev_' + Date.now(),
+            orderId: order.orderId,
+            sellerId: order.seller.id,
+            sellerName: order.seller.name,
+            rating: selectedRating,
+            categories: Array.from(selectedCategories),
+            reviewText: reviewText.value.trim(),
+            photos: uploadedPhotos.length,
+            anonymous: document.getElementById('anonymousCheckbox').checked,
+            date: new Date().toISOString(),
+            helpful: 0,
+            verifiedPurchase: true
+        };
+        
+        apiClient.post('../api/bookstore/reviews', review).catch(console.error);
+        
+        // Show success message
+        const rewardAmount = 0.50;
+        alert(`✅ Review Submitted!\n\nThank you for sharing your experience!\n🎉 You earned +$${rewardAmount} USD store credit!\n\nYour review helps other students make informed decisions.`);
+        
+        // Redirect to browse page or order history
+        window.location.href = 'student-secondhand-bookstore-buy-sell-exchange-textbooks.html';
+    };
+    
+    async function loadOrder() {
+        try {
+            const orderId = new URLSearchParams(window.location.search).get('order');
+            const orders = await fetch('../api/bookstore/orders').then(response => response.json());
+            order = orders.find(item => String(item.id) === String(orderId) || String(item.orderId) === String(orderId)) || orders[0] || null;
+        } catch (error) {
+            console.error(error);
+        }
+        if (order) {
+            renderOrderSummary();
+        }
+    }
+
+    // Initialize
+    loadOrder();
+</script>
+</body>
+</html>
+
+

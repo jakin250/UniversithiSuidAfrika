@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Secure Escrow Payment | Student Secondhand Bookstore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f7f9fc;
+            color: #1a2a3a;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: #0f3b2c;
+            letter-spacing: -0.3px;
+        }
+
+        .logo p {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+        }
+
+        .trust-badges {
+            display: flex;
+            gap: 24px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #2c5f4a;
+        }
+
+        .badge::before {
+            content: "✓";
+            background: #0f3b2c;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #1a2a3a;
+            font-weight: 500;
+        }
+
+        /* Checkout Layout */
+        .checkout-container {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 32px;
+            margin: 40px 0;
+        }
+
+        /* Order Summary */
+        .order-summary {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .order-summary h2 {
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .book-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .book-cover {
+            width: 80px;
+            height: 100px;
+            background: #eef2f5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            flex-shrink: 0;
+        }
+
+        .book-details {
+            flex: 1;
+        }
+
+        .book-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .book-meta {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+            margin-bottom: 8px;
+        }
+
+        .book-price {
+            font-weight: 700;
+            color: #0f3b2c;
+            font-size: 1.2rem;
+        }
+
+        .seller-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #5a6e7c;
+        }
+
+        .price-breakdown {
+            margin: 20px 0;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 0.95rem;
+        }
+
+        .price-row.total {
+            border-top: 2px solid #e2e8f0;
+            margin-top: 10px;
+            padding-top: 16px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #0f3b2c;
+        }
+
+        .escrow-badge {
+            background: #e9f5ef;
+            padding: 12px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+
+        .escrow-badge strong {
+            color: #0f3b2c;
+        }
+
+        /* Payment Form */
+        .payment-form {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        .payment-form h2 {
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a2a3a;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #0f3b2c;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        /* Payment Methods */
+        .payment-methods {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .payment-method {
+            flex: 1;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .payment-method.selected {
+            border-color: #0f3b2c;
+            background: #e9f5ef;
+        }
+
+        .payment-method:hover {
+            border-color: #0f3b2c;
+        }
+
+        .payment-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .payment-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Credit Card Fields */
+        .card-fields {
+            display: none;
+        }
+
+        .card-fields.show {
+            display: block;
+        }
+
+        /* Submit Button */
+        .btn-pay {
+            width: 100%;
+            background: #0f3b2c;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: background 0.2s;
+        }
+
+        .btn-pay:hover {
+            background: #1e5a45;
+        }
+
+        /* Security Notice */
+        .security-notice {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: #5a6e7c;
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: #5a6e7c;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .checkout-container {
+                grid-template-columns: 1fr;
+            }
+            .order-summary {
+                position: static;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <h1>📚 STUDENT SECONDHAND BOOKSTORE</h1>
+                <p>Buy, sell and exchange textbooks with students on your campus.</p>
+            </div>
+            <div class="trust-badges">
+                <span class="badge">Student verified</span>
+                <span class="badge">Safe Payments</span>
+                <span class="badge">Better Prices</span>
+            </div>
+            <nav>
+                <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Browse</a>
+                <a href="my-listings-student-secondhand-bookstore.html">My Listings</a>
+                <a href="sell-your-books-student-secondhand-bookstore.html">Sell</a>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="checkout-container">
+        <!-- Order Summary -->
+        <div class="order-summary">
+            <h2>📋 Order Summary</h2>
+            <div id="orderItems">
+                <!-- Dynamic order items -->
+            </div>
+            <div class="price-breakdown" id="priceBreakdown">
+                <!-- Dynamic price breakdown -->
+            </div>
+            <div class="escrow-badge">
+                🔒 <strong>Escrow Protection Active</strong><br>
+                Payment held securely until you confirm delivery
+            </div>
+        </div>
+
+        <!-- Payment Form -->
+        <div class="payment-form">
+            <h2>💳 Payment Details</h2>
+            
+            <div class="form-group">
+                <label>Payment Method</label>
+                <div class="payment-methods">
+                    <div class="payment-method selected" data-method="card">
+                        <div class="payment-icon">💳</div>
+                        <div class="payment-name">Credit Card</div>
+                    </div>
+                    <div class="payment-method" data-method="paypal">
+                        <div class="payment-icon">📱</div>
+                        <div class="payment-name">PayPal</div>
+                    </div>
+                    <div class="payment-method" data-method="cash">
+                        <div class="payment-icon">💵</div>
+                        <div class="payment-name">Cash (On Pickup)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Credit Card Fields -->
+            <div id="cardFields" class="card-fields show">
+                <div class="form-group">
+                    <label>Card Number</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" maxlength="19">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Expiry Date</label>
+                        <input type="text" id="expiry" placeholder="MM/YY" maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label>CVV</label>
+                        <input type="text" id="cvv" placeholder="123" maxlength="4">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Cardholder Name</label>
+                    <input type="text" id="cardholderName" placeholder="As shown on card">
+                </div>
+            </div>
+
+            <!-- Billing Information -->
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="fullName" placeholder="John Doe" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="email" placeholder="student@university.ac.za" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" id="phone" placeholder="+27 12 345 6789" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Delivery Address (Optional - for shipping)</label>
+                <input type="text" id="address" placeholder="Campus name, residence, or pickup point">
+            </div>
+
+            <div class="form-group">
+                <label>Additional Notes for Seller</label>
+                <input type="text" id="notes" placeholder="e.g., Meet at library, text when ready...">
+            </div>
+
+            <button class="btn-pay" onclick="processPayment()">🔒 Pay Securely with Escrow</button>
+            <div class="security-notice">
+                🔐 Your payment is protected by our escrow system. Funds only released after you confirm receipt.
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <p>Student Secondhand Bookstore — Buy wisely, sell easily, exchange fairly.</p>
+</footer>
+
+<script>
+    // Mock book data (would come from URL parameter or previous page)
+    const booksDB = {
+        1: {
+            id: 1,
+            title: "Introduction to Microeconomics",
+            author: "Gregory Mankiw",
+            edition: "4th Edition",
+            price: 200,
+            condition: "Great Condition",
+            seller: "Thando M.",
+            university: "UCT Student",
+            cover: "📊",
+            reward: "+0.25 USD store credit"
+        },
+        2: {
+            id: 2,
+            title: "CONSTRUCTIONAL ARTS",
+            author: "A. Peterson",
+            edition: "3rd Edition",
+            price: 180,
+            condition: "Used with minor wear",
+            seller: "Luke J.",
+            university: "Wits University",
+            cover: "🏗️"
+        },
+        3: {
+            id: 3,
+            title: "Constitutional Law of South Africa",
+            author: "J. Dugard",
+            edition: "7th Edition",
+            price: 180,
+            condition: "Good",
+            seller: "Priya N.",
+            university: "Wits University",
+            cover: "⚖️",
+            reward: "+0.25 USD store credit"
+        }
+    };
+
+    // Get book ID from URL or localStorage
+    function getBookFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        const bookId = params.get('id');
+        if (bookId && booksDB[bookId]) {
+            return booksDB[bookId];
+        }
+        // Default to first book for demo
+        return booksDB[1];
+    }
+
+    const book = getBookFromURL();
+    
+    // Calculate fees
+    const platformFee = Math.round(book.price * 0.05); // 5% platform fee
+    const total = book.price + platformFee;
+    
+    // Render order summary
+    function renderOrderSummary() {
+        const orderItems = document.getElementById('orderItems');
+        orderItems.innerHTML = `
+            <div class="book-item">
+                <div class="book-cover">${book.cover}</div>
+                <div class="book-details">
+                    <div class="book-title">${book.title}</div>
+                    <div class="book-meta">${book.author} • ${book.edition}</div>
+                    <div class="book-price">R${book.price}</div>
+                    <div class="seller-info">
+                        👤 Seller: ${book.seller} (${book.university})
+                        <span style="color:#0f3b2c;">✓ Verified</span>
+                    </div>
+                    ${book.reward ? `<div style="font-size:0.75rem; color:#c97e00; margin-top:6px;">🎁 ${book.reward}</div>` : ''}
+                </div>
+            </div>
+        `;
+        
+        const priceBreakdown = document.getElementById('priceBreakdown');
+        priceBreakdown.innerHTML = `
+            <div class="price-row">
+                <span>Book Price</span>
+                <span>R${book.price}</span>
+            </div>
+            <div class="price-row">
+                <span>Platform Fee (5%)</span>
+                <span>R${platformFee}</span>
+            </div>
+            <div class="price-row total">
+                <span>Total (incl. fees)</span>
+                <span>R${total}</span>
+            </div>
+            <div class="price-row" style="font-size:0.8rem; color:#5a6e7c;">
+                <span>💵 You save ${Math.round((book.price / (book.price + 100)) * 100)}% vs retail</span>
+                <span>🔒 Escrow included</span>
+            </div>
+        `;
+    }
+    
+    // Payment method selection
+    const paymentMethods = document.querySelectorAll('.payment-method');
+    const cardFields = document.getElementById('cardFields');
+    let selectedMethod = 'card';
+    
+    paymentMethods.forEach(method => {
+        method.addEventListener('click', () => {
+            paymentMethods.forEach(m => m.classList.remove('selected'));
+            method.classList.add('selected');
+            selectedMethod = method.getAttribute('data-method');
+            
+            if (selectedMethod === 'card') {
+                cardFields.classList.add('show');
+            } else {
+                cardFields.classList.remove('show');
+            }
+        });
+    });
+    
+    // Format card number
+    const cardNumberInput = document.getElementById('cardNumber');
+    if (cardNumberInput) {
+        cardNumberInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\s/g, '');
+            if (value.length > 16) value = value.slice(0, 16);
+            value = value.replace(/(\d{4})/g, '$1 ').trim();
+            e.target.value = value;
+        });
+    }
+    
+    // Format expiry
+    const expiryInput = document.getElementById('expiry');
+    if (expiryInput) {
+        expiryInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace('/', '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+    }
+    
+    // Process payment
+    window.processPayment = () => {
+        const fullName = document.getElementById('fullName').value;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        
+        // Validate required fields
+        if (!fullName || !email || !phone) {
+            alert('⚠️ Please fill in all required fields: Full Name, Email, and Phone Number.');
+            return;
+        }
+        
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert('⚠️ Please enter a valid email address.');
+            return;
+        }
+        
+        // Validate card details if card payment
+        if (selectedMethod === 'card') {
+            const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            const expiry = document.getElementById('expiry').value;
+            const cvv = document.getElementById('cvv').value;
+            const cardholderName = document.getElementById('cardholderName').value;
+            
+            if (!cardNumber || cardNumber.length < 16) {
+                alert('⚠️ Please enter a valid 16-digit card number.');
+                return;
+            }
+            if (!expiry || expiry.length < 5) {
+                alert('⚠️ Please enter a valid expiry date (MM/YY).');
+                return;
+            }
+            if (!cvv || cvv.length < 3) {
+                alert('⚠️ Please enter a valid CVV code.');
+                return;
+            }
+            if (!cardholderName) {
+                alert('⚠️ Please enter the cardholder name.');
+                return;
+            }
+        }
+        
+        // Create order object
+        const order = {
+            orderId: 'ORD-' + Date.now(),
+            book: book,
+            buyer: {
+                name: fullName,
+                email: email,
+                phone: phone,
+                address: document.getElementById('address').value || 'Campus pickup',
+                notes: document.getElementById('notes').value
+            },
+            paymentMethod: selectedMethod,
+            amount: total,
+            platformFee: platformFee,
+            sellerPayout: book.price,
+            status: 'payment_pending',
+            escrowStatus: 'payment_held',
+            orderDate: new Date().toISOString(),
+            trackingId: 'TRK-' + Math.random().toString(36).substr(2, 8).toUpperCase()
+        };
+        
+        fetch('../api/bookstore/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(order)
+        }).then(() => {
+            alert(`✅ Payment Successful!\n\nOrder ID: ${order.orderId}\nTotal Paid: R${total}\n\n🔒 Your payment is held in escrow.\nThe seller has been notified and will arrange delivery.\n\nYou will be redirected to Order Tracking.`);
+            window.location.href = `order-tracking-student-secondhand-bookstore.html?id=${order.orderId}`;
+        }).catch(() => {
+            alert('❌ Could not save the order. Please try again.');
+        });
+    };
+    
+    // Initial render
+    renderOrderSummary();
+</script>
+</body>
+</html>
+
+

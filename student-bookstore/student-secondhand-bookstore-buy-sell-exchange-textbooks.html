@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Student Secondhand Bookstore | Buy, Sell & Exchange Textbooks</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f7f9fc;
+            color: #1a2a3a;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* Header */
+        .main-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo h1 {
+            font-size: 1.5rem;
+            color: #0f3b2c;
+            letter-spacing: -0.3px;
+        }
+
+        .logo p {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+        }
+
+        .trust-badges {
+            display: flex;
+            gap: 24px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #2c5f4a;
+        }
+
+        .badge::before {
+            content: "✓";
+            background: #0f3b2c;
+            color: white;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        nav {
+            display: flex;
+            gap: 24px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #1a2a3a;
+            font-weight: 500;
+        }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #e9f5ef 0%, #d4e8df 100%);
+            padding: 48px 0;
+            border-radius: 0 0 32px 32px;
+            margin-bottom: 40px;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 60px;
+            padding: 8px 8px 8px 24px;
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            max-width: 700px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            font-size: 1rem;
+            padding: 12px 0;
+            outline: none;
+        }
+
+        .search-box button {
+            background: #0f3b2c;
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .search-box button:hover {
+            background: #1e5a45;
+        }
+
+        /* User Journey Steps */
+        .journey {
+            margin: 48px 0;
+        }
+
+        .journey h3 {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .step {
+            background: white;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #0f3b2c;
+            border: 1px solid #cbd5e1;
+        }
+
+        /* Categories */
+        .categories {
+            margin: 40px 0;
+        }
+
+        .category-list {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .category-btn {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .category-btn.active {
+            background: #0f3b2c;
+            color: white;
+            border-color: #0f3b2c;
+        }
+
+        /* Book Grid */
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 40px 0 20px;
+        }
+
+        .book-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .book-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+
+        .book-cover {
+            height: 200px;
+            background: #eef2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+
+        .book-info {
+            padding: 16px;
+        }
+
+        .book-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+
+        .book-detail {
+            font-size: 0.8rem;
+            color: #5a6e7c;
+            margin: 6px 0;
+        }
+
+        .price {
+            font-weight: 700;
+            color: #0f3b2c;
+            font-size: 1.3rem;
+            margin: 12px 0 8px;
+        }
+
+        .condition {
+            font-size: 0.75rem;
+            background: #e9f5ef;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .seller {
+            font-size: 0.75rem;
+            color: #5a6e7c;
+            margin: 8px 0;
+        }
+
+        .reward-badge {
+            color: #c97e00;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .btn-primary {
+            background: #0f3b2c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid #0f3b2c;
+            color: #0f3b2c;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        /* Why love & Condition */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin: 60px 0;
+            background: white;
+            padding: 32px;
+            border-radius: 24px;
+        }
+
+        .condition-list p, .love-list p {
+            margin: 12px 0;
+        }
+
+        .campus-links {
+            text-align: center;
+            padding: 32px;
+            background: #e9f5ef;
+            border-radius: 24px;
+            margin: 40px 0;
+        }
+
+        .campus-links a {
+            display: inline-block;
+            margin: 8px 16px;
+            color: #0f3b2c;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 32px;
+            color: #5a6e7c;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            .search-box {
+                flex-direction: column;
+                border-radius: 32px;
+                padding: 16px;
+            }
+            .search-box button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <h1>📚 STUDENT SECONDHAND BOOKSTORE</h1>
+                <p>Buy, sell and exchange textbooks with students on your campus.</p>
+            </div>
+            <div class="trust-badges">
+                <span class="badge">Student verified</span>
+                <span class="badge">Safe Payments</span>
+                <span class="badge">Better Prices</span>
+            </div>
+            <nav>
+                <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Browse</a>
+                <a href="my-listings-student-secondhand-bookstore.html">My Listings</a>
+                <a href="sell-your-books-student-secondhand-bookstore.html">Sell</a>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div class="hero">
+    <div class="container">
+        <h2>📖 Find your books. Save money. Support students.</h2>
+        <p>Search by title, author, ISBN or course code</p>
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="e.g. Microeconomics, LAW101, 978-0-13...">
+            <button id="searchBtn">🔍 Search</button>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="journey">
+        <h3>📌 USER JOURNEY</h3>
+        <div class="steps">
+            <span class="step">1. Discover Books</span>
+            <span class="step">2. Book Details</span>
+            <span class="step">3. Checkout (Escrow)</span>
+            <span class="step">4. Order Tracking</span>
+            <span class="step">5. Chat</span>
+            <span class="step">6. Receive & Confirm</span>
+            <span class="step">7. Rate & Review</span>
+            <span class="step">8. Act/Unlock</span>
+        </div>
+    </div>
+
+    <div class="categories">
+        <h3>Categories</h3>
+        <div class="category-list" id="categoryList">
+            <button class="category-btn active" data-cat="all">All Books</button>
+            <button class="category-btn" data-cat="Law">Law</button>
+            <button class="category-btn" data-cat="Engineering">Engineering</button>
+            <button class="category-btn" data-cat="Science">Science</button>
+            <button class="category-btn" data-cat="More">More</button>
+        </div>
+    </div>
+
+    <div class="section-title">
+        <h2>🔥 Popular Books</h2>
+        <span>See cheapest prices across campus →</span>
+    </div>
+
+    <div class="book-grid" id="bookGrid"></div>
+
+    <div class="info-grid">
+        <div class="why-love">
+            <h3>💚 WHY STUDENTS LOVE IT</h3>
+            <div class="love-list">
+                <p>💰 Cheaper than retail</p>
+                <p>🏫 Books from your own campus</p>
+                <p>🔒 Safe and secure transactions</p>
+                <p>🤝 Support other students</p>
+            </div>
+        </div>
+        <div class="condition-guide">
+            <h3>📘 CONDITION GUIDE</h3>
+            <div class="condition-list">
+                <p>⭐ Brand new, never used</p>
+                <p>✨ Barely used. Excellent condition</p>
+                <p>📖 Used with minor wear</p>
+                <p>⚠️ Visible wear but usable</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="campus-links">
+        <h3>📍 Available at your university</h3>
+        <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">/uct/bookstore</a>
+        <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">/wits/bookstore</a>
+        <a href="student-secondhand-bookstore-buy-sell-exchange-textbooks.html">/up/bookstore</a>
+    </div>
+</div>
+
+<footer>
+    <p>Student Secondhand Bookstore — Buy wisely, sell easily, exchange fairly.</p>
+</footer>
+
+<script>
+    // Sample books data
+    const books = [
+        {
+            id: 1,
+            title: "Introduction to Microeconomics",
+            author: "Mankiw",
+            edition: "4th Edition",
+            price: 200,
+            condition: "Great Condition",
+            conditionDesc: "Used for first year economics. Highlights in pencil. All pages intact.",
+            seller: "Thando M.",
+            university: "UCT Student",
+            reward: "+0.25 USD",
+            category: "Economics"
+        },
+        {
+            id: 2,
+            title: "CONSTRUCTIONAL ARTS",
+            author: "A. Peterson",
+            edition: "3rd Edition",
+            price: 180,
+            condition: "Used with minor wear",
+            seller: "Luke J.",
+            university: "Wits",
+            reward: null,
+            category: "Engineering"
+        },
+        {
+            id: 3,
+            title: "FUNDAMENTALS OF ARCHITECTURE",
+            author: "S. Hall",
+            edition: "2nd Edition",
+            price: 250,
+            condition: "Barely used. Excellent condition",
+            seller: "Nadia K.",
+            university: "UP",
+            reward: null,
+            category: "Engineering"
+        },
+        {
+            id: 4,
+            title: "INTRODUCTION TO ARCHITECTURE",
+            author: "R. Meier",
+            edition: "5th Edition",
+            price: 310,
+            condition: "Brand new, never used",
+            seller: "James W.",
+            university: "UCT",
+            reward: null,
+            category: "Engineering"
+        },
+        {
+            id: 5,
+            title: "Constitutional Law of South Africa",
+            author: "J. Dugard",
+            edition: "7th Edition",
+            price: 180,
+            condition: "Good",
+            seller: "Priya N.",
+            university: "Wits",
+            reward: "+0.25 USD",
+            category: "Law"
+        },
+        {
+            id: 6,
+            title: "Company Law",
+            author: "D. Pretorius",
+            edition: "2nd Edition",
+            price: 190,
+            condition: "Fair",
+            seller: "Michael R.",
+            university: "UCT",
+            reward: "+0.25 USD",
+            category: "Law"
+        }
+    ];
+
+    const bookGrid = document.getElementById("bookGrid");
+    const categoryBtns = document.querySelectorAll(".category-btn");
+    const searchInput = document.getElementById("searchInput");
+    const searchBtn = document.getElementById("searchBtn");
+
+    let activeCategory = "all";
+    let searchQuery = "";
+
+    function renderBooks() {
+        let filtered = books;
+
+        // Filter by category
+        if (activeCategory !== "all") {
+            filtered = filtered.filter(book => book.category === activeCategory);
+        }
+
+        // Filter by search query (title, author, course, isbn mock)
+        if (searchQuery.trim() !== "") {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(book =>
+                book.title.toLowerCase().includes(query) ||
+                book.author.toLowerCase().includes(query) ||
+                book.edition.toLowerCase().includes(query) ||
+                (book.university && book.university.toLowerCase().includes(query))
+            );
+        }
+
+        if (filtered.length === 0) {
+            bookGrid.innerHTML = `<p style="grid-column:1/-1; text-align:center;">No books found. Try another search or category.</p>`;
+            return;
+        }
+
+        bookGrid.innerHTML = filtered.map(book => `
+            <div class="book-card" onclick="goToBookDetails(${book.id})">
+                <div class="book-cover">📘</div>
+                <div class="book-info">
+                    <div class="book-title">${book.title}</div>
+                    <div class="book-detail">${book.author} • ${book.edition}</div>
+                    <div class="price">R${book.price}</div>
+                    <div class="condition">${book.condition}</div>
+                    <div class="seller">${book.seller} • ${book.university}</div>
+                    ${book.reward ? `<div class="reward-badge">🎁 ${book.reward} store credit</div>` : ''}
+                    <div class="action-buttons">
+                        <button class="btn-primary" onclick="event.stopPropagation(); buyNow(${book.id})">Buy Now</button>
+                        <button class="btn-secondary" onclick="event.stopPropagation(); chatSeller(${book.id})">Chat</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    window.goToBookDetails = (id) => {
+        alert(`📖 Navigate to Book Details page for book ID: ${id}\n(Next page: book-details.html)`);
+        // In real implementation: window.location.href = `book-details.html?id=${id}`;
+    };
+
+    window.buyNow = (id) => {
+        alert(`Proceed to checkout with escrow protection for book ID: ${id}`);
+        // window.location.href = `checkout.html?book=${id}`;
+    };
+
+    window.chatSeller = (id) => {
+        alert(`Open chat with seller for book ID: ${id}`);
+        // window.location.href = `chat.html?book=${id}`;
+    };
+
+    categoryBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            categoryBtns.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            activeCategory = btn.getAttribute("data-cat");
+            renderBooks();
+        });
+    });
+
+    searchBtn.addEventListener("click", () => {
+        searchQuery = searchInput.value;
+        renderBooks();
+    });
+
+    searchInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+            searchQuery = searchInput.value;
+            renderBooks();
+        }
+    });
+
+    // Initial render
+    renderBooks();
+</script>
+</body>
+</html>
+
+

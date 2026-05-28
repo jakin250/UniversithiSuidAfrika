@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Search Results - UCT Student Forum</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f7fc;
+      color: #0a2b3e;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #dce5ec;
+    }
+
+    .logo-area h1 {
+      font-size: 1.8rem;
+      color: #0a2b3e;
+    }
+
+    .logo-area .tagline {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+    }
+
+    .back-link {
+      color: #0f5b8c;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      transition: background 0.2s;
+    }
+
+    .back-link:hover {
+      background: #eef2f7;
+    }
+
+    /* Search Bar */
+    .search-section {
+      background: white;
+      border-radius: 28px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .search-input-group {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .search-input-group input {
+      flex: 1;
+      padding: 0.9rem 1.2rem;
+      border: 2px solid #e0e9f0;
+      border-radius: 60px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: 0.2s;
+    }
+
+    .search-input-group input:focus {
+      outline: none;
+      border-color: #0f5b8c;
+      box-shadow: 0 0 0 3px rgba(15,91,140,0.1);
+    }
+
+    .search-input-group button {
+      padding: 0.9rem 2rem;
+      background: #0f5b8c;
+      color: white;
+      border: none;
+      border-radius: 60px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .search-input-group button:hover {
+      background: #0a4368;
+    }
+
+    .result-stats {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+      margin-top: 0.5rem;
+    }
+
+    /* Filters and Tabs */
+    .search-tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 2px solid #e9eef3;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .search-tab {
+      padding: 0.7rem 1.5rem;
+      background: none;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #6c7e8c;
+      cursor: pointer;
+      border-radius: 40px 40px 0 0;
+      transition: 0.2s;
+    }
+
+    .search-tab.active {
+      color: #0f5b8c;
+      background: white;
+      border-bottom: 3px solid #0f5b8c;
+    }
+
+    .filter-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      background: white;
+      padding: 1rem 1.5rem;
+      border-radius: 20px;
+    }
+
+    .sort-select {
+      padding: 0.5rem 1rem;
+      border: 1px solid #cddfe8;
+      border-radius: 40px;
+      background: white;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    /* Results Layout */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+    }
+
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .result-card {
+      background: white;
+      border-radius: 20px;
+      padding: 1.3rem 1.5rem;
+      transition: transform 0.1s, box-shadow 0.2s;
+      cursor: pointer;
+      border: 1px solid #eaf0f5;
+    }
+
+    .result-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      transform: translateY(-1px);
+    }
+
+    .result-type {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 30px;
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+    }
+
+    .type-post { background: #dbeafe; color: #2563eb; }
+    .type-group { background: #d1fae5; color: #059669; }
+    .type-announcement { background: #fee2e2; color: #dc2626; }
+
+    .result-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+      color: #0a2b3e;
+    }
+
+    .result-excerpt {
+      font-size: 0.85rem;
+      color: #4a627a;
+      margin: 0.5rem 0;
+      line-height: 1.5;
+    }
+
+    .result-meta {
+      font-size: 0.75rem;
+      color: #6c7e8c;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    /* Sidebar */
+    .sidebar-card {
+      background: white;
+      border-radius: 24px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      position: sticky;
+      top: 1.5rem;
+    }
+
+    .sidebar-card h3 {
+      font-size: 1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #0f5b8c;
+      padding-left: 0.7rem;
+    }
+
+    .trending-search-item {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid #eef2f6;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+
+    .trending-search-item:hover {
+      color: #0f5b8c;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      background: white;
+      border-radius: 24px;
+      color: #7c93a8;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+
+    .page-btn {
+      padding: 0.4rem 0.8rem;
+      border: 1px solid #cddfe8;
+      background: white;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+
+    .page-btn.active {
+      background: #0f5b8c;
+      color: white;
+    }
+
+    @media (max-width: 800px) {
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+      .container {
+        padding: 1rem;
+      }
+      .sidebar-card {
+        position: static;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <div class="logo-area">
+      <h1>STUDENT FORUM</h1>
+      <div class="tagline">Your campus. Your voice.</div>
+    </div>
+    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+  </div>
+
+  <div class="search-section">
+    <div class="search-input-group">
+      <input type="text" id="searchInput" placeholder="Search discussions, study groups, announcements..." value="exam">
+      <button id="searchBtn">🔍 Search</button>
+    </div>
+    <div class="result-stats" id="resultStats"></div>
+  </div>
+
+  <div class="results-grid">
+    <!-- Main Results Area -->
+    <div>
+      <div class="search-tabs">
+        <button class="search-tab active" data-tab="all">📌 All Results</button>
+        <button class="search-tab" data-tab="posts">📝 Posts</button>
+        <button class="search-tab" data-tab="groups">👥 Study Groups</button>
+        <button class="search-tab" data-tab="announcements">📢 Announcements</button>
+      </div>
+
+      <div class="filter-row">
+        <div>🔎 <span id="resultCount">0</span> results found</div>
+        <select id="sortSelect" class="sort-select">
+          <option value="relevance">Relevance</option>
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+        </select>
+      </div>
+
+      <div id="resultsContainer" class="results-list"></div>
+      <div id="paginationContainer" class="pagination"></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <div class="sidebar-card">
+        <h3>🔥 Trending Searches</h3>
+        <div id="trendingSearches"></div>
+      </div>
+      <div class="sidebar-card">
+        <h3>💡 Search Tips</h3>
+        <ul style="list-style: none; font-size: 0.8rem;">
+          <li>✓ Use specific keywords (e.g., "Quantitative Methods past papers")</li>
+          <li>✓ Filter by type (posts / groups / announcements)</li>
+          <li>✓ Sort by relevance or date</li>
+          <li>✓ Try course codes (e.g., "MAM1000W")</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ======================= MOCK SEARCH DATA =======================
+  // Posts (from forum discussions)
+  const searchPosts = [
+    { id: 1, title: "How do I survive Quantitative Methods?", category: "Academic Help", author: "Sipho M.", date: "2026-05-10", timeAgo: "3h ago", excerpt: "I'm really struggling with QM. Any study tips or resources?", votes: 327, replies: 24, tags: ["stats", "qm", "exam"] },
+    { id: 2, title: "Best budget laptops for Computer Science students?", category: "Tech & Gadgets", author: "Lerato K.", date: "2026-05-09", timeAgo: "1d ago", excerpt: "Looking for affordable laptops under R8000 for coding.", votes: 283, replies: 31, tags: ["laptop", "cs", "budget"] },
+    { id: 3, title: "Past papers for Financial Accounting II", category: "Study Resources", author: "Thabo R.", date: "2026-05-08", timeAgo: "2d ago", excerpt: "Does anyone have past exam papers for FAC1502?", votes: 35, replies: 8, tags: ["accounting", "pastpapers", "exam"] },
+    { id: 4, title: "Exam Season Support Hub Resources", category: "Academic Help", author: "Admin", date: "2026-05-12", timeAgo: "1d ago", excerpt: "Free tutoring and past papers available at the library.", votes: 89, replies: 5, tags: ["exam", "support", "resources"] },
+    { id: 5, title: "Study group for Quantitative Methods", category: "Study Resources", author: "Naledi M.", date: "2026-05-11", timeAgo: "2d ago", excerpt: "Looking for 3-4 students to form a QM study group.", votes: 42, replies: 12, tags: ["qm", "studygroup", "exam"] }
+  ];
+
+  // Study Groups
+  const searchGroups = [
+    { id: 101, name: "📊 Quant Methods Warriors", course: "Quantitative Methods", members: 12, description: "Weekly problem-solving sessions for QM.", tags: ["qm", "stats"] },
+    { id: 102, name: "💻 CS Study Squad", course: "Computer Science", members: 8, description: "Focus on Data Structures & Algorithms.", tags: ["cs", "coding"] },
+    { id: 103, name: "📖 Accounting Masters", course: "Financial Accounting", members: 5, description: "Group for Accounting II & III.", tags: ["accounting", "exam"] },
+    { id: 104, name: "Exam Prep Bootcamp", course: "General", members: 15, description: "Daily exam prep sessions for all courses.", tags: ["exam", "prep"] }
+  ];
+
+  // Announcements
+  const searchAnnouncements = [
+    { id: 201, title: "Exam Season Support Hub Now Open", type: "urgent", date: "2026-05-12", excerpt: "Free tutoring and past papers available.", tags: ["exam", "support"] },
+    { id: 202, title: "New: Study Group Feature Launched", type: "update", date: "2026-05-10", excerpt: "Create and join study groups on the forum.", tags: ["feature", "studygroup"] },
+    { id: 203, title: "Library Extended Hours for Exams", type: "urgent", date: "2026-05-11", excerpt: "Library open until midnight during exam period.", tags: ["exam", "library"] }
+  ];
+
+  let currentTab = "all";
+  let currentQuery = "exam";
+  let currentSort = "relevance";
+  let currentPage = 1;
+  const itemsPerPage = 5;
+
+  // Helper: escape HTML
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  // Search function - returns results based on query and tab
+  function performSearch() {
+    const query = currentQuery.toLowerCase();
+    let results = [];
+
+    if (currentTab === "all" || currentTab === "posts") {
+      const matchedPosts = searchPosts.filter(post => 
+        post.title.toLowerCase().includes(query) || 
+        post.excerpt.toLowerCase().includes(query) ||
+        post.tags.some(tag => tag.toLowerCase().includes(query))
+      ).map(p => ({ ...p, type: "post", typeLabel: "📝 Post" }));
+      results.push(...matchedPosts);
+    }
+
+    if (currentTab === "all" || currentTab === "groups") {
+      const matchedGroups = searchGroups.filter(group =>
+        group.name.toLowerCase().includes(query) ||
+        group.description.toLowerCase().includes(query) ||
+        group.course.toLowerCase().includes(query) ||
+        group.tags.some(tag => tag.toLowerCase().includes(query))
+      ).map(g => ({ ...g, type: "group", typeLabel: "👥 Study Group" }));
+      results.push(...matchedGroups);
+    }
+
+    if (currentTab === "all" || currentTab === "announcements") {
+      const matchedAnnouncements = searchAnnouncements.filter(ann =>
+        ann.title.toLowerCase().includes(query) ||
+        ann.excerpt.toLowerCase().includes(query) ||
+        ann.tags.some(tag => tag.toLowerCase().includes(query))
+      ).map(a => ({ ...a, type: "announcement", typeLabel: "📢 Announcement" }));
+      results.push(...matchedAnnouncements);
+    }
+
+    // Sorting
+    if (currentSort === "newest") {
+      results.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    } else if (currentSort === "oldest") {
+      results.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+    } else {
+      // relevance: simple scoring based on title/name match
+      results.sort((a, b) => {
+        const aTitle = (a.title || a.name || "").toLowerCase();
+        const bTitle = (b.title || b.name || "").toLowerCase();
+        const aScore = aTitle.includes(query) ? 2 : 1;
+        const bScore = bTitle.includes(query) ? 2 : 1;
+        return bScore - aScore;
+      });
+    }
+
+    return results;
+  }
+
+  function renderResults() {
+    const allResults = performSearch();
+    const totalItems = allResults.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const start = (currentPage - 1) * itemsPerPage;
+    const paginatedResults = allResults.slice(start, start + itemsPerPage);
+
+    document.getElementById('resultCount').innerText = totalItems;
+    document.getElementById('resultStats').innerHTML = `🔍 Showing results for "${escapeHtml(currentQuery)}" — ${totalItems} matches`;
+
+    const container = document.getElementById('resultsContainer');
+    if (paginatedResults.length === 0) {
+      container.innerHTML = `<div class="empty-state">🔎 No results found for "${escapeHtml(currentQuery)}". Try different keywords or browse categories.</div>`;
+      document.getElementById('paginationContainer').innerHTML = '';
+      return;
+    }
+
+    container.innerHTML = paginatedResults.map(item => {
+      if (item.type === "post") {
+        return `
+          <div class="result-card" data-type="post" data-id="${item.id}">
+            <span class="result-type type-post">${item.typeLabel}</span>
+            <div class="result-title">${escapeHtml(item.title)}</div>
+            <div class="result-excerpt">${escapeHtml(item.excerpt.substring(0, 120))}${item.excerpt.length > 120 ? '…' : ''}</div>
+            <div class="result-meta">
+              <span>📂 ${escapeHtml(item.category)}</span>
+              <span>👤 ${escapeHtml(item.author)}</span>
+              <span>🕒 ${item.timeAgo}</span>
+              <span>▲ ${item.votes} votes</span>
+              <span>💬 ${item.replies} replies</span>
+            </div>
+          </div>
+        `;
+      } else if (item.type === "group") {
+        return `
+          <div class="result-card" data-type="group" data-id="${item.id}">
+            <span class="result-type type-group">${item.typeLabel}</span>
+            <div class="result-title">${escapeHtml(item.name)}</div>
+            <div class="result-excerpt">${escapeHtml(item.description)}</div>
+            <div class="result-meta">
+              <span>📚 ${escapeHtml(item.course)}</span>
+              <span>👥 ${item.members} members</span>
+            </div>
+          </div>
+        `;
+      } else {
+        return `
+          <div class="result-card" data-type="announcement" data-id="${item.id}">
+            <span class="result-type type-announcement">${item.typeLabel}</span>
+            <div class="result-title">${escapeHtml(item.title)}</div>
+            <div class="result-excerpt">${escapeHtml(item.excerpt)}</div>
+            <div class="result-meta">
+              <span>📅 ${item.date}</span>
+              <span>🏷️ ${item.type === 'urgent' ? '⚠️ Urgent' : 'Update'}</span>
+            </div>
+          </div>
+        `;
+      }
+    }).join('');
+
+    // Add click handlers to result cards
+    document.querySelectorAll('.result-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const type = card.getAttribute('data-type');
+        const id = card.getAttribute('data-id');
+        if (type === 'post') alert(`📄 Opening post #${id} (simulated navigation to discussion detail)`);
+        else if (type === 'group') alert(`👥 Opening study group #${id} (simulated navigation)`);
+        else alert(`📢 Opening announcement #${id} (simulated navigation)`);
+      });
+    });
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    const container = document.getElementById('paginationContainer');
+    if (totalPages <= 1) {
+      container.innerHTML = '';
+      return;
+    }
+    let buttons = '';
+    for (let i = 1; i <= totalPages; i++) {
+      buttons += `<button class="page-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+    }
+    container.innerHTML = buttons;
+    document.querySelectorAll('.page-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentPage = parseInt(btn.getAttribute('data-page'));
+        renderResults();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  }
+
+  // Trending searches (static)
+  function renderTrendingSearches() {
+    const trending = ["quantitative methods", "past papers", "exam tips", "study groups", "financial accounting"];
+    const container = document.getElementById('trendingSearches');
+    container.innerHTML = trending.map(term => `
+      <div class="trending-search-item" data-term="${term}">
+        🔥 ${term}
+      </div>
+    `).join('');
+    document.querySelectorAll('.trending-search-item').forEach(el => {
+      el.addEventListener('click', () => {
+        currentQuery = el.getAttribute('data-term');
+        document.getElementById('searchInput').value = currentQuery;
+        currentPage = 1;
+        renderResults();
+      });
+    });
+  }
+
+  // Tab switching
+  function initTabs() {
+    const tabs = document.querySelectorAll('.search-tab');
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentTab = tab.getAttribute('data-tab');
+        currentPage = 1;
+        renderResults();
+      });
+    });
+  }
+
+  // Search input handler
+  function initSearch() {
+    const searchBtn = document.getElementById('searchBtn');
+    const searchInput = document.getElementById('searchInput');
+    
+    searchBtn.addEventListener('click', () => {
+      currentQuery = searchInput.value.trim();
+      if (!currentQuery) {
+        alert('Please enter a search term');
+        return;
+      }
+      currentPage = 1;
+      renderResults();
+    });
+    
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        currentQuery = searchInput.value.trim();
+        if (currentQuery) {
+          currentPage = 1;
+          renderResults();
+        }
+      }
+    });
+  }
+
+  // Sort handler
+  function initSort() {
+    const sortSelect = document.getElementById('sortSelect');
+    sortSelect.addEventListener('change', () => {
+      currentSort = sortSelect.value;
+      currentPage = 1;
+      renderResults();
+    });
+  }
+
+  // Back button
+  document.getElementById('backToForum')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('← Returning to homepage (simulated navigation)');
+  });
+
+  // Initialize everything
+  function init() {
+    renderTrendingSearches();
+    initTabs();
+    initSearch();
+    initSort();
+    renderResults(); // initial search with "exam" query
+  }
+
+  init();
+</script>
+</body>
+</html>
+

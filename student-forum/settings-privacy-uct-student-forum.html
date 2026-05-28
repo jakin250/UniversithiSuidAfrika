@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Settings & Privacy - UCT Student Forum</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f7fc;
+      color: #0a2b3e;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 1.5rem 2rem;
+    }
+
+    /* Header */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #dce5ec;
+    }
+
+    .logo-area h1 {
+      font-size: 1.8rem;
+      color: #0a2b3e;
+    }
+
+    .logo-area .tagline {
+      font-size: 0.85rem;
+      color: #5a6e7a;
+    }
+
+    .back-link {
+      color: #0f5b8c;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: white;
+      padding: 0.5rem 1rem;
+      border-radius: 40px;
+      transition: background 0.2s;
+    }
+
+    .back-link:hover {
+      background: #eef2f7;
+    }
+
+    .btn-primary {
+      background: #0f5b8c;
+      color: white;
+      border: none;
+      padding: 0.7rem 1.8rem;
+      border-radius: 40px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: #0a4368;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid #0f5b8c;
+      color: #0f5b8c;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.5rem;
+      border-radius: 40px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    /* Settings Layout */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+    }
+
+    /* Sidebar Navigation */
+    .settings-nav {
+      background: white;
+      border-radius: 24px;
+      padding: 1rem;
+      position: sticky;
+      top: 1.5rem;
+    }
+
+    .nav-item {
+      padding: 0.8rem 1rem;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: 500;
+      color: #4a627a;
+    }
+
+    .nav-item:hover {
+      background: #eef2f7;
+    }
+
+    .nav-item.active {
+      background: #0f5b8c;
+      color: white;
+    }
+
+    /* Main Content */
+    .settings-content {
+      background: white;
+      border-radius: 28px;
+      padding: 2rem;
+    }
+
+    .setting-section {
+      display: none;
+    }
+
+    .setting-section.active {
+      display: block;
+    }
+
+    .section-title {
+      font-size: 1.4rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #0f5b8c;
+      padding-left: 1rem;
+    }
+
+    .setting-group {
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid #eef2f6;
+    }
+
+    .setting-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .setting-group input, .setting-group select {
+      width: 100%;
+      max-width: 400px;
+      padding: 0.7rem 1rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      font-family: inherit;
+    }
+
+    .setting-group small {
+      display: block;
+      color: #6c7e8c;
+      font-size: 0.7rem;
+      margin-top: 0.2rem;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin: 0.5rem 0;
+    }
+
+    .checkbox-group input {
+      width: 20px;
+      height: 20px;
+    }
+
+    .danger-zone {
+      background: #fef2f2;
+      border-radius: 20px;
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .danger-zone h3 {
+      color: #dc2626;
+      margin-bottom: 0.5rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1e2f3c;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .container {
+        padding: 1rem;
+      }
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+      .settings-nav {
+        position: static;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .nav-item {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top-bar">
+    <div class="logo-area">
+      <h1>STUDENT FORUM</h1>
+      <div class="tagline">Your campus. Your voice.</div>
+    </div>
+    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+  </div>
+
+  <div class="settings-grid">
+    <!-- Navigation Sidebar -->
+    <div class="settings-nav">
+      <div class="nav-item active" data-section="profile">👤 Profile Settings</div>
+      <div class="nav-item" data-section="notifications">🔔 Notifications</div>
+      <div class="nav-item" data-section="privacy">🔒 Privacy & Security</div>
+      <div class="nav-item" data-section="appearance">🎨 Appearance</div>
+      <div class="nav-item" data-section="data">📊 Data & Backup</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="settings-content">
+      <!-- Profile Settings -->
+      <div id="profile" class="setting-section active">
+        <h2 class="section-title">👤 Profile Settings</h2>
+        <div class="setting-group">
+          <label>Display Name</label>
+          <input type="text" id="displayName" value="Thando M.">
+          <small>This is how your name appears to others</small>
+        </div>
+        <div class="setting-group">
+          <label>Email Address</label>
+          <input type="email" id="email" value="thando.m@uct.ac.za" disabled>
+          <small>Email is verified and cannot be changed</small>
+        </div>
+        <div class="setting-group">
+          <label>Faculty</label>
+          <select id="faculty">
+            <option>Engineering & Built Environment</option>
+            <option>Commerce</option>
+            <option>Humanities</option>
+            <option>Science</option>
+            <option>Law</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <label>Year of Study</label>
+          <select id="yearOfStudy">
+            <option>1st Year</option>
+            <option>2nd Year</option>
+            <option selected>3rd Year</option>
+            <option>4th Year</option>
+            <option>Postgraduate</option>
+            <option>PhD</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <label>Bio</label>
+          <textarea id="bio" rows="3" style="width:100%; max-width:500px; border-radius:16px; border:1.5px solid #e2e8f0; padding:0.7rem;">3rd year Engineering student passionate about tech and helping peers succeed. Ask me about coding, thermodynamics, or study tips!</textarea>
+        </div>
+        <button id="saveProfileBtn" class="btn-primary">Save Changes</button>
+      </div>
+
+      <!-- Notifications -->
+      <div id="notifications" class="setting-section">
+        <h2 class="section-title">🔔 Notification Preferences</h2>
+        <div class="checkbox-group">
+          <input type="checkbox" id="notifyReplies" checked>
+          <label>Email me when someone replies to my post</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="notifyUpvotes" checked>
+          <label>Email me when I receive upvotes</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="notifyMentions" checked>
+          <label>Email me when someone mentions me (@username)</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="notifyMessages" checked>
+          <label>Email me when I receive a private message</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="notifyAnnouncements">
+          <label>Receive forum announcement emails</label>
+        </div>
+        <div class="setting-group" style="margin-top: 1rem;">
+          <label>Push Notifications</label>
+          <select id="pushNotifications">
+            <option value="all">All notifications</option>
+            <option value="mentions">Only mentions & messages</option>
+            <option value="none">None</option>
+          </select>
+        </div>
+        <button id="saveNotificationsBtn" class="btn-primary">Save Notification Settings</button>
+      </div>
+
+      <!-- Privacy & Security -->
+      <div id="privacy" class="setting-section">
+        <h2 class="section-title">🔒 Privacy & Security</h2>
+        <div class="checkbox-group">
+          <input type="checkbox" id="showOnlineStatus" checked>
+          <label>Show when I'm online</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="showEmailPublic">
+          <label>Show my email address on my profile</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="allowMessages" checked>
+          <label>Allow users to send me private messages</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="showActivity" checked>
+          <label>Show my recent activity on my profile</label>
+        </div>
+        <div class="setting-group">
+          <label>Change Password</label>
+          <input type="password" id="currentPassword" placeholder="Current Password" style="margin-bottom:0.5rem;">
+          <input type="password" id="newPassword" placeholder="New Password">
+          <input type="password" id="confirmPassword" placeholder="Confirm New Password">
+          <button id="changePasswordBtn" class="btn-outline" style="margin-top:0.5rem;">Update Password</button>
+        </div>
+        <div class="danger-zone">
+          <h3>⚠️ Danger Zone</h3>
+          <p style="margin-bottom: 1rem; font-size: 0.85rem;">These actions are irreversible.</p>
+          <button id="deactivateAccountBtn" class="btn-outline" style="border-color:#dc2626; color:#dc2626;">Deactivate Account</button>
+          <button id="deleteAccountBtn" class="btn-danger" style="margin-left: 0.5rem;">Delete Account Permanently</button>
+        </div>
+      </div>
+
+      <!-- Appearance -->
+      <div id="appearance" class="setting-section">
+        <h2 class="section-title">🎨 Appearance</h2>
+        <div class="setting-group">
+          <label>Theme</label>
+          <select id="themeSelect">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="system">System Default</option>
+          </select>
+        </div>
+        <div class="setting-group">
+          <label>Font Size</label>
+          <select id="fontSize">
+            <option value="small">Small</option>
+            <option value="medium" selected>Medium</option>
+            <option value="large">Large</option>
+          </select>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="compactView">
+          <label>Use compact view (show more posts per page)</label>
+        </div>
+        <div class="checkbox-group">
+          <input type="checkbox" id="showAvatars" checked>
+          <label>Show user avatars</label>
+        </div>
+        <button id="saveAppearanceBtn" class="btn-primary">Save Appearance Settings</button>
+      </div>
+
+      <!-- Data & Backup -->
+      <div id="data" class="setting-section">
+        <h2 class="section-title">📊 Data & Backup</h2>
+        <div class="setting-group">
+          <button id="exportDataBtn" class="btn-outline">📥 Export My Data (JSON)</button>
+          <small>Download all your posts, comments, and messages</small>
+        </div>
+        <div class="setting-group">
+          <button id="clearHistoryBtn" class="btn-outline" style="border-color:#dc2626; color:#dc2626;">🗑️ Clear Search History</button>
+          <small>Remove all your search queries from your account</small>
+        </div>
+        <div class="setting-group">
+          <button id="clearCacheBtn" class="btn-outline">🔄 Clear Local Cache</button>
+          <small>Clear stored data to free up space</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerText = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  // Tab navigation
+  function initNavigation() {
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const sectionId = item.getAttribute('data-section');
+        navItems.forEach(nav => nav.classList.remove('active'));
+        item.classList.add('active');
+        
+        document.querySelectorAll('.setting-section').forEach(section => {
+          section.classList.remove('active');
+        });
+        document.getElementById(sectionId).classList.add('active');
+      });
+    });
+  }
+
+  // Save Profile
+  document.getElementById('saveProfileBtn')?.addEventListener('click', () => {
+    const displayName = document.getElementById('displayName').value;
+    const faculty = document.getElementById('faculty').value;
+    const year = document.getElementById('yearOfStudy').value;
+    const bio = document.getElementById('bio').value;
+    showToast(`✅ Profile updated! ${displayName}, ${faculty}, ${year}`);
+  });
+
+  // Save Notifications
+  document.getElementById('saveNotificationsBtn')?.addEventListener('click', () => {
+    const replies = document.getElementById('notifyReplies').checked;
+    const upvotes = document.getElementById('notifyUpvotes').checked;
+    const mentions = document.getElementById('notifyMentions').checked;
+    const messages = document.getElementById('notifyMessages').checked;
+    const announcements = document.getElementById('notifyAnnouncements').checked;
+    showToast(`🔔 Notification preferences saved`);
+  });
+
+  // Change Password
+  document.getElementById('changePasswordBtn')?.addEventListener('click', () => {
+    const current = document.getElementById('currentPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('confirmPassword').value;
+    if (!current) {
+      showToast('Please enter your current password');
+      return;
+    }
+    if (newPass !== confirm) {
+      showToast('New passwords do not match');
+      return;
+    }
+    if (newPass.length > 0 && newPass.length < 6) {
+      showToast('Password must be at least 6 characters');
+      return;
+    }
+    showToast('🔒 Password updated successfully!');
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+  });
+
+  // Danger Zone
+  document.getElementById('deactivateAccountBtn')?.addEventListener('click', () => {
+    if (confirm('Are you sure you want to deactivate your account? You can reactivate later by logging in.')) {
+      showToast('⚠️ Account deactivated. Redirecting to login...');
+      setTimeout(() => alert('Account deactivated (simulated)'), 1000);
+    }
+  });
+
+  document.getElementById('deleteAccountBtn')?.addEventListener('click', () => {
+    if (confirm('⚠️ PERMANENT ACTION: This will delete all your data forever. Type "DELETE" to confirm.')) {
+      const confirmation = prompt('Type "DELETE" to confirm account deletion:');
+      if (confirmation === 'DELETE') {
+        showToast('🗑️ Account permanently deleted. Goodbye!');
+        setTimeout(() => alert('Account deleted (simulated)'), 1000);
+      } else {
+        showToast('Deletion cancelled');
+      }
+    }
+  });
+
+  // Appearance
+  document.getElementById('saveAppearanceBtn')?.addEventListener('click', () => {
+    const theme = document.getElementById('themeSelect').value;
+    const fontSize = document.getElementById('fontSize').value;
+    const compact = document.getElementById('compactView').checked;
+    showToast(`🎨 Theme: ${theme}, Font: ${fontSize}, Compact: ${compact ? 'On' : 'Off'}`);
+  });
+
+  // Data & Backup
+  document.getElementById('exportDataBtn')?.addEventListener('click', () => {
+    const dummyData = {
+      user: "Thando M.",
+      posts: 23,
+      comments: 89,
+      upvotes: 156,
+      exportDate: new Date().toISOString()
+    };
+    const dataStr = JSON.stringify(dummyData, null, 2);
+    const blob = new Blob([dataStr], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `uct_forum_data_${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('📥 Data exported successfully');
+  });
+
+  document.getElementById('clearHistoryBtn')?.addEventListener('click', () => {
+    if (confirm('Clear all your search history?')) {
+      showToast('🗑️ Search history cleared');
+    }
+  });
+
+  document.getElementById('clearCacheBtn')?.addEventListener('click', () => {
+    showToast('🔄 Local cache cleared');
+  });
+
+  // Back button
+  document.getElementById('backToForum')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('← Returning to homepage (simulated navigation)');
+  });
+
+  // Initialize
+  initNavigation();
+</script>
+</body>
+</html>
+
