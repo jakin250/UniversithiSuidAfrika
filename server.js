@@ -3,9 +3,8 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import express from 'express';
 import session from 'express-session';
-import Database from 'better-sqlite3';
-import helmet from 'helmet';
 import fs from 'fs';
+import helmet from 'helmet';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -16,244 +15,115 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = Number(process.env.PORT || 3000);
 const dataDir = path.join(__dirname, 'data');
-const dbPath = process.env.DATABASE_PATH || path.join(dataDir, 'app.db');
+const dbPath = process.env.DATABASE_PATH || path.join(dataDir, 'app.json');
 const sessionSecret = process.env.SESSION_SECRET || 'change-me-in-production';
 
 fs.mkdirSync(dataDir, { recursive: true });
 
-const db = new Database(dbPath);
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+const seed = {
+  users: [],
+  bookstore: {
+    books: [{ id: 1, title: 'Introduction to Microeconomics', author: 'N. Gregory Mankiw', price: 280, condition: 'Good', course: 'ECON101', isbn: '978-0-13-123456-7', seller: 'A. Naidoo' }],
+    orders: [{ id: 1, orderId: 'ORD-TEST-1', book: { title: 'Test Book', seller: 'Tester' }, buyer: { name: 'Buyer' }, paymentMethod: 'card', amount: 100, platformFee: 10, sellerPayout: 90, status: 'payment_pending', escrowStatus: 'payment_held', orderDate: '2026-05-28T00:00:00Z', trackingId: 'TRK-TEST', createdAt: new Date().toISOString() }],
+    reviews: [{ id: 1, orderId: 'ORD-TEST-1', rating: 5, reviewText: 'Great', sellerName: 'Tester', createdAt: new Date().toISOString() }],
+    listings: []
+  },
+  marketplace: {
+    listings: [{ id: 1, title: 'Calculus: Early Transcendentals', price: 320, courseCode: 'MATH 101', condition: 'Very Good', location: 'Campus Union', seller: 'Jessica Davis' }],
+    messages: [{ id: 1, sellerName: 'Tester', sellerInitials: 'TE', itemTitle: 'Test Item', itemPrice: 10, orderId: 'ORD-TEST-2', text: 'Hello', amount: 10, createdAt: new Date().toISOString() }],
+    orders: [],
+    reviews: []
+  },
+  forum: {
+    posts: [{ id: 1, title: 'How do I survive Quantitative Methods?', category: 'Academic Help', author: 'Student', likes: 18, comments: 4 }],
+    comments: [],
+    groups: [],
+    messages: []
+  },
+  sessions: {}
+};
 
-db.exec(`
-CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  email TEXT NOT NULL UNIQUE,
-  password_hash TEXT NOT NULL,
-  role TEXT NOT NULL DEFAULT 'user',
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS bookstore_books (
-  id INTEGER PRIMARY KEY,
-  title TEXT NOT NULL,
-  author TEXT,
-  price REAL,
-  condition TEXT,
-  course TEXT,
-  isbn TEXT,
-  seller TEXT
-);
-
-CREATE TABLE IF NOT EXISTS bookstore_orders (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  order_id TEXT NOT NULL UNIQUE,
-  payload TEXT NOT NULL,
-  created_by INTEGER,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS bookstore_reviews (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  payload TEXT NOT NULL,
-  created_by INTEGER,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS bookstore_listings (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  payload TEXT NOT NULL,
-  created_by INTEGER,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS marketplace_listings (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  payload TEXT NOT NULL,
-  created_by INTEGER,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS marketplace_messages (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  payload TEXT NOT NULL,
-  created_by INTEGER,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS marketplace_orders (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  order_id TEXT NOT NULL UNIQUE,
-  payload TEXT NOT NULL,
-  created_by INTEGER,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS marketplace_reviews (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  payload TEXT NOT NULL,
-  created_by INTEGER,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS forum_posts (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  payload TEXT NOT NULL,
-  created_by INTEGER,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS forum_comments (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  payload TEXT NOT NULL,
-  created_by INTEGER,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS forum_groups (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  payload TEXT NOT NULL,
-  created_by INTEGER,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE IF NOT EXISTS sessions (
-  sid TEXT PRIMARY KEY,
-  expires INTEGER NOT NULL,
-  data TEXT NOT NULL
-);
-CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires);
-`);
-
-function loadJsonSeed(fileName, fallback) {
-  const filePath = path.join(dataDir, fileName);
-  if (!fs.existsSync(filePath)) return fallback;
-  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
-}
-
-function json(value) {
-  return JSON.stringify(value);
-}
-
-function parseJson(value, fallback = {}) {
-  if (!value) return fallback;
+function loadState() {
+  if (!fs.existsSync(dbPath)) return structuredClone(seed);
   try {
-    return JSON.parse(value);
+    return JSON.parse(fs.readFileSync(dbPath, 'utf8'));
   } catch {
-    return fallback;
+    return structuredClone(seed);
   }
 }
 
-function firstRow(sql, params = []) {
-  return db.prepare(sql).get(...params);
+let state = loadState();
+
+function saveState() {
+  fs.writeFileSync(dbPath, JSON.stringify(state, null, 2));
 }
 
-function allRows(sql, params = []) {
-  return db.prepare(sql).all(...params);
-}
+function ensureState() {
+  state.users ||= [];
+  state.bookstore ||= structuredClone(seed.bookstore);
+  state.marketplace ||= structuredClone(seed.marketplace);
+  state.forum ||= structuredClone(seed.forum);
+  state.sessions ||= {};
 
-function run(sql, params = []) {
-  return db.prepare(sql).run(...params);
-}
-
-function ensureSeeded() {
-  const userCount = firstRow('SELECT COUNT(*) AS count FROM users')?.count || 0;
-  if (userCount === 0) {
+  if (!state.users.length) {
     const demoPassword = bcrypt.hashSync('password123', 10);
-    const insertUser = db.prepare('INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)');
-    insertUser.run('Campus Admin', 'admin@universithi.local', demoPassword, 'admin');
-    insertUser.run('Student User', 'student@universithi.local', demoPassword, 'user');
+    state.users.push(
+      { id: 1, name: 'Campus Admin', email: 'admin@universithi.local', passwordHash: demoPassword, role: 'admin', createdAt: new Date().toISOString() },
+      { id: 2, name: 'Student User', email: 'student@universithi.local', passwordHash: demoPassword, role: 'user', createdAt: new Date().toISOString() }
+    );
   }
-
-  const bookstoreCount = firstRow('SELECT COUNT(*) AS count FROM bookstore_books')?.count || 0;
-  if (bookstoreCount === 0) {
-    const seed = loadJsonSeed('bookstore.json', { books: [], reviews: [], orders: [], listings: [] });
-    const insertBook = db.prepare('INSERT INTO bookstore_books (id, title, author, price, condition, course, isbn, seller) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
-    for (const book of seed.books || []) {
-      insertBook.run(book.id, book.title ?? '', book.author ?? '', book.price ?? null, book.condition ?? '', book.course ?? '', book.isbn ?? '', book.seller ?? '');
-    }
-    const insertOrder = db.prepare('INSERT INTO bookstore_orders (order_id, payload, created_by, created_at) VALUES (?, ?, ?, ?)');
-    for (const order of seed.orders || []) {
-      insertOrder.run(order.orderId || `ORD-${order.id}`, json(order), null, order.createdAt || new Date().toISOString());
-    }
-    const insertReview = db.prepare('INSERT INTO bookstore_reviews (payload, created_by, created_at) VALUES (?, ?, ?)');
-    for (const review of seed.reviews || []) {
-      insertReview.run(json(review), null, review.createdAt || new Date().toISOString());
-    }
-    const insertListing = db.prepare('INSERT INTO bookstore_listings (payload, created_by, created_at) VALUES (?, ?, ?)');
-    for (const listing of seed.listings || []) {
-      insertListing.run(json(listing), null, listing.createdAt || new Date().toISOString());
-    }
-  }
-
-  const marketplaceCount = firstRow('SELECT COUNT(*) AS count FROM marketplace_listings')?.count || 0;
-  if (marketplaceCount === 0) {
-    const seed = loadJsonSeed('marketplace.json', { listings: [], messages: [], orders: [], reviews: [], users: [] });
-    const insertListing = db.prepare('INSERT INTO marketplace_listings (payload, created_by, created_at) VALUES (?, ?, ?)');
-    for (const listing of seed.listings || []) insertListing.run(json(listing), null, listing.createdAt || new Date().toISOString());
-    const insertMessage = db.prepare('INSERT INTO marketplace_messages (payload, created_by, created_at) VALUES (?, ?, ?)');
-    for (const message of seed.messages || []) insertMessage.run(json(message), null, message.createdAt || new Date().toISOString());
-    const insertOrder = db.prepare('INSERT INTO marketplace_orders (order_id, payload, created_by, created_at) VALUES (?, ?, ?, ?)');
-    for (const order of seed.orders || []) insertOrder.run(order.orderId || `ORD-${order.id}`, json(order), null, order.createdAt || new Date().toISOString());
-    const insertReview = db.prepare('INSERT INTO marketplace_reviews (payload, created_by, created_at) VALUES (?, ?, ?)');
-    for (const review of seed.reviews || []) insertReview.run(json(review), null, review.createdAt || new Date().toISOString());
-  }
-
-  const forumCount = firstRow('SELECT COUNT(*) AS count FROM forum_posts')?.count || 0;
-  if (forumCount === 0) {
-    const seed = loadJsonSeed('forum.json', { posts: [], comments: [], groups: [], messages: [] });
-    const insertPost = db.prepare('INSERT INTO forum_posts (payload, created_by, created_at) VALUES (?, ?, ?)');
-    for (const post of seed.posts || []) insertPost.run(json(post), null, post.createdAt || new Date().toISOString());
-    const insertComment = db.prepare('INSERT INTO forum_comments (payload, created_by, created_at) VALUES (?, ?, ?)');
-    for (const comment of seed.comments || []) insertComment.run(json(comment), null, comment.createdAt || new Date().toISOString());
-    const insertGroup = db.prepare('INSERT INTO forum_groups (payload, created_by, created_at) VALUES (?, ?, ?)');
-    for (const group of seed.groups || []) insertGroup.run(json(group), null, group.createdAt || new Date().toISOString());
-  }
+  saveState();
 }
 
-ensureSeeded();
+ensureState();
 
-class SqliteSessionStore extends session.Store {
-  get(sid, callback) {
-    try {
-      const row = firstRow('SELECT data, expires FROM sessions WHERE sid = ?', [sid]);
-      if (!row) return callback(null, null);
-      if (row.expires <= Date.now()) {
-        run('DELETE FROM sessions WHERE sid = ?', [sid]);
-        return callback(null, null);
-      }
-      callback(null, JSON.parse(row.data));
-    } catch (error) {
-      callback(error);
-    }
-  }
+function nextId(items) {
+  return items.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
+}
 
-  set(sid, sessionData, callback) {
-    try {
-      const expires = sessionData?.cookie?.expires ? new Date(sessionData.cookie.expires).getTime() : Date.now() + 24 * 60 * 60 * 1000;
-      run(
-        'INSERT INTO sessions (sid, expires, data) VALUES (?, ?, ?) ON CONFLICT(sid) DO UPDATE SET expires = excluded.expires, data = excluded.data',
-        [sid, expires, JSON.stringify(sessionData)]
-      );
-      callback?.(null);
-    } catch (error) {
-      callback?.(error);
-    }
-  }
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
 
-  destroy(sid, callback) {
-    try {
-      run('DELETE FROM sessions WHERE sid = ?', [sid]);
-      callback?.(null);
-    } catch (error) {
-      callback?.(error);
-    }
-  }
+function getCookieValue(req, name) {
+  const cookieHeader = req.headers.cookie || '';
+  return cookieHeader.split(';').map(part => part.trim()).find(part => part.startsWith(`${name}=`))?.slice(name.length + 1) || null;
+}
 
-  touch(sid, sessionData, callback) {
-    this.set(sid, sessionData, callback);
+function signSession(userId) {
+  const token = `${userId}.${bcrypt.hashSync(`${userId}:${sessionSecret}`, 4).slice(0, 10)}`;
+  state.sessions[token] = { userId, expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000 };
+  saveState();
+  return token;
+}
+
+function getSessionUser(req) {
+  const token = getCookieValue(req, 'universithi_session');
+  if (!token) return null;
+  const entry = state.sessions[token];
+  if (!entry || entry.expiresAt < Date.now()) return null;
+  return state.users.find(user => String(user.id) === String(entry.userId)) || null;
+}
+
+function setSessionCookie(userId) {
+  return `universithi_session=${signSession(userId)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}`;
+}
+
+function clearSessionCookie(req) {
+  const token = getCookieValue(req, 'universithi_session');
+  if (token) {
+    delete state.sessions[token];
+    saveState();
   }
+  return 'universithi_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0';
+}
+
+function normalizeUser(user) {
+  return user ? { id: user.id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt } : null;
+}
+
+function responseCollection(collection) {
+  return clone(collection).reverse();
 }
 
 app.set('trust proxy', 1);
@@ -261,7 +131,6 @@ app.use(helmet({ contentSecurityPolicy: false }));
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
 app.use(session({
-  store: new SqliteSessionStore(),
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
@@ -274,158 +143,121 @@ app.use(session({
 }));
 app.use(express.static(__dirname));
 
-function normalizeUser(row) {
-  return row ? { id: row.id, name: row.name, email: row.email, role: row.role, createdAt: row.created_at } : null;
-}
-
-function currentUser(req) {
-  return req.session.user || null;
-}
-
-function requireAuth(req, res, next) {
-  if (!req.session.user) return res.status(401).json({ error: 'Authentication required' });
-  next();
-}
-
-function ordered(sql, params = []) {
-  return allRows(sql, params).map(row => {
-    const payload = parseJson(row.payload, {});
-    return {
-      ...payload,
-      id: payload.id ?? row.id,
-      createdAt: payload.createdAt || row.created_at
-    };
-  });
-}
-
 app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, database: path.basename(dbPath), authenticated: false });
+  res.json({ ok: true, storage: 'json-file', file: path.basename(dbPath) });
 });
 
 app.get('/api/auth/me', (req, res) => {
-  res.json({ user: currentUser(req) });
+  res.json({ user: normalizeUser(getSessionUser(req)) });
 });
 
 app.post('/api/auth/register', (req, res) => {
   const name = String(req.body?.name || '').trim();
   const email = String(req.body?.email || '').trim().toLowerCase();
   const password = String(req.body?.password || '');
-  if (!name || !email || password.length < 8) {
-    return res.status(400).json({ error: 'Name, email, and password of at least 8 characters are required' });
-  }
-  const existing = firstRow('SELECT id FROM users WHERE email = ?', [email]);
-  if (existing) return res.status(409).json({ error: 'Email already registered' });
-  const passwordHash = bcrypt.hashSync(password, 12);
-  const result = run('INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)', [name, email, passwordHash]);
-  req.session.user = normalizeUser(firstRow('SELECT * FROM users WHERE id = ?', [result.lastInsertRowid]));
-  res.status(201).json({ user: req.session.user });
+  if (!name || !email || password.length < 8) return res.status(400).json({ error: 'Invalid signup data' });
+  if (state.users.some(user => user.email === email)) return res.status(409).json({ error: 'Email already registered' });
+  const user = {
+    id: nextId(state.users),
+    name,
+    email,
+    passwordHash: bcrypt.hashSync(password, 12),
+    role: 'user',
+    createdAt: new Date().toISOString()
+  };
+  state.users.unshift(user);
+  saveState();
+  res.setHeader('Set-Cookie', setSessionCookie(user.id));
+  res.status(201).json({ user: normalizeUser(user) });
 });
 
 app.post('/api/auth/login', (req, res) => {
   const email = String(req.body?.email || '').trim().toLowerCase();
   const password = String(req.body?.password || '');
-  const user = firstRow('SELECT * FROM users WHERE email = ?', [email]);
-  if (!user || !bcrypt.compareSync(password, user.password_hash)) {
-    return res.status(401).json({ error: 'Invalid email or password' });
-  }
-  req.session.user = normalizeUser(user);
-  res.json({ user: req.session.user });
+  const user = state.users.find(entry => entry.email === email);
+  if (!user || !bcrypt.compareSync(password, user.passwordHash)) return res.status(401).json({ error: 'Invalid email or password' });
+  res.setHeader('Set-Cookie', setSessionCookie(user.id));
+  res.json({ user: normalizeUser(user) });
 });
 
 app.post('/api/auth/logout', (req, res) => {
-  req.session.destroy(() => res.json({ ok: true }));
+  res.setHeader('Set-Cookie', clearSessionCookie(req));
+  res.json({ ok: true });
 });
 
-app.get('/api/bookstore/books', (_req, res) => {
-  res.json(allRows('SELECT * FROM bookstore_books ORDER BY id DESC'));
-});
+app.get('/api/bookstore/books', (_req, res) => res.json(responseCollection(state.bookstore.books)));
 app.get('/api/bookstore/books/:id', (req, res) => {
-  const book = firstRow('SELECT * FROM bookstore_books WHERE id = ?', [req.params.id]);
+  const book = state.bookstore.books.find(item => String(item.id) === String(req.params.id));
   if (!book) return res.status(404).json({ error: 'Book not found' });
   res.json(book);
 });
-app.get('/api/bookstore/orders', (_req, res) => {
-  res.json(ordered('SELECT * FROM bookstore_orders ORDER BY id DESC'));
-});
+app.get('/api/bookstore/orders', (_req, res) => res.json(responseCollection(state.bookstore.orders)));
 app.post('/api/bookstore/orders', (req, res) => {
-  const order = { ...req.body, createdAt: new Date().toISOString() };
-  const orderId = order.orderId || `ORD-${Date.now()}`;
-  run(
-    'INSERT INTO bookstore_orders (order_id, payload, created_by, created_at) VALUES (?, ?, ?, ?)',
-    [orderId, json(order), req.session.user?.id || null, order.createdAt]
-  );
-  res.status(201).json({ ...order, orderId });
+  const order = { id: nextId(state.bookstore.orders), ...req.body, createdAt: new Date().toISOString() };
+  state.bookstore.orders.unshift(order);
+  saveState();
+  res.status(201).json(order);
 });
-app.get('/api/bookstore/reviews', (_req, res) => {
-  res.json(ordered('SELECT * FROM bookstore_reviews ORDER BY id DESC'));
-});
+app.get('/api/bookstore/reviews', (_req, res) => res.json(responseCollection(state.bookstore.reviews)));
 app.post('/api/bookstore/reviews', (req, res) => {
-  const review = { ...req.body, createdAt: new Date().toISOString() };
-  run(
-    'INSERT INTO bookstore_reviews (payload, created_by, created_at) VALUES (?, ?, ?)',
-    [json(review), req.session.user?.id || null, review.createdAt]
-  );
+  const review = { id: nextId(state.bookstore.reviews), ...req.body, createdAt: new Date().toISOString() };
+  state.bookstore.reviews.unshift(review);
+  saveState();
   res.status(201).json(review);
 });
 app.post('/api/bookstore/listings', (req, res) => {
-  const listing = { ...req.body, createdAt: new Date().toISOString() };
-  run(
-    'INSERT INTO bookstore_listings (payload, created_by, created_at) VALUES (?, ?, ?)',
-    [json(listing), req.session.user?.id || null, listing.createdAt]
-  );
+  const listing = { id: nextId(state.bookstore.listings), ...req.body, createdAt: new Date().toISOString() };
+  state.bookstore.listings.unshift(listing);
+  saveState();
   res.status(201).json(listing);
 });
 
-app.get('/api/marketplace/listings', (_req, res) => {
-  res.json(ordered('SELECT * FROM marketplace_listings ORDER BY id DESC'));
-});
+app.get('/api/marketplace/listings', (_req, res) => res.json(responseCollection(state.marketplace.listings)));
 app.post('/api/marketplace/listings', (req, res) => {
-  const listing = { ...req.body, createdAt: new Date().toISOString() };
-  run('INSERT INTO marketplace_listings (payload, created_by, created_at) VALUES (?, ?, ?)', [json(listing), req.session.user?.id || null, listing.createdAt]);
+  const listing = { id: nextId(state.marketplace.listings), ...req.body, createdAt: new Date().toISOString() };
+  state.marketplace.listings.unshift(listing);
+  saveState();
   res.status(201).json(listing);
 });
-app.get('/api/marketplace/messages', (_req, res) => {
-  res.json(ordered('SELECT * FROM marketplace_messages ORDER BY id DESC'));
-});
+app.get('/api/marketplace/messages', (_req, res) => res.json(responseCollection(state.marketplace.messages)));
 app.post('/api/marketplace/messages', (req, res) => {
-  const message = { ...req.body, createdAt: new Date().toISOString() };
-  run('INSERT INTO marketplace_messages (payload, created_by, created_at) VALUES (?, ?, ?)', [json(message), req.session.user?.id || null, message.createdAt]);
+  const message = { id: nextId(state.marketplace.messages), ...req.body, createdAt: new Date().toISOString() };
+  state.marketplace.messages.unshift(message);
+  saveState();
   res.status(201).json(message);
 });
-app.get('/api/marketplace/orders', (_req, res) => {
-  res.json(ordered('SELECT * FROM marketplace_orders ORDER BY id DESC'));
-});
+app.get('/api/marketplace/orders', (_req, res) => res.json(responseCollection(state.marketplace.orders)));
 app.post('/api/marketplace/orders', (req, res) => {
-  const order = { ...req.body, createdAt: new Date().toISOString() };
-  const orderId = order.orderId || `MKT-${Date.now()}`;
-  run('INSERT INTO marketplace_orders (order_id, payload, created_by, created_at) VALUES (?, ?, ?, ?)', [orderId, json(order), req.session.user?.id || null, order.createdAt]);
-  res.status(201).json({ ...order, orderId });
+  const order = { id: nextId(state.marketplace.orders), ...req.body, createdAt: new Date().toISOString() };
+  state.marketplace.orders.unshift(order);
+  saveState();
+  res.status(201).json(order);
 });
 app.post('/api/marketplace/reviews', (req, res) => {
-  const review = { ...req.body, createdAt: new Date().toISOString() };
-  run('INSERT INTO marketplace_reviews (payload, created_by, created_at) VALUES (?, ?, ?)', [json(review), req.session.user?.id || null, review.createdAt]);
+  const review = { id: nextId(state.marketplace.reviews), ...req.body, createdAt: new Date().toISOString() };
+  state.marketplace.reviews.unshift(review);
+  saveState();
   res.status(201).json(review);
 });
 
-app.get('/api/forum/posts', (_req, res) => {
-  res.json(ordered('SELECT * FROM forum_posts ORDER BY id DESC'));
-});
+app.get('/api/forum/posts', (_req, res) => res.json(responseCollection(state.forum.posts)));
 app.post('/api/forum/posts', (req, res) => {
-  const post = { ...req.body, createdAt: new Date().toISOString() };
-  run('INSERT INTO forum_posts (payload, created_by, created_at) VALUES (?, ?, ?)', [json(post), req.session.user?.id || null, post.createdAt]);
+  const post = { id: nextId(state.forum.posts), ...req.body, createdAt: new Date().toISOString() };
+  state.forum.posts.unshift(post);
+  saveState();
   res.status(201).json(post);
 });
 app.post('/api/forum/comments', (req, res) => {
-  const comment = { ...req.body, createdAt: new Date().toISOString() };
-  run('INSERT INTO forum_comments (payload, created_by, created_at) VALUES (?, ?, ?)', [json(comment), req.session.user?.id || null, comment.createdAt]);
+  const comment = { id: nextId(state.forum.comments), ...req.body, createdAt: new Date().toISOString() };
+  state.forum.comments.unshift(comment);
+  saveState();
   res.status(201).json(comment);
 });
-app.get('/api/forum/groups', (_req, res) => {
-  res.json(ordered('SELECT * FROM forum_groups ORDER BY id DESC'));
-});
+app.get('/api/forum/groups', (_req, res) => res.json(responseCollection(state.forum.groups)));
 app.post('/api/forum/groups', (req, res) => {
-  const group = { ...req.body, createdAt: new Date().toISOString() };
-  run('INSERT INTO forum_groups (payload, created_by, created_at) VALUES (?, ?, ?)', [json(group), req.session.user?.id || null, group.createdAt]);
+  const group = { id: nextId(state.forum.groups), ...req.body, createdAt: new Date().toISOString() };
+  state.forum.groups.unshift(group);
+  saveState();
   res.status(201).json(group);
 });
 
@@ -438,15 +270,6 @@ app.use((error, _req, res, _next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on http://0.0.0.0:${port}`);
 });
-
-function shutdown(signal) {
-  console.log(`Received ${signal}, closing database.`);
-  db.close();
-  process.exit(0);
-}
-
-process.on('SIGINT', () => shutdown('SIGINT'));
-process.on('SIGTERM', () => shutdown('SIGTERM'));
