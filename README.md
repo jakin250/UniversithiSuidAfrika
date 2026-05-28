@@ -1,28 +1,30 @@
 # Universithi SuidAfrika
 
-A campus marketplace, bookstore, and forum platform with a Node.js + SQLite backend.
+A campus marketplace, bookstore, and forum platform designed to run on Vercel.
 
-## Local run
+## Local development
 
 ```bash
 npm install
-npm start
+npm run dev
 ```
 
-## Environment
+## Storage
 
-Copy `.env.example` to `.env` and set:
+For production, set these environment variables in Vercel:
+- `DATABASE_URL`
+- `DATABASE_AUTH_TOKEN` if your database provider requires it
 - `SESSION_SECRET`
-- `PORT`
-- `DATABASE_PATH`
 
-## Main features
+The API falls back to local in-memory data for development, but production should use a hosted database such as Turso or another Vercel-compatible Postgres provider.
 
-- Student authentication with sessions
+## Main areas
+
+- Student authentication
 - Marketplace listings, orders, messages, and reviews
 - Bookstore listings, orders, tracking, and reviews
 - Forum posts, comments, and groups
 
 ## Deployment
 
-See `DEPLOYMENT.md` for VPS notes and PM2-friendly setup.
+Push to the Vercel-linked GitHub repository, then redeploy the project in Vercel.
