@@ -530,6 +530,14 @@
   function renderTrendingPosts(postsArray) {
     const container = document.getElementById('trendingContainer');
     if (!container) return;
+    if (!postsArray.length) {
+      container.innerHTML = `
+        <div style="padding: 1.5rem; color: #5f6f7c;">
+          No posts yet. Be the first to start a real discussion.
+        </div>
+      `;
+      return;
+    }
     container.innerHTML = '';
     postsArray.forEach(post => {
       const postDiv = document.createElement('div');

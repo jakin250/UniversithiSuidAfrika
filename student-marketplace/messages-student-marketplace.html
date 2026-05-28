@@ -178,71 +178,9 @@
 
   <script src="../public/api-client.js"></script>
   <script>
-    // Mock conversations & messages data
-    let conversations = [
-      {
-        id: 1,
-        sellerName: "Alex Johnson",
-        sellerInitials: "AJ",
-        item: "Calculus: Early Transcendentals",
-        itemPrice: 45,
-        orderId: "SMP-4829",
-        lastMessage: "Hi! The textbook is ready for pickup at the union.",
-        timestamp: "10:32 AM",
-        unread: true,
-        online: true,
-        messages: [
-          { type: "received", text: "Hey! I'm interested in the Calculus textbook.", time: "9:15 AM", sender: "buyer" },
-          { type: "sent", text: "Hi! Yes it's still available. Great condition, no highlights.", time: "9:22 AM", sender: "seller" },
-          { type: "received", text: "Perfect. I just placed the order with escrow payment.", time: "9:45 AM", sender: "buyer" },
-          { type: "sent", text: "Awesome! I'll prepare it for pickup. Meet at Student Union tomorrow?", time: "10:00 AM", sender: "seller" },
-          { type: "received", text: "Sounds good. What time works for you?", time: "10:05 AM", sender: "buyer" },
-          { type: "sent", text: "Hi! The textbook is ready for pickup at the union. I can be there 2-4 PM.", time: "10:32 AM", sender: "seller" }
-        ],
-        orderStatus: "delivered", // delivered = awaiting buyer confirmation
-        escrowAmount: 45
-      },
-      {
-        id: 2,
-        sellerName: "Jamie Lee",
-        sellerInitials: "JL",
-        item: "iPad Air 4th Gen + Pencil",
-        itemPrice: 320,
-        orderId: "SMP-4791",
-        lastMessage: "Can you do $300?",
-        timestamp: "Yesterday",
-        unread: false,
-        online: false,
-        messages: [
-          { type: "received", text: "Is the iPad still available?", time: "Yesterday", sender: "buyer" },
-          { type: "sent", text: "Yes, still available. Comes with pencil and charger.", time: "Yesterday", sender: "seller" },
-          { type: "received", text: "Can you do $300?", time: "Yesterday", sender: "buyer" }
-        ],
-        orderStatus: "pending_payment",
-        escrowAmount: null
-      },
-      {
-        id: 3,
-        sellerName: "Taylor Wong",
-        sellerInitials: "TW",
-        item: "IKEA Desk + Chair",
-        itemPrice: 75,
-        orderId: "SMP-4755",
-        lastMessage: "Pickup today after 3pm works!",
-        timestamp: "May 10",
-        unread: false,
-        online: false,
-        messages: [
-          { type: "sent", text: "The desk is assembled and ready.", time: "May 10", sender: "seller" },
-          { type: "received", text: "Pickup today after 3pm works!", time: "May 10", sender: "buyer" }
-        ],
-        orderStatus: "completed",
-        escrowAmount: null
-      }
-    ];
-
-    let currentConversationId = 1; // default open first chat
-    let currentConvData = conversations.find(c => c.id === currentConversationId);
+    let conversations = [];
+    let currentConversationId = null;
+    let currentConvData = null;
 
     // DOM elements
     const conversationListDiv = document.getElementById('conversationList');
@@ -256,10 +194,18 @@
 
     // Helper: Render conversation list
     function renderConversations(filterText = '') {
-      let filtered = conversations.filter(conv => 
+      let filtered = conversations.filter(conv =>
         conv.sellerName.toLowerCase().includes(filterText.toLowerCase()) ||
         conv.item.toLowerCase().includes(filterText.toLowerCase())
       );
+      if (!filtered.length) {
+        conversationListDiv.innerHTML = `
+          <div class="p-6 text-center text-gray-500 text-sm">
+            No conversations yet. Messages will appear here once you contact a seller or buyer.
+          </div>
+        `;
+        return;
+      }
       conversationListDiv.innerHTML = filtered.map(conv => `
         <div class="conversation-item p-4 border-b border-gray-100 ${currentConversationId === conv.id ? 'active' : ''}" data-id="${conv.id}">
           <div class="flex gap-3">
@@ -295,7 +241,18 @@
 
     // Render messages for current conversation
     function renderMessages() {
-      if (!currentConvData) return;
+      if (!currentConvData) {
+        messagesArea.innerHTML = `
+          <div class="h-full flex items-center justify-center text-center text-gray-500 px-6">
+            <div>
+              <p class="font-semibold text-gray-700">No chat selected</p>
+              <p class="text-sm mt-2">Your real conversations will show up here after a message is sent.</p>
+            </div>
+          </div>
+        `;
+        chatSellerNameSpan.innerText = 'No conversations yet';
+        return;
+      }
       chatSellerNameSpan.innerText = currentConvData.sellerName;
       const msgs = currentConvData.messages;
       messagesArea.innerHTML = msgs.map(msg => `
@@ -431,7 +388,7 @@ Only proceed if you have received the item and are satisfied. This action is fin
         console.error(error);
       }
       currentConversationId = conversations[0]?.id || null;
-      currentConvData = conversations.find(c => c.id === currentConversationId);
+      currentConvData = conversations.find(c => c.id === currentConversationId) || null;
       renderConversations();
       renderMessages();
       updateEscrowBanner();

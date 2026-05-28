@@ -23,19 +23,19 @@ fs.mkdirSync(dataDir, { recursive: true });
 const seed = {
   users: [],
   bookstore: {
-    books: [{ id: 1, title: 'Introduction to Microeconomics', author: 'N. Gregory Mankiw', price: 280, condition: 'Good', course: 'ECON101', isbn: '978-0-13-123456-7', seller: 'A. Naidoo' }],
-    orders: [{ id: 1, orderId: 'ORD-TEST-1', book: { title: 'Test Book', seller: 'Tester' }, buyer: { name: 'Buyer' }, paymentMethod: 'card', amount: 100, platformFee: 10, sellerPayout: 90, status: 'payment_pending', escrowStatus: 'payment_held', orderDate: '2026-05-28T00:00:00Z', trackingId: 'TRK-TEST', createdAt: new Date().toISOString() }],
-    reviews: [{ id: 1, orderId: 'ORD-TEST-1', rating: 5, reviewText: 'Great', sellerName: 'Tester', createdAt: new Date().toISOString() }],
+    books: [],
+    orders: [],
+    reviews: [],
     listings: []
   },
   marketplace: {
-    listings: [{ id: 1, title: 'Calculus: Early Transcendentals', price: 320, courseCode: 'MATH 101', condition: 'Very Good', location: 'Campus Union', seller: 'Jessica Davis' }],
-    messages: [{ id: 1, sellerName: 'Tester', sellerInitials: 'TE', itemTitle: 'Test Item', itemPrice: 10, orderId: 'ORD-TEST-2', text: 'Hello', amount: 10, createdAt: new Date().toISOString() }],
+    listings: [],
+    messages: [],
     orders: [],
     reviews: []
   },
   forum: {
-    posts: [{ id: 1, title: 'How do I survive Quantitative Methods?', category: 'Academic Help', author: 'Student', likes: 18, comments: 4 }],
+    posts: [],
     comments: [],
     groups: [],
     messages: []
@@ -65,13 +65,7 @@ function ensureState() {
   state.forum ||= structuredClone(seed.forum);
   state.sessions ||= {};
 
-  if (!state.users.length) {
-    const demoPassword = bcrypt.hashSync('password123', 10);
-    state.users.push(
-      { id: 1, name: 'Campus Admin', email: 'admin@universithi.local', passwordHash: demoPassword, role: 'admin', createdAt: new Date().toISOString() },
-      { id: 2, name: 'Student User', email: 'student@universithi.local', passwordHash: demoPassword, role: 'user', createdAt: new Date().toISOString() }
-    );
-  }
+  state.sessions = {};
   saveState();
 }
 
