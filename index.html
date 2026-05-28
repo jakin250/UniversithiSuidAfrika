@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universithi SuidAfrika</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(99,102,241,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(14,165,233,.16), transparent 24%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+    }
+    .portal-card {
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .portal-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center px-4 py-10">
+  <main class="w-full max-w-6xl">
+    <section class="text-center mb-10">
+      <div class="inline-flex items-center gap-3 bg-white/80 backdrop-blur rounded-full px-5 py-2 shadow-sm border border-indigo-100">
+        <span class="h-3 w-3 rounded-full bg-indigo-500"></span>
+        <span class="font-semibold text-slate-700">Universithi SuidAfrika Portal</span>
+      </div>
+      <h1 class="mt-6 text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight">Choose your campus space</h1>
+      <p class="mt-4 text-slate-600 text-lg max-w-2xl mx-auto">
+        Jump straight into the forum, bookstore, or student marketplace.
+      </p>
+    </section>
+
+    <section class="grid gap-6 md:grid-cols-3">
+      <a href="/student-forum/uct-student-forum-your-campus-your-voice.html" class="portal-card group rounded-3xl bg-white border border-slate-200 p-7 shadow-lg">
+        <div class="h-14 w-14 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-2xl mb-5">💬</div>
+        <h2 class="text-2xl font-bold text-slate-900">Student Forum</h2>
+        <p class="mt-3 text-slate-600">Join discussions, ask questions, and connect with fellow students.</p>
+        <div class="mt-6 inline-flex items-center font-semibold text-indigo-700 group-hover:translate-x-1 transition">Open forum →</div>
+      </a>
+
+      <a href="/student-bookstore/student-secondhand-bookstore-buy-sell-exchange-textbooks.html" class="portal-card group rounded-3xl bg-white border border-slate-200 p-7 shadow-lg">
+        <div class="h-14 w-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl mb-5">📚</div>
+        <h2 class="text-2xl font-bold text-slate-900">Bookstore</h2>
+        <p class="mt-3 text-slate-600">Browse and exchange secondhand textbooks for your courses.</p>
+        <div class="mt-6 inline-flex items-center font-semibold text-emerald-700 group-hover:translate-x-1 transition">Open bookstore →</div>
+      </a>
+
+      <a href="/student-marketplace/student-marketplace-buy-sell-trade-on-campus.html" class="portal-card group rounded-3xl bg-white border border-slate-200 p-7 shadow-lg">
+        <div class="h-14 w-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl mb-5">🛍️</div>
+        <h2 class="text-2xl font-bold text-slate-900">Marketplace</h2>
+        <p class="mt-3 text-slate-600">Buy, sell, and trade everyday items with campus students.</p>
+        <div class="mt-6 inline-flex items-center font-semibold text-amber-700 group-hover:translate-x-1 transition">Open marketplace →</div>
+      </a>
+    </section>
+  </main>
+</body>
+</html>

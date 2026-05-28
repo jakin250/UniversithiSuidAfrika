@@ -262,7 +262,7 @@ app.post('/api/forum/groups', (req, res) => {
 });
 
 app.get('/', (_req, res) => {
-  res.redirect('/student-marketplace/student-marketplace-buy-sell-trade-on-campus.html');
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.use((error, _req, res, _next) => {
