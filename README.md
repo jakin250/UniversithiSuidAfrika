@@ -30,3 +30,7 @@ Copy `.env.example` to `.env` and set:
 - Marketplace listings, orders, messages, and reviews
 - Bookstore listings, orders, tracking, and reviews
 - Forum posts, comments, and groups
+
+## Roadmap
+
+See [`ROADMAP.md`](ROADMAP.md) for the phased implementation plan covering identity, forum, marketplace, bookstore, messaging, trust and safety, and notifications.

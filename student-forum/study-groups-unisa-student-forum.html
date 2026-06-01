@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Study Groups - UCT Student Forum</title>
+  <title>Study Groups - UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -307,7 +307,7 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <div class="hero-section">
@@ -500,7 +500,7 @@
           const id = parseInt(card.getAttribute('data-id'));
           const group = studyGroups.find(g => g.id === id);
           if (group) {
-            alert(`📖 Group: ${group.name}\n📚 Course: ${group.course}\n👥 Members: ${group.members}/${group.maxMembers || '∞'}\n📝 Description: ${group.description}\n\n✨ Full group page coming soon!`);
+            window.location.href = `quant-methods-warriors-study-group-unisa-student-forum.html?group=${id}`;
           }
         });
       });
@@ -575,7 +575,7 @@
     document.getElementById('courseFilter').addEventListener('change', () => renderGroups());
     document.getElementById('backToForum').addEventListener('click', (e) => {
       e.preventDefault();
-      alert('← Returning to homepage (simulated navigation)');
+      window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
     });
 
     // Close modal when clicking outside

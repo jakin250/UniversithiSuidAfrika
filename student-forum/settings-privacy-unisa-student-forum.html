@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Settings & Privacy - UCT Student Forum</title>
+  <title>Settings & Privacy - UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -258,7 +258,7 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <div class="settings-grid">
@@ -283,7 +283,7 @@
         </div>
         <div class="setting-group">
           <label>Email Address</label>
-          <input type="email" id="email" value="thando.m@uct.ac.za" disabled>
+          <input type="email" id="email" value="thando.m@unisa.ac.za" disabled>
           <small>Email is verified and cannot be changed</small>
         </div>
         <div class="setting-group">
@@ -504,7 +504,7 @@
   document.getElementById('deactivateAccountBtn')?.addEventListener('click', () => {
     if (confirm('Are you sure you want to deactivate your account? You can reactivate later by logging in.')) {
       showToast('⚠️ Account deactivated. Redirecting to login...');
-      setTimeout(() => alert('Account deactivated (simulated)'), 1000);
+      setTimeout(() => window.location.href = 'authentication-student-marketplace.html', 1000);
     }
   });
 
@@ -513,7 +513,7 @@
       const confirmation = prompt('Type "DELETE" to confirm account deletion:');
       if (confirmation === 'DELETE') {
         showToast('🗑️ Account permanently deleted. Goodbye!');
-        setTimeout(() => alert('Account deleted (simulated)'), 1000);
+        setTimeout(() => window.location.href = 'authentication-student-marketplace.html', 1000);
       } else {
         showToast('Deletion cancelled');
       }
@@ -561,7 +561,7 @@
   // Back button
   document.getElementById('backToForum')?.addEventListener('click', (e) => {
     e.preventDefault();
-    alert('← Returning to homepage (simulated navigation)');
+    window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
   });
 
   // Initialize

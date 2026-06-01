@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Create New Post - UCT Student Forum</title>
+  <title>Create New Post - UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -354,7 +354,7 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <div class="form-card">
@@ -441,7 +441,7 @@
 
   <!-- Guidelines -->
   <div style="background: #f8fafd; border-radius: 24px; padding: 1.2rem; text-align: center; font-size: 0.8rem; color: #5a6e7a;">
-    📌 <strong>Community Guidelines</strong> — Be respectful, stay on topic, and help fellow UCT students succeed.
+    📌 <strong>Community Guidelines</strong> — Be respectful, stay on topic, and help fellow UNISA students succeed.
   </div>
 </div>
 
@@ -545,7 +545,7 @@
     const category = categorySelect.options[categorySelect.selectedIndex]?.text.split(' ').slice(1).join(' ') || "Uncategorized";
     const content = contentTextarea.value.trim() || "Your content will appear here...";
     const anonymous = anonymousCheck.checked;
-    const authorDisplay = anonymous ? "Anonymous Student" : "You (verified UCT member)";
+    const authorDisplay = anonymous ? "Anonymous Student" : "You (verified UNISA member)";
     
     previewTitle.innerText = escapeHtml(title);
     previewMeta.innerText = `${escapeHtml(category)} • by ${escapeHtml(authorDisplay)} ${tags.length ? ` • #${tags.join(', #')}` : ''}`;
@@ -714,10 +714,10 @@
     e.preventDefault();
     if (titleInput.value || contentTextarea.value || tags.length) {
       if (confirm('You have unsaved content. Your draft was auto-saved. Leave anyway?')) {
-        window.location.href = 'uct-student-forum-your-campus-your-voice.html';
+        window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
       }
     } else {
-      window.location.href = 'uct-student-forum-your-campus-your-voice.html';
+      window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
     }
   });
 

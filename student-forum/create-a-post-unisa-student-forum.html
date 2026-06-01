@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Create a post - UCT Student Forum</title>
+  <title>Create a post - UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -251,13 +251,13 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <!-- main creation card -->
   <div class="form-card">
     <div class="form-title">✍️ Start a new discussion</div>
-    <div class="form-sub">Share your question, insight, or resource with the UCT community</div>
+    <div class="form-sub">Share your question, insight, or resource with the UNISA community</div>
 
     <!-- success / feedback banner (hidden initially) -->
     <div id="feedbackBanner" style="display: none;" class="success-message">
@@ -335,10 +335,29 @@
     </ul>
     <p style="margin-top: 1rem; font-size: 0.8rem; background: #eef3fa; padding: 0.6rem; border-radius: 20px;">⭐ Need help? Tag a moderator or visit the help desk.</p>
   </div>
-  <footer>UCT Student Forum — Empowering student voices. Your post will appear after verification.</footer>
+  <footer>UNISA Student Forum — Empowering student voices. Your post will appear after verification.</footer>
 </div>
 
+<script src="../public/api-client.js"></script>
 <script>
+  const AUTH_URL = '../student-marketplace/authentication-student-marketplace.html';
+
+  function buildNextParam() {
+    const url = new URL(window.location.href);
+    return encodeURIComponent(`${url.pathname}${url.search}${url.hash}`);
+  }
+
+  async function requireAuthOrRedirect() {
+    try {
+      const me = await apiClient.get('../api/auth/me');
+      if (me?.user) return me.user;
+    } catch {
+      // ignore
+    }
+    window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+    return null;
+  }
+
   // DOM elements
   const titleInput = document.getElementById('postTitle');
   const contentTextarea = document.getElementById('postContent');
@@ -362,7 +381,7 @@
     if (titlePreview === "") titlePreview = "[Your title will appear here]";
     if (contentPreview === "") contentPreview = "[Write your post content to see a preview...]";
 
-    let authorDisplay = anonymousActive ? "Anonymous Student" : "You (verified UCT member)";
+    let authorDisplay = anonymousActive ? "Anonymous Student" : "You (verified UNISA member)";
     let tagDisplay = "";
     if (tagsRaw) {
       let tagsArray = tagsRaw.split(',').map(t => t.trim()).filter(t => t);
@@ -488,28 +507,19 @@
   }
 
   // show feedback success
-  function showSuccessAndRedirect() {
+  function showSuccessAndRedirect(postId) {
     feedbackDiv.style.display = 'flex';
     // Scroll to feedback
     feedbackDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
     // Clear draft from localStorage after successful publishing
     localStorage.removeItem('forum_draft_post');
-    // After 3 secs, simulate redirect to discussion page (with new post id)
     setTimeout(() => {
-      alert('✨ Post published! In the real app you would be redirected to your new post. For demo, we reset the form.');
-      // reset form except maybe keep a thank you state
-      titleInput.value = '';
-      contentTextarea.value = '';
-      categorySelect.value = '';
-      tagsInput.value = '';
-      anonymousCheck.checked = false;
-      updatePreview();
-      feedbackDiv.style.display = 'none';
-    }, 2800);
+      window.location.href = `discussion-unisa-student-forum.html?id=${encodeURIComponent(String(postId || ''))}`;
+    }, 900);
   }
 
   // handle submit
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     // validation
     const titleVal = titleInput.value.trim();
@@ -536,22 +546,40 @@
       return;
     }
 
-    // build new post object (simulate)
+    const user = await requireAuthOrRedirect();
+    if (!user) return;
+
     const newPost = {
-      id: 'post_' + Date.now(),
       title: titleVal,
-      category: categorySelect.options[categorySelect.selectedIndex]?.text,
+      category: categoryVal,
       rawCategory: categoryVal,
-      content: contentVal,
+      body: contentVal,
       tags: tagsInput.value.split(',').map(t=>t.trim()).filter(t=>t),
       anonymous: anonymousCheck.checked,
-      author: anonymousCheck.checked ? 'Anonymous' : 'Current User (Verified)',
-      createdAt: new Date().toLocaleString(),
-      votes: 0
+      author: anonymousCheck.checked ? 'Anonymous' : user.name
     };
-    console.log('New Post Created:', newPost);
-    // In real scenario, save to backend, then redirect.
-    showSuccessAndRedirect();
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Publishing...';
+    }
+
+    try {
+      const saved = await apiClient.post('../api/forum/posts', newPost);
+      showSuccessAndRedirect(saved?.id);
+    } catch (error) {
+      if (error?.status === 401) {
+        window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+        return;
+      }
+      alert(error?.message || 'Could not publish post');
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🚀 Publish Post';
+      }
+    }
   }
 
   // back button handler (simulate navigation)
@@ -559,11 +587,10 @@
     e.preventDefault();
     if (titleInput.value.trim() || contentTextarea.value.trim()) {
       if (confirm('You have unsaved content. Go back anyway? Your draft was auto-saved.')) {
-        alert('Returning to homepage (simulated navigation).');
-        // normally redirect window.location.href = 'index.html';
+        window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
       }
     } else {
-      alert('← Navigate back to forum homepage');
+      window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
     }
   });
 

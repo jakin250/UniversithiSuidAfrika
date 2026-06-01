@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>My Dashboard - UCT Student Forum</title>
+  <title>My Dashboard - UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -295,7 +295,7 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <div class="dashboard-grid">
@@ -303,7 +303,7 @@
     <div class="profile-card">
       <div class="avatar-large">👤</div>
       <div class="display-name">Thando M.</div>
-      <div class="user-email">thando.m@uct.ac.za</div>
+      <div class="user-email">thando.m@unisa.ac.za</div>
       <div class="user-badge">⭐ Verified Student • 3rd Year Engineering</div>
       <div class="stat-row">
         <div class="stat-item">
@@ -363,8 +363,8 @@
         </div>
         <div class="settings-group">
           <label>Email (verified)</label>
-          <input type="email" id="emailInput" value="thando.m@uct.ac.za" disabled>
-          <small style="color:#6c7e8c;">Email cannot be changed (verified UCT account)</small>
+          <input type="email" id="emailInput" value="thando.m@unisa.ac.za" disabled>
+          <small style="color:#6c7e8c;">Email cannot be changed (verified UNISA account)</small>
         </div>
         <div class="settings-group">
           <label>Faculty</label>
@@ -395,11 +395,12 @@
   </div>
 </div>
 
+<script src="../public/api-client.js"></script>
 <script>
   // Mock user data for "Thando M." - current logged-in user
   let userData = {
     displayName: "Thando M.",
-    email: "thando.m@uct.ac.za",
+    email: "thando.m@unisa.ac.za",
     faculty: "Engineering & Built Environment",
     notifyReplies: true,
     notifyUpvotes: true,
@@ -569,12 +570,14 @@
   // Back button
   document.getElementById('backToForum')?.addEventListener('click', (e) => {
     e.preventDefault();
-    alert('← Returning to homepage (simulated navigation)');
+    window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
   });
 
   document.getElementById('saveSettingsBtn')?.addEventListener('click', saveSettings);
   document.getElementById('logoutBtn')?.addEventListener('click', () => {
-    alert('🚪 Logged out successfully (simulated)');
+    apiClient.post('../api/auth/logout', {}).finally(() => {
+      window.location.href = '../student-marketplace/authentication-student-marketplace.html';
+    });
   });
 
   // Initialize all

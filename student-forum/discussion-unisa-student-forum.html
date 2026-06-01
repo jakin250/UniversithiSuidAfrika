@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Discussion | UCT Student Forum</title>
+  <title>Discussion | UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -315,7 +315,12 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToHome" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+      <span id="authStatus" class="small-text" style="background:#ffffff; border:1px solid #dce5ec; padding:0.4rem 0.8rem; border-radius:999px;">Checking sign-in…</span>
+      <button id="loginBtn" class="btn-outline" style="display:none;">Sign in</button>
+      <button id="logoutBtn" class="btn-outline" style="display:none;">Log out</button>
+      <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToHome" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    </div>
   </div>
 
   <div class="discussion-grid">
@@ -365,59 +370,63 @@
   </div>
 </div>
 
+<script src="../public/api-client.js"></script>
 <script>
-  // Mock data for the current post (simulating a clicked post from homepage)
+  const AUTH_URL = '../student-marketplace/authentication-student-marketplace.html';
+
+  function buildNextParam() {
+    const url = new URL(window.location.href);
+    return encodeURIComponent(`${url.pathname}${url.search}${url.hash}`);
+  }
+
+  async function getMe() {
+    try {
+      const me = await apiClient.get('../api/auth/me');
+      return me?.user || null;
+    } catch {
+      return null;
+    }
+  }
+
+  async function requireAuthOrRedirect() {
+    const user = await getMe();
+    if (user) return user;
+    window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+    return null;
+  }
+
+  function setAuthUI(user) {
+    const authStatus = document.getElementById('authStatus');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (!authStatus || !loginBtn || !logoutBtn) return;
+
+    if (user) {
+      authStatus.textContent = `Signed in as ${user.name || user.email}`;
+      loginBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-flex';
+    } else {
+      authStatus.textContent = 'Not signed in';
+      loginBtn.style.display = 'inline-flex';
+      logoutBtn.style.display = 'none';
+    }
+  }
+
   const currentPost = {
-    id: 1,
-    title: "How do I survive Quantitative Methods?",
-    category: "Academic Help",
-    author: "Sipho M.",
-    authorPoints: 4200,
-    authorYear: "2nd Year",
-    timeAgo: "3h ago",
-    body: "I'm really struggling with QM (Quantitative Methods). The statistics part is overwhelming and I feel like I'm falling behind. Any study tips, resources, or strategies from those who've been through it? Would really appreciate any advice! 🙏",
-    votes: 327,
-    comments: [
-      {
-        id: 101,
-        author: "Thando M.",
-        authorBadge: "3rd Year Engineering",
-        time: "2h ago",
-        body: "Practice past papers every day! Focus on understanding formulas rather than memorizing. The textbook exercises are key. Also, form a study group - that saved me last semester.",
-        votes: 45,
-        replies: [
-          { id: 1011, author: "Sipho M.", time: "1h ago", body: "Thanks Thando! Any specific past papers you'd recommend?", votes: 12 },
-          { id: 1012, author: "Thando M.", time: "45m ago", body: "Start with 2019-2023 papers. The exam structure is similar each year.", votes: 8 }
-        ]
-      },
-      {
-        id: 102,
-        author: "Lerato K.",
-        authorBadge: "Tutor",
-        time: "2h ago",
-        body: "YouTube is your best friend! Channels like 'StatQuest' and 'Khan Academy' break down tough concepts. Also, don't skip consultation hours - lecturers actually help.",
-        votes: 32,
-        replies: []
-      },
-      {
-        id: 103,
-        author: "Aisha B.",
-        authorBadge: "4th Year",
-        time: "1h ago",
-        body: "Create a formula sheet and update it weekly. Practice with a timer to simulate exam conditions. You've got this! 💪",
-        votes: 28,
-        replies: []
-      }
-    ]
+    id: null,
+    title: '',
+    category: '',
+    author: '',
+    authorPoints: 0,
+    authorYear: '',
+    timeAgo: '',
+    body: '',
+    votes: 0,
+    comments: []
   };
 
-  // Similar posts data
-  const similarPosts = [
-    { id: 2, title: "Best budget laptops for CS students?", votes: 283 },
-    { id: 3, title: "Is internship worth it in first year?", votes: 33 },
-    { id: 4, title: "Where to find free parking on campus?", votes: 34 },
-    { id: 5, title: "Past papers for Financial Accounting II", votes: 35 }
-  ];
+  const similarPosts = [];
 
   // Helper to escape HTML
   function escapeHtml(str) {
@@ -433,6 +442,13 @@
   // Render main post
   function renderPost() {
     const container = document.getElementById('postCard');
+    if (!currentPost.id) {
+      container.innerHTML = `
+        <div class="post-title" style="font-size:1.2rem;">No discussion selected</div>
+        <div class="post-body">Open a forum post from the main feed to view the full thread and join the conversation.</div>
+      `;
+      return;
+    }
     container.innerHTML = `
       <div class="post-vote-area">
         <div class="vote-buttons">
@@ -455,8 +471,19 @@
     `;
 
     // Add vote listeners
-    document.getElementById('upvotePost')?.addEventListener('click', () => {
-      currentPost.votes++;
+    document.getElementById('upvotePost')?.addEventListener('click', async () => {
+      const user = await requireAuthOrRedirect();
+      if (!user) return;
+      try {
+        const updated = await apiClient.post(`../api/forum/posts/${currentPost.id}/upvote`, {});
+        currentPost.votes = updated.votes;
+      } catch (error) {
+        if (error?.status === 401) {
+          window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+          return;
+        }
+        currentPost.votes++;
+      }
       document.getElementById('postVoteCount').innerText = currentPost.votes;
     });
     document.getElementById('downvotePost')?.addEventListener('click', () => {
@@ -468,6 +495,11 @@
   // Render comments with nested replies
   function renderComments() {
     const container = document.getElementById('commentsContainer');
+    if (!currentPost.id) {
+      container.innerHTML = '<div style="color:#6c7e8c;">No comments yet.</div>';
+      document.getElementById('commentCount').innerText = '0';
+      return;
+    }
     const commentCountSpan = document.getElementById('commentCount');
     let totalComments = currentPost.comments.length;
     currentPost.comments.forEach(c => totalComments += c.replies.length);
@@ -511,9 +543,20 @@
 
     // Attach upvote comment handlers
     document.querySelectorAll('.upvote-comment').forEach(btn => {
-      btn.addEventListener('click', (e) => {
+      btn.addEventListener('click', async (e) => {
+        const user = await requireAuthOrRedirect();
+        if (!user) return;
         const id = parseInt(btn.getAttribute('data-id'));
-        // Find comment or reply and increment votes
+        try {
+          const updated = await apiClient.post(`../api/forum/comments/${id}/upvote`, {});
+          document.getElementById(`commentVotes-${id}`).innerText = updated.votes;
+          return;
+        } catch (error) {
+          if (error?.status === 401) {
+            window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+            return;
+          }
+        }
         let found = false;
         for (let c of currentPost.comments) {
           if (c.id === id) {
@@ -572,6 +615,10 @@
   // Render author info sidebar
   function renderAuthorSidebar() {
     const container = document.getElementById('authorInfo');
+    if (!currentPost.id) {
+      container.innerHTML = '<p style="color:#6c7e8c; font-size:0.85rem;">Select a post to see the author profile.</p>';
+      return;
+    }
     container.innerHTML = `
       <div class="author-avatar">👨‍🎓</div>
       <h4>${escapeHtml(currentPost.author)}</h4>
@@ -583,6 +630,10 @@
   // Render similar posts
   function renderSimilarPosts() {
     const container = document.getElementById('similarPosts');
+    if (!similarPosts.length) {
+      container.innerHTML = '<div style="color:#6c7e8c; font-size:0.85rem;">No similar discussions yet.</div>';
+      return;
+    }
     container.innerHTML = similarPosts.map(post => `
       <div class="similar-post" data-id="${post.id}">
         <div class="similar-title">📄 ${escapeHtml(post.title)}</div>
@@ -593,45 +644,103 @@
     // Click on similar post alerts (simulate navigation)
     document.querySelectorAll('.similar-post').forEach(el => {
       el.addEventListener('click', () => {
-        alert(`🔁 Navigating to: ${el.querySelector('.similar-title')?.innerText}\n(Full detail page would open here)`);
+        const id = el.getAttribute('data-id');
+        window.location.href = `discussion-unisa-student-forum.html?id=${id}`;
       });
     });
   }
 
   // Add new comment
-  function addComment() {
+  async function addComment() {
+    if (!currentPost.id) return;
     const input = document.getElementById('newCommentInput');
     const text = input.value.trim();
     if (!text) return;
-
-    const newComment = {
-      id: Date.now(),
-      author: "You (Verified)",
-      authorBadge: "Student",
-      time: "Just now",
-      body: text,
-      votes: 0,
-      replies: []
-    };
-
-    currentPost.comments.push(newComment);
-    renderComments();
-    input.value = '';
+    const user = await requireAuthOrRedirect();
+    if (!user) return;
+    try {
+      await apiClient.post('../api/forum/comments', {
+        postId: currentPost.id,
+        body: text,
+        author: user.name || user.email || 'Student',
+        authorBadge: 'Student'
+      });
+      input.value = '';
+      loadThread();
+    } catch (error) {
+      if (error?.status === 401) {
+        window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+        return;
+      }
+      alert(error?.message || 'Could not post comment');
+    }
   }
 
   // Back button (simulate)
   document.getElementById('backToHome').addEventListener('click', (e) => {
     e.preventDefault();
-    alert('🏠 Returning to homepage (would navigate to index)');
+    window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
   });
 
   document.getElementById('submitCommentBtn').addEventListener('click', addComment);
 
-  // Initialize page
-  renderPost();
-  renderComments();
-  renderAuthorSidebar();
-  renderSimilarPosts();
+  async function loadThread() {
+    const params = new URLSearchParams(window.location.search);
+    const postId = params.get('id');
+    if (!postId) {
+      renderPost();
+      renderComments();
+      renderAuthorSidebar();
+      renderSimilarPosts();
+      return;
+    }
+    try {
+      const post = await apiClient.get(`../api/forum/posts/${postId}`);
+      currentPost.id = post.id;
+      currentPost.title = post.title || '';
+      currentPost.category = post.category || '';
+      currentPost.author = post.author || 'Anonymous';
+      currentPost.authorPoints = post.authorPoints || 0;
+      currentPost.authorYear = post.authorYear || '';
+      currentPost.timeAgo = post.timeAgo || 'Just now';
+      currentPost.body = post.content || post.body || '';
+      currentPost.votes = post.votes || 0;
+      const comments = await apiClient.get('../api/forum/comments');
+      currentPost.comments = comments.filter(comment => String(comment.postId) === String(post.id)).map(comment => ({
+        id: comment.id,
+        author: comment.author || 'Anonymous',
+        authorBadge: comment.authorBadge || 'Student',
+        time: 'Just now',
+        body: comment.body || comment.content || '',
+        votes: comment.votes || 0,
+        replies: []
+      }));
+    } catch (error) {
+      console.error(error);
+      currentPost.id = null;
+    }
+    renderPost();
+    renderComments();
+    renderAuthorSidebar();
+    renderSimilarPosts();
+  }
+
+  (async () => {
+    const user = await getMe();
+    setAuthUI(user);
+
+    document.getElementById('loginBtn')?.addEventListener('click', () => {
+      window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+    });
+
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+      try { await apiClient.post('../api/auth/logout', {}); } catch {}
+      setAuthUI(null);
+      window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+    });
+
+    loadThread();
+  })();
 </script>
 </body>
 </html>

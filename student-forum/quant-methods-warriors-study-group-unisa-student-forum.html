@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Quant Methods Warriors - Study Group | UCT Student Forum</title>
+  <title>Quant Methods Warriors - Study Group | UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -319,7 +319,7 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <div class="two-column">
@@ -370,9 +370,9 @@
       <div class="sidebar-card">
         <h3>🔗 Quick Links</h3>
         <ul style="list-style: none; font-size:0.85rem;">
-          <li>📅 <a href="uct-student-forum-your-campus-your-voice.html" style="color:#0f5b8c;">Add to Calendar</a></li>
-          <li>📧 <a href="uct-student-forum-your-campus-your-voice.html" style="color:#0f5b8c;">Email Group</a></li>
-          <li>🚩 <a href="uct-student-forum-your-campus-your-voice.html" style="color:#dc2626;">Report Group</a></li>
+          <li>📅 <a href="unisa-student-forum-your-campus-your-voice.html" style="color:#0f5b8c;">Add to Calendar</a></li>
+          <li>📧 <a href="unisa-student-forum-your-campus-your-voice.html" style="color:#0f5b8c;">Email Group</a></li>
+          <li>🚩 <a href="unisa-student-forum-your-campus-your-voice.html" style="color:#dc2626;">Report Group</a></li>
         </ul>
       </div>
     </div>
@@ -472,7 +472,7 @@
       card.addEventListener('click', () => {
         const id = card.getAttribute('data-id');
         const thread = discussions.find(d => d.id == id);
-        alert(`📝 Thread: ${thread.title}\n\n${thread.content}\n\n👤 ${thread.author}\n💬 ${thread.replies} replies\n\n(Full thread view coming soon)`);
+        window.location.href = `discussion-unisa-student-forum.html?id=${thread.id}`;
       });
     });
   }
@@ -587,16 +587,16 @@
 
   // Placeholder for adding session/resource
   document.getElementById('addSessionBtn')?.addEventListener('click', () => {
-    alert('📅 Schedule a new session feature coming soon!');
+    showToast('📅 Session scheduling will be available in a future update.');
   });
   document.getElementById('addResourceBtn')?.addEventListener('click', () => {
-    alert('📚 Share a resource feature coming soon!');
+    showToast('📚 Resource sharing will be available in a future update.');
   });
 
   // Back button
   document.getElementById('backToForum')?.addEventListener('click', (e) => {
     e.preventDefault();
-    alert('← Returning to homepage (simulated navigation)');
+    window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
   });
 
   // Initialize all

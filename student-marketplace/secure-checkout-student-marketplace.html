@@ -190,6 +190,13 @@
 
   <script src="../public/api-client.js"></script>
   <script>
+    const checkoutParams = new URLSearchParams(window.location.search);
+    const listingId = checkoutParams.get('listingId');
+    const orderSummaryTitle = document.querySelector('.flex-1 .font-semibold.text-gray-800');
+    const orderSummaryMeta = document.querySelector('.flex-1 .text-xs.text-gray-500');
+    const orderSummaryPrice = document.querySelector('.flex-1 .text-indigo-600.font-bold');
+    const subtotalSpan = document.querySelector('.space-y-2.text-sm .flex.justify-between span:last-child');
+
     // Mobile menu toggle
     const mobileBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
@@ -205,7 +212,9 @@
     const deliveryFeeSpan = document.getElementById('deliveryFeeAmount');
     const totalSpan = document.getElementById('totalAmount');
     const payBtnSpan = document.getElementById('payAmount');
+    let basePrice = 45;
     let currentTotal = 45;
+    let currentListing = null;
 
     function updateTotal() {
       let deliveryFee = 0;
@@ -216,10 +225,21 @@
         if(deliveryAddressBox) deliveryAddressBox.classList.add('hidden');
       }
       deliveryFeeSpan.innerText = `$${deliveryFee}.00`;
-      const newTotal = 45 + deliveryFee;
+      const newTotal = basePrice + deliveryFee;
       currentTotal = newTotal;
       totalSpan.innerText = `$${newTotal}.00`;
       payBtnSpan.innerText = `${newTotal}.00`;
+    }
+
+    function renderCheckoutListing() {
+      if (!currentListing) return;
+      const price = Number(currentListing.price || currentListing.amount || 0);
+      basePrice = price;
+      currentTotal = price;
+      if (orderSummaryTitle) orderSummaryTitle.innerText = currentListing.title || 'Selected item';
+      if (orderSummaryMeta) orderSummaryMeta.innerText = `Condition: ${currentListing.condition || 'N/A'} • Seller: ${currentListing.seller || 'Marketplace seller'}`;
+      if (orderSummaryPrice) orderSummaryPrice.innerText = `$${price.toFixed(2)}`;
+      updateTotal();
     }
 
     if(pickupRadio) pickupRadio.addEventListener('change', updateTotal);
@@ -257,12 +277,18 @@
     if(confirmBtn) {
       confirmBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        // validate delivery if needed
-        let deliveryMethod = pickupRadio.checked ? 'Campus pickup' : 'Local delivery';
-        let methodSelected = document.querySelector('.payment-card.selected')?.getAttribute('data-method') || 'card';
+        if (!currentListing) {
+          alert('Please select a listing before checking out.');
+          return;
+        }
+        const deliveryMethod = pickupRadio.checked ? 'Campus pickup' : 'Local delivery';
+        const methodSelected = document.querySelector('.payment-card.selected')?.getAttribute('data-method') || 'card';
         apiClient.post('../api/marketplace/orders', {
-          title: 'Marketplace order',
+          listingId: currentListing.id,
+          title: currentListing.title || 'Marketplace order',
+          seller: currentListing.seller || 'Marketplace seller',
           total: currentTotal,
+          deliveryMethod,
           paymentMethod: methodSelected,
           status: 'processing'
         }).then(order => {
@@ -279,6 +305,33 @@
         setTimeout(updateTotal, 10);
       });
     });
+
+    async function loadListingForCheckout() {
+      if (!listingId) {
+        const fallbackTitle = 'Marketplace item';
+        if (orderSummaryTitle) orderSummaryTitle.innerText = fallbackTitle;
+        if (orderSummaryMeta) orderSummaryMeta.innerText = 'Select a listing from the marketplace to continue checkout.';
+        return;
+      }
+      try {
+        const listings = await apiClient.get('../api/marketplace/listings');
+        currentListing = listings.find(entry => String(entry.id) === String(listingId)) || null;
+        if (!currentListing) {
+          if (orderSummaryTitle) orderSummaryTitle.innerText = 'Listing not found';
+          if (orderSummaryMeta) orderSummaryMeta.innerText = 'The selected item is no longer available.';
+          confirmBtn.disabled = true;
+          confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          return;
+        }
+        renderCheckoutListing();
+      } catch (error) {
+        console.error(error);
+        if (orderSummaryTitle) orderSummaryTitle.innerText = 'Unable to load item';
+        if (orderSummaryMeta) orderSummaryMeta.innerText = 'Please refresh or go back to the listing page.';
+      }
+    }
+
+    loadListingForCheckout();
   </script>
 </body>
 </html>

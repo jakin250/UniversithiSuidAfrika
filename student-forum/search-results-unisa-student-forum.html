@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Search Results - UCT Student Forum</title>
+  <title>Search Results - UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -304,7 +304,7 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <div class="search-section">
@@ -358,30 +358,9 @@
 </div>
 
 <script>
-  // ======================= MOCK SEARCH DATA =======================
-  // Posts (from forum discussions)
-  const searchPosts = [
-    { id: 1, title: "How do I survive Quantitative Methods?", category: "Academic Help", author: "Sipho M.", date: "2026-05-10", timeAgo: "3h ago", excerpt: "I'm really struggling with QM. Any study tips or resources?", votes: 327, replies: 24, tags: ["stats", "qm", "exam"] },
-    { id: 2, title: "Best budget laptops for Computer Science students?", category: "Tech & Gadgets", author: "Lerato K.", date: "2026-05-09", timeAgo: "1d ago", excerpt: "Looking for affordable laptops under R8000 for coding.", votes: 283, replies: 31, tags: ["laptop", "cs", "budget"] },
-    { id: 3, title: "Past papers for Financial Accounting II", category: "Study Resources", author: "Thabo R.", date: "2026-05-08", timeAgo: "2d ago", excerpt: "Does anyone have past exam papers for FAC1502?", votes: 35, replies: 8, tags: ["accounting", "pastpapers", "exam"] },
-    { id: 4, title: "Exam Season Support Hub Resources", category: "Academic Help", author: "Admin", date: "2026-05-12", timeAgo: "1d ago", excerpt: "Free tutoring and past papers available at the library.", votes: 89, replies: 5, tags: ["exam", "support", "resources"] },
-    { id: 5, title: "Study group for Quantitative Methods", category: "Study Resources", author: "Naledi M.", date: "2026-05-11", timeAgo: "2d ago", excerpt: "Looking for 3-4 students to form a QM study group.", votes: 42, replies: 12, tags: ["qm", "studygroup", "exam"] }
-  ];
-
-  // Study Groups
-  const searchGroups = [
-    { id: 101, name: "📊 Quant Methods Warriors", course: "Quantitative Methods", members: 12, description: "Weekly problem-solving sessions for QM.", tags: ["qm", "stats"] },
-    { id: 102, name: "💻 CS Study Squad", course: "Computer Science", members: 8, description: "Focus on Data Structures & Algorithms.", tags: ["cs", "coding"] },
-    { id: 103, name: "📖 Accounting Masters", course: "Financial Accounting", members: 5, description: "Group for Accounting II & III.", tags: ["accounting", "exam"] },
-    { id: 104, name: "Exam Prep Bootcamp", course: "General", members: 15, description: "Daily exam prep sessions for all courses.", tags: ["exam", "prep"] }
-  ];
-
-  // Announcements
-  const searchAnnouncements = [
-    { id: 201, title: "Exam Season Support Hub Now Open", type: "urgent", date: "2026-05-12", excerpt: "Free tutoring and past papers available.", tags: ["exam", "support"] },
-    { id: 202, title: "New: Study Group Feature Launched", type: "update", date: "2026-05-10", excerpt: "Create and join study groups on the forum.", tags: ["feature", "studygroup"] },
-    { id: 203, title: "Library Extended Hours for Exams", type: "urgent", date: "2026-05-11", excerpt: "Library open until midnight during exam period.", tags: ["exam", "library"] }
-  ];
+  let searchPosts = [];
+  let searchGroups = [];
+  let searchAnnouncements = [];
 
   let currentTab = "all";
   let currentQuery = "exam";
@@ -403,13 +382,17 @@
   // Search function - returns results based on query and tab
   function performSearch() {
     const query = currentQuery.toLowerCase();
+    const compactQuery = query.replace(/\s+/g, '');
     let results = [];
 
     if (currentTab === "all" || currentTab === "posts") {
       const matchedPosts = searchPosts.filter(post => 
         post.title.toLowerCase().includes(query) || 
         post.excerpt.toLowerCase().includes(query) ||
-        post.tags.some(tag => tag.toLowerCase().includes(query))
+        post.category.toLowerCase().includes(query) ||
+        post.author.toLowerCase().includes(query) ||
+        post.tags.some(tag => tag.toLowerCase().includes(query)) ||
+        post.tags.some(tag => tag.toLowerCase().replace(/\s+/g, '').includes(compactQuery))
       ).map(p => ({ ...p, type: "post", typeLabel: "📝 Post" }));
       results.push(...matchedPosts);
     }
@@ -419,7 +402,8 @@
         group.name.toLowerCase().includes(query) ||
         group.description.toLowerCase().includes(query) ||
         group.course.toLowerCase().includes(query) ||
-        group.tags.some(tag => tag.toLowerCase().includes(query))
+        group.tags.some(tag => tag.toLowerCase().includes(query)) ||
+        group.tags.some(tag => tag.toLowerCase().replace(/\s+/g, '').includes(compactQuery))
       ).map(g => ({ ...g, type: "group", typeLabel: "👥 Study Group" }));
       results.push(...matchedGroups);
     }
@@ -517,9 +501,9 @@
       card.addEventListener('click', () => {
         const type = card.getAttribute('data-type');
         const id = card.getAttribute('data-id');
-        if (type === 'post') alert(`📄 Opening post #${id} (simulated navigation to discussion detail)`);
-        else if (type === 'group') alert(`👥 Opening study group #${id} (simulated navigation)`);
-        else alert(`📢 Opening announcement #${id} (simulated navigation)`);
+        if (type === 'post') window.location.href = `discussion-unisa-student-forum.html?id=${id}`;
+        else if (type === 'group') window.location.href = `study-groups-unisa-student-forum.html?group=${id}`;
+        else window.location.href = `announcements-unisa-student-forum.html?id=${id}`;
       });
     });
 
@@ -546,9 +530,13 @@
     });
   }
 
-  // Trending searches (static)
+  // Trending searches (dynamic hints from real data)
   function renderTrendingSearches() {
-    const trending = ["quantitative methods", "past papers", "exam tips", "study groups", "financial accounting"];
+    const trending = Array.from(new Set([
+      ...searchPosts.slice(0, 3).flatMap(post => [post.category, ...(post.tags || [])]),
+      ...searchGroups.slice(0, 3).flatMap(group => [group.course, ...(group.tags || [])]),
+      ...searchAnnouncements.slice(0, 2).flatMap(ann => ann.tags || [])
+    ].filter(Boolean))).slice(0, 5);
     const container = document.getElementById('trendingSearches');
     container.innerHTML = trending.map(term => `
       <div class="trending-search-item" data-term="${term}">
@@ -618,16 +606,73 @@
   // Back button
   document.getElementById('backToForum')?.addEventListener('click', (e) => {
     e.preventDefault();
-    alert('← Returning to homepage (simulated navigation)');
+    window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
   });
 
   // Initialize everything
   function init() {
-    renderTrendingSearches();
-    initTabs();
-    initSearch();
-    initSort();
-    renderResults(); // initial search with "exam" query
+    Promise.all([
+      apiClient.get('../api/forum/posts'),
+      apiClient.get('../api/forum/groups'),
+      apiClient.get('../api/forum/notifications').catch(() => [])
+    ]).then(([posts, groups, notifications]) => {
+      searchPosts = posts.map(post => {
+        const body = String(post.body || '');
+        const title = String(post.title || 'Untitled post');
+        return {
+          id: post.id,
+          title,
+          category: String(post.category || 'Forum'),
+          author: String(post.author || 'Community member'),
+          date: post.createdAt || new Date().toISOString(),
+          timeAgo: post.createdAt ? new Date(post.createdAt).toLocaleDateString() : 'Just now',
+          excerpt: body.slice(0, 140) || 'Open to read the full discussion.',
+          votes: Number(post.votes || 0),
+          replies: 0,
+          tags: [title, post.category, body.slice(0, 60)].filter(Boolean)
+        };
+      });
+      searchGroups = groups.map(group => ({
+        id: group.id,
+        name: String(group.name || 'Study group'),
+        course: String(group.course || 'General'),
+        members: Number(group.members || 0),
+        description: String(group.description || ''),
+        tags: [group.course, group.name, group.description].filter(Boolean)
+      }));
+      searchAnnouncements = searchPosts
+        .filter(post => String(post.category || '').toLowerCase().includes('announcement'))
+        .map(post => ({
+          id: post.id,
+          title: post.title,
+          type: 'update',
+          date: post.date,
+          excerpt: post.excerpt,
+          tags: [post.category, 'announcement', post.title].filter(Boolean)
+        }));
+      if (notifications.length) {
+        const announcementNotifications = notifications.filter(item => item.type === 'announcement').map(item => ({
+          id: `notif-${item.id}`,
+          title: item.title || 'Announcement',
+          type: 'urgent',
+          date: item.createdAt || new Date().toISOString(),
+          excerpt: item.message || '',
+          tags: ['announcement', 'forum']
+        }));
+        searchAnnouncements = [...announcementNotifications, ...searchAnnouncements];
+      }
+      renderTrendingSearches();
+      initTabs();
+      initSearch();
+      initSort();
+      renderResults();
+    }).catch(() => {
+      renderTrendingSearches();
+      initTabs();
+      initSearch();
+      initSort();
+      renderResults();
+    });
   }
 
   init();

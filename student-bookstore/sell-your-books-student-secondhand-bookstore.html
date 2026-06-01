@@ -539,9 +539,27 @@
     <p>Student Secondhand Bookstore — Buy wisely, sell easily, exchange fairly.</p>
 </footer>
 
+<script src="../public/api-client.js"></script>
 <script>
     // Photo upload handling
     let uploadedPhotos = [];
+    const AUTH_URL = '../student-marketplace/authentication-student-marketplace.html';
+
+    function buildNextParam() {
+        const url = new URL(window.location.href);
+        return encodeURIComponent(`${url.pathname}${url.search}${url.hash}`);
+    }
+
+    async function requireAuthOrRedirect() {
+        try {
+            const me = await apiClient.get('../api/auth/me');
+            if (me?.user) return me.user;
+        } catch {
+            // ignore
+        }
+        window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+        return null;
+    }
     
     const photoUpload = document.getElementById('photoUpload');
     const photoInput = document.getElementById('photoInput');
@@ -612,6 +630,9 @@
     
     // Save as Draft
     window.saveAsDraft = () => {
+        alert('Drafts are not implemented yet. Publish the listing to save it.');
+        return;
+
         const title = document.getElementById('title').value;
         const author = document.getElementById('author').value;
         const edition = document.getElementById('edition').value;
@@ -655,7 +676,7 @@
     // Publish Listing
     const sellForm = document.getElementById('sellForm');
     
-    sellForm.addEventListener('submit', (e) => {
+    sellForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const title = document.getElementById('title').value;
@@ -674,19 +695,21 @@
                 return;
             }
         }
+
+        const user = await requireAuthOrRedirect();
+        if (!user) return;
         
         const listingData = {
-            id: Date.now(),
             title: title,
             author: author,
             edition: edition,
             isbn: document.getElementById('isbn').value,
-            course: document.getElementById('course').value,
+            courseCode: document.getElementById('course').value,
             price: parseInt(price),
             retailPrice: document.getElementById('retailPrice').value,
             condition: condition,
             description: document.getElementById('description').value || "No description provided",
-            photos: uploadedPhotos.length,
+            photos: uploadedPhotos,
             exchange: exchangeCheckbox.checked,
             wantedBooks: document.getElementById('wantedBooks').value,
             exchangeTerms: document.getElementById('exchangeTerms').value,
@@ -695,21 +718,29 @@
             reward: price >= 150 ? '+0.25 USD' : null,
             cover: getCoverEmoji(title)
         };
-        
-        fetch('../api/bookstore/listings', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(listingData)
-        }).finally(() => {
-            alert(`🎉 Listing Published Successfully!\n\n${title}\n💰 R${price}\n📚 ${condition}\n\nYour book is now visible to ${getRandomUniversity()} students!`);
-            sellForm.reset();
-            uploadedPhotos = [];
-            displayPhotos();
-            conditionOptions.forEach(opt => opt.classList.remove('selected'));
-            conditionInput.value = '';
-            exchangeFields.classList.remove('show');
-            exchangeCheckbox.checked = false;
-        });
+
+        const submitBtn = sellForm.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Publishing...';
+        }
+
+        try {
+            const saved = await apiClient.post('../api/bookstore/books', listingData);
+            alert(`🎉 Listing Published Successfully!\n\n${saved.title || title}\n💰 R${price}\n📚 ${condition}\n\nYour book is now visible in Browse.`);
+            window.location.href = `book-details-student-secondhand-bookstore.html?id=${encodeURIComponent(String(saved.id))}`;
+        } catch (error) {
+            if (error?.status === 401) {
+                window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+                return;
+            }
+            alert(error?.message || 'Could not publish listing');
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Publish Listing';
+            }
+        }
     });
     
     function getCoverEmoji(title) {
@@ -725,7 +756,7 @@
     }
     
     function getRandomUniversity() {
-        const universities = ['UCT', 'Wits', 'UP', 'Stellenbosch', 'Rhodes', 'Nelson Mandela'];
+        const universities = ['UNISA', 'Wits', 'UP', 'Stellenbosch', 'Rhodes', 'Nelson Mandela'];
         return universities[Math.floor(Math.random() * universities.length)];
     }
 </script>

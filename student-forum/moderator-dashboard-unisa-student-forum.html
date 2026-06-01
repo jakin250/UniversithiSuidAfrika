@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Moderator Dashboard - UCT Student Forum</title>
+  <title>Moderator Dashboard - UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -266,7 +266,7 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Moderator Portal</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <div class="dashboard-grid">
@@ -351,26 +351,11 @@
   </div>
 </div>
 
+<script src="../public/api-client.js"></script>
 <script>
-  // Mock reports data
-  let reports = [
-    { id: 1, type: "Post", content: "How do I survive Quantitative Methods?", reportedBy: "Anonymous", reason: "Harassment", status: "pending" },
-    { id: 2, type: "Comment", content: "This is spam content...", reportedBy: "Lerato K.", reason: "Spam", status: "pending" },
-    { id: 3, type: "User", content: "User profile offensive", reportedBy: "Sipho M.", reason: "Offensive", status: "resolved" }
-  ];
-
-  let users = [
-    { name: "Sipho M.", email: "sipho@uct.ac.za", status: "active", joined: "2024-02-01" },
-    { name: "Lerato K.", email: "lerato@uct.ac.za", status: "active", joined: "2024-02-15" },
-    { name: "Spam User", email: "spam@example.com", status: "suspended", joined: "2026-01-10" },
-    { name: "Troll Account", email: "troll@uct.ac.za", status: "banned", joined: "2025-11-20" }
-  ];
-
-  let moderationLogs = [
-    { action: "User 'Spam User' suspended for 7 days", moderator: "Aisha P.", timestamp: "2026-05-12 14:30" },
-    { action: "Report #2 resolved (spam removed)", moderator: "Thabo M.", timestamp: "2026-05-12 10:15" },
-    { action: "Warning issued to 'Troll Account'", moderator: "Aisha P.", timestamp: "2026-05-11 09:45" }
-  ];
+  let reports = [];
+  let users = [];
+  let moderationLogs = [];
 
   function escapeHtml(str) {
     if (!str) return '';
@@ -390,10 +375,10 @@
     container.innerHTML = reports.map(r => `
       <tr>
         <td>${r.id}</td>
-        <td>${escapeHtml(r.type)}</td>
-        <td>${escapeHtml(r.content.substring(0, 40))}...</td>
-        <td>${escapeHtml(r.reportedBy)}</td>
-        <td>${escapeHtml(r.reason)}</td>
+        <td>${escapeHtml(r.type || 'Content')}</td>
+        <td>${escapeHtml(String(r.content || r.contentId || '').substring(0, 40))}...</td>
+        <td>${escapeHtml(r.reportedBy || r.ownerId || 'Anonymous')}</td>
+        <td>${escapeHtml(r.reason || 'Unspecified')}</td>
         <td><span class="status-badge status-${r.status === 'pending' ? 'pending' : 'resolved'}">${r.status}</span></td>
         <td class="action-buttons">
           ${r.status === 'pending' ? `
@@ -407,24 +392,15 @@
     document.querySelectorAll('.resolve-report').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = parseInt(btn.getAttribute('data-id'));
-        const report = reports.find(r => r.id === id);
-        if (report) {
-          report.status = 'resolved';
-          moderationLogs.unshift({ action: `Report #${id} resolved by moderator`, moderator: "Aisha P.", timestamp: new Date().toLocaleString() });
-          renderReports();
-          renderLogs();
-          showToast('Report resolved');
-        }
+        apiClient.post(`../api/forum/reports/${id}/resolve`, { moderator: 'Aisha P.' }).then(loadModerationData);
+        showToast('Report resolved');
       });
     });
 
     document.querySelectorAll('.delete-report').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = parseInt(btn.getAttribute('data-id'));
-        reports = reports.filter(r => r.id !== id);
-        moderationLogs.unshift({ action: `Report #${id} content removed`, moderator: "Aisha P.", timestamp: new Date().toLocaleString() });
-        renderReports();
-        renderLogs();
+        apiClient.post(`../api/forum/reports/${id}/remove`, { moderator: 'Aisha P.' }).then(loadModerationData);
         showToast('Content removed');
       });
     });
@@ -469,12 +445,12 @@
   }
 
   function updateStats() {
-    document.getElementById('totalUsers').innerText = "2,847";
-    document.getElementById('activeToday').innerText = "1,234";
+    document.getElementById('totalUsers').innerText = users.length || "0";
+    document.getElementById('activeToday').innerText = reports.filter(r => r.status === 'pending').length || "0";
     document.getElementById('bannedUsers').innerText = users.filter(u => u.status === 'banned').length;
-    document.getElementById('totalPosts').innerText = "8,432";
-    document.getElementById('totalComments').innerText = "24,156";
-    document.getElementById('studyGroups').innerText = "156";
+    document.getElementById('totalPosts').innerText = reports.length || "0";
+    document.getElementById('totalComments').innerText = moderationLogs.length || "0";
+    document.getElementById('studyGroups').innerText = "0";
   }
 
   function showToast(msg) {
@@ -508,17 +484,28 @@
 
   document.getElementById('backToForum')?.addEventListener('click', (e) => {
     e.preventDefault();
-    alert('← Returning to homepage (simulated navigation)');
+    window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
   });
 
   document.getElementById('userSearch')?.addEventListener('input', () => renderUsers());
   document.getElementById('saveModSettings')?.addEventListener('click', () => showToast('⚙️ Moderation settings saved'));
 
-  renderReports();
-  renderUsers();
-  renderLogs();
-  updateStats();
-  initTabs();
+  async function loadModerationData() {
+    try {
+      reports = await apiClient.get('../api/forum/reports');
+      users = await apiClient.get('../api/auth/me').then(r => r.user ? [r.user] : []);
+      moderationLogs = await apiClient.get('../api/forum/moderation-logs');
+    } catch (error) {
+      console.error(error);
+    }
+    renderReports();
+    renderUsers();
+    renderLogs();
+    updateStats();
+    initTabs();
+  }
+
+  loadModerationData();
 </script>
 </body>
 </html>

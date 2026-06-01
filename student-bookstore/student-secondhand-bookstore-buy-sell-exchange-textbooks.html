@@ -457,109 +457,45 @@
     <p>Student Secondhand Bookstore — Buy wisely, sell easily, exchange fairly.</p>
 </footer>
 
+<script src="../public/api-client.js"></script>
 <script>
-    // Sample books data
-    const books = [
-        {
-            id: 1,
-            title: "Introduction to Microeconomics",
-            author: "Mankiw",
-            edition: "4th Edition",
-            price: 200,
-            condition: "Great Condition",
-            conditionDesc: "Used for first year economics. Highlights in pencil. All pages intact.",
-            seller: "Thando M.",
-            university: "UCT Student",
-            reward: "+0.25 USD",
-            category: "Economics"
-        },
-        {
-            id: 2,
-            title: "CONSTRUCTIONAL ARTS",
-            author: "A. Peterson",
-            edition: "3rd Edition",
-            price: 180,
-            condition: "Used with minor wear",
-            seller: "Luke J.",
-            university: "Wits",
-            reward: null,
-            category: "Engineering"
-        },
-        {
-            id: 3,
-            title: "FUNDAMENTALS OF ARCHITECTURE",
-            author: "S. Hall",
-            edition: "2nd Edition",
-            price: 250,
-            condition: "Barely used. Excellent condition",
-            seller: "Nadia K.",
-            university: "UP",
-            reward: null,
-            category: "Engineering"
-        },
-        {
-            id: 4,
-            title: "INTRODUCTION TO ARCHITECTURE",
-            author: "R. Meier",
-            edition: "5th Edition",
-            price: 310,
-            condition: "Brand new, never used",
-            seller: "James W.",
-            university: "UCT",
-            reward: null,
-            category: "Engineering"
-        },
-        {
-            id: 5,
-            title: "Constitutional Law of South Africa",
-            author: "J. Dugard",
-            edition: "7th Edition",
-            price: 180,
-            condition: "Good",
-            seller: "Priya N.",
-            university: "Wits",
-            reward: "+0.25 USD",
-            category: "Law"
-        },
-        {
-            id: 6,
-            title: "Company Law",
-            author: "D. Pretorius",
-            edition: "2nd Edition",
-            price: 190,
-            condition: "Fair",
-            seller: "Michael R.",
-            university: "UCT",
-            reward: "+0.25 USD",
-            category: "Law"
-        }
-    ];
-
     const bookGrid = document.getElementById("bookGrid");
     const categoryBtns = document.querySelectorAll(".category-btn");
     const searchInput = document.getElementById("searchInput");
     const searchBtn = document.getElementById("searchBtn");
 
+    let books = [];
     let activeCategory = "all";
     let searchQuery = "";
+
+    function bookSearchText(book) {
+        return [
+            book.title,
+            book.author,
+            book.edition,
+            book.category,
+            book.university,
+            book.seller,
+            book.courseCode,
+            book.isbn,
+            book.description
+        ].filter(Boolean).join(' ').toLowerCase();
+    }
 
     function renderBooks() {
         let filtered = books;
 
-        // Filter by category
-        if (activeCategory !== "all") {
-            filtered = filtered.filter(book => book.category === activeCategory);
+        if (activeCategory !== "all" && activeCategory !== "More") {
+            filtered = filtered.filter(book => String(book.category || '').toLowerCase() === activeCategory.toLowerCase());
         }
 
-        // Filter by search query (title, author, course, isbn mock)
+        if (activeCategory === "More") {
+            filtered = filtered.filter(book => !["law", "engineering", "science", "economics"].includes(String(book.category || '').toLowerCase()));
+        }
+
         if (searchQuery.trim() !== "") {
             const query = searchQuery.toLowerCase();
-            filtered = filtered.filter(book =>
-                book.title.toLowerCase().includes(query) ||
-                book.author.toLowerCase().includes(query) ||
-                book.edition.toLowerCase().includes(query) ||
-                (book.university && book.university.toLowerCase().includes(query))
-            );
+            filtered = filtered.filter(book => bookSearchText(book).includes(query));
         }
 
         if (filtered.length === 0) {
@@ -569,13 +505,13 @@
 
         bookGrid.innerHTML = filtered.map(book => `
             <div class="book-card" onclick="goToBookDetails(${book.id})">
-                <div class="book-cover">📘</div>
+                <div class="book-cover">${book.cover || '📘'}</div>
                 <div class="book-info">
                     <div class="book-title">${book.title}</div>
-                    <div class="book-detail">${book.author} • ${book.edition}</div>
+                    <div class="book-detail">${book.author || 'Unknown author'}${book.edition ? ` • ${book.edition}` : ''}</div>
                     <div class="price">R${book.price}</div>
-                    <div class="condition">${book.condition}</div>
-                    <div class="seller">${book.seller} • ${book.university}</div>
+                    <div class="condition">${book.condition || 'Good'}</div>
+                    <div class="seller">${book.seller || 'Campus Seller'} • ${book.university || 'Student marketplace'}</div>
                     ${book.reward ? `<div class="reward-badge">🎁 ${book.reward} store credit</div>` : ''}
                     <div class="action-buttons">
                         <button class="btn-primary" onclick="event.stopPropagation(); buyNow(${book.id})">Buy Now</button>
@@ -587,18 +523,15 @@
     }
 
     window.goToBookDetails = (id) => {
-        alert(`📖 Navigate to Book Details page for book ID: ${id}\n(Next page: book-details.html)`);
-        // In real implementation: window.location.href = `book-details.html?id=${id}`;
+        window.location.href = `book-details-student-secondhand-bookstore.html?id=${id}`;
     };
 
     window.buyNow = (id) => {
-        alert(`Proceed to checkout with escrow protection for book ID: ${id}`);
-        // window.location.href = `checkout.html?book=${id}`;
+        window.location.href = `checkout-secure-escrow-payment-student-secondhand-bookstore.html?book=${id}`;
     };
 
     window.chatSeller = (id) => {
-        alert(`Open chat with seller for book ID: ${id}`);
-        // window.location.href = `chat.html?book=${id}`;
+        window.location.href = `chat-student-secondhand-bookstore.html?book=${id}`;
     };
 
     categoryBtns.forEach(btn => {
@@ -622,8 +555,33 @@
         }
     });
 
-    // Initial render
-    renderBooks();
+    async function loadBooks() {
+        try {
+            const remote = await apiClient.get('../api/bookstore/books');
+            books = remote.map(book => ({
+                id: book.id,
+                title: book.title || 'Untitled book',
+                author: book.author || 'Unknown author',
+                edition: book.edition || '',
+                price: Number(book.price || 0),
+                condition: book.condition || 'Good',
+                conditionDesc: book.description || '',
+                seller: book.seller || 'Campus Seller',
+                university: book.university || 'Student marketplace',
+                reward: book.reward || null,
+                category: book.category || 'General',
+                cover: book.cover || '📘',
+                courseCode: book.courseCode || '',
+                isbn: book.isbn || '',
+                description: book.description || ''
+            }));
+        } catch {
+            books = [];
+        }
+        renderBooks();
+    }
+
+    loadBooks();
 </script>
 </body>
 </html>

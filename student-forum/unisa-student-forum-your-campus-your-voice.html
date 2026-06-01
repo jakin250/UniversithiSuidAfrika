@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>UCT Student Forum | Your Campus. Your Voice.</title>
+  <title>UNISA Student Forum | Your Campus. Your Voice.</title>
   <style>
     * {
       margin: 0;
@@ -390,7 +390,12 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <button id="startDiscussionBtn" class="btn-primary">✨ Start a Discussion</button>
+    <div style="display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap; justify-content:flex-end;">
+      <span id="authStatus" class="small-text" style="background:#ffffff; border:1px solid #dce5ec; padding:0.4rem 0.8rem; border-radius:999px;">Checking sign-in…</span>
+      <button id="loginBtn" class="btn-outline" style="display:none;">Sign in</button>
+      <button id="logoutBtn" class="btn-outline" style="display:none;">Log out</button>
+      <button id="startDiscussionBtn" class="btn-primary">✨ Start a Discussion</button>
+    </div>
   </div>
 
   <div class="forum-grid">
@@ -398,7 +403,7 @@
     <div>
       <!-- Welcome banner -->
       <div style="background: linear-gradient(135deg, #e9f2f9 0%, #ffffff 100%); padding: 1.2rem 1.5rem; border-radius: 28px; margin-bottom: 1.5rem;">
-        <h2 style="border-left: none; padding-left: 0; margin-bottom: 0.2rem;">Welcome to the UCT Student Forum</h2>
+        <h2 style="border-left: none; padding-left: 0; margin-bottom: 0.2rem;">Welcome to the Student Forum</h2>
         <p>Ask questions. Share knowledge. Build community.</p>
       </div>
 
@@ -490,6 +495,47 @@
 
 <script src="../public/api-client.js"></script>
 <script>
+  const AUTH_URL = '../student-marketplace/authentication-student-marketplace.html';
+
+  function buildNextParam() {
+    const url = new URL(window.location.href);
+    return encodeURIComponent(`${url.pathname}${url.search}${url.hash}`);
+  }
+
+  async function getMe() {
+    try {
+      const me = await apiClient.get('../api/auth/me');
+      return me?.user || null;
+    } catch {
+      return null;
+    }
+  }
+
+  async function requireAuthOrRedirect() {
+    const user = await getMe();
+    if (user) return user;
+    window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+    return null;
+  }
+
+  function setAuthUI(user) {
+    const authStatus = document.getElementById('authStatus');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (!authStatus || !loginBtn || !logoutBtn) return;
+
+    if (user) {
+      authStatus.textContent = `Signed in as ${user.name || user.email}`;
+      loginBtn.style.display = 'none';
+      logoutBtn.style.display = 'inline-flex';
+    } else {
+      authStatus.textContent = 'Not signed in';
+      loginBtn.style.display = 'inline-flex';
+      logoutBtn.style.display = 'none';
+    }
+  }
+
   const trendingPostsData = [];
 
   const categoriesWithCounts = [];
@@ -518,6 +564,21 @@
     { title: "Study Groups", desc: "Find or create study groups easily." },
     { title: "Announcements", desc: "Stay updated with important news." }
   ];
+
+  (async () => {
+    const user = await getMe();
+    setAuthUI(user);
+
+    document.getElementById('loginBtn')?.addEventListener('click', () => {
+      window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+    });
+
+    document.getElementById('logoutBtn')?.addEventListener('click', async () => {
+      try { await apiClient.post('../api/auth/logout', {}); } catch {}
+      setAuthUI(null);
+      window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+    });
+  })();
 
   const communityValues = [
     { title: "Be Respectful", desc: "Treat others with kindness and respect." },
@@ -565,13 +626,20 @@
         const id = parseInt(btn.getAttribute('data-id'));
         const post = trendingPostsData.find(p => p.id === id);
         if (post) {
-          post.votes += 1;
-          const voteSpan = document.getElementById(`voteCount-${id}`);
-          if (voteSpan) voteSpan.innerText = post.votes;
-          // Optional: give feedback
-          btn.style.color = "#1e6f3f";
-          btn.innerText = "▲ Upvoted!";
-          setTimeout(() => { btn.innerText = "▲ Upvote"; btn.style.color = ""; }, 800);
+          apiClient.post(`../api/forum/posts/${id}/upvote`, {})
+            .then(updated => {
+              post.votes = updated.votes;
+              const voteSpan = document.getElementById(`voteCount-${id}`);
+              if (voteSpan) voteSpan.innerText = post.votes;
+              btn.style.color = "#1e6f3f";
+              btn.innerText = "▲ Upvoted!";
+              setTimeout(() => { btn.innerText = "▲ Upvote"; btn.style.color = ""; }, 800);
+            })
+            .catch(() => {
+              post.votes += 1;
+              const voteSpan = document.getElementById(`voteCount-${id}`);
+              if (voteSpan) voteSpan.innerText = post.votes;
+            });
         }
       });
     });
@@ -617,7 +685,11 @@
     container.innerHTML = trendingTags.map(tag => `<span class="tag">${escapeHtml(tag)}</span>`).join('');
     // simulate tag click (search later)
     document.querySelectorAll('.tag').forEach(t => {
-      t.addEventListener('click', () => alert(`🔍 Showing posts tagged ${t.innerText} (simulated search)`));
+      t.addEventListener('click', () => {
+        const tagged = trendingPostsData.filter(post => (post.title || '').toLowerCase().includes(t.innerText.replace('#', '').toLowerCase()) || (post.category || '').toLowerCase().includes(t.innerText.replace('#', '').toLowerCase()));
+        renderTrendingPosts(tagged);
+        document.getElementById('trendingContainer')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
     });
   }
 
@@ -715,20 +787,22 @@
 
     const publishBtn = document.getElementById('publishPostBtn');
     if (publishBtn) {
-      publishBtn.addEventListener('click', () => {
+      publishBtn.addEventListener('click', async () => {
+        const user = await requireAuthOrRedirect();
+        if (!user) return;
         const titleArea = document.getElementById('postTitleInput');
         const categorySelect = document.getElementById('postCategory');
         const anonymousCheck = document.getElementById('anonymousCheckbox');
         if (titleArea && categorySelect) {
           addNewPost(titleArea.value, categorySelect.value, anonymousCheck.checked);
         } else {
-          alert("Error: missing fields");
+      alert("Error: missing fields");
         }
       });
     }
   }
 
-  // small demo: simulate localstorage or just interactive, also handle flags
+  // Keep interactive UI state local for this page’s draft experience
   async function initPage() {
     try {
       const posts = await apiClient.get('../api/forum/posts');
@@ -755,19 +829,25 @@
     renderValuesGrid();
     initButtons();
 
-    // optional: add click on category items to show alert (prototype category page later)
+    // optional: add click on category items to filter the visible feed
     document.querySelectorAll('.category-list li').forEach(li => {
       li.style.cursor = 'pointer';
       li.addEventListener('click', (e) => {
         const catName = li.querySelector('span:first-child')?.innerText;
-        if (catName) alert(`🚀 Category page for "${catName}" will open in next version.`);
+        if (!catName) return;
+        const filtered = trendingPostsData.filter(post => post.category === catName);
+        renderTrendingPosts(filtered);
+        document.getElementById('trendingContainer')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
     });
 
-    // top contributors click hint
+    // top contributors open profile page when available
     document.querySelectorAll('.contributor-item').forEach(item => {
       item.style.cursor = 'pointer';
-      item.addEventListener('click', () => alert("👤 View full profile (coming soon)"));
+      item.addEventListener('click', () => {
+        const name = item.querySelector('span strong')?.nextSibling?.textContent?.trim();
+        if (name) window.location.href = `sipho-m-unisa-student-forum-profile.html?user=${encodeURIComponent(name)}`;
+      });
     });
   }
 

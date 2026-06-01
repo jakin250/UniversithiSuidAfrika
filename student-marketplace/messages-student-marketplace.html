@@ -93,7 +93,7 @@
               <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
               <a href="saved-items-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Saved items</a>
               <hr class="my-1">
-              <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+              <a href="authentication-student-marketplace.html" data-logout="1" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
             </div>
           </div>
         </div>
@@ -107,7 +107,7 @@
       <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
       <a href="messages-student-marketplace.html" class="block py-2 text-indigo-600 font-medium">Messages</a>
       <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
-      <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+      <a href="authentication-student-marketplace.html" data-logout="1" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
     </div>
   </nav>
 
@@ -178,9 +178,31 @@
 
   <script src="../public/api-client.js"></script>
   <script>
+    const AUTH_URL = 'authentication-student-marketplace.html';
+    function buildNextParam() {
+      const url = new URL(window.location.href);
+      return encodeURIComponent(`${url.pathname}${url.search}${url.hash}`);
+    }
+    async function requireAuthOrRedirect() {
+      try {
+        const me = await apiClient.get('../api/auth/me');
+        if (me?.user) return me.user;
+      } catch {
+        // ignore
+      }
+      window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+      return null;
+    }
+
+    requireAuthOrRedirect();
+
     let conversations = [];
     let currentConversationId = null;
     let currentConvData = null;
+    let marketplaceListings = [];
+    const messageParams = new URLSearchParams(window.location.search);
+    const initialListingId = messageParams.get('listingId');
+    const initialOrderId = messageParams.get('orderId');
 
     // DOM elements
     const conversationListDiv = document.getElementById('conversationList');
@@ -192,6 +214,14 @@
     const quickConfirmBtn = document.getElementById('quickConfirmBtn');
     const searchChatInput = document.getElementById('searchChat');
 
+    function getConversationKey(message) {
+      return message.threadId || message.orderId || message.listingId || message.itemTitle || message.sellerName || 'general';
+    }
+
+    function buildConversationId(key, fallbackIndex) {
+      return Number.isFinite(Number(key)) ? Number(key) : fallbackIndex + 1;
+    }
+
     // Helper: Render conversation list
     function renderConversations(filterText = '') {
       let filtered = conversations.filter(conv =>
@@ -201,7 +231,7 @@
       if (!filtered.length) {
         conversationListDiv.innerHTML = `
           <div class="p-6 text-center text-gray-500 text-sm">
-            No conversations yet. Messages will appear here once you contact a seller or buyer.
+            No conversations yet. Start a conversation from a listing or order and it will appear here.
           </div>
         `;
         return;
@@ -226,15 +256,13 @@
       // attach click listeners
       document.querySelectorAll('.conversation-item').forEach(el => {
         el.addEventListener('click', () => {
-          const id = parseInt(el.getAttribute('data-id'));
-          if (!isNaN(id)) {
-            currentConversationId = id;
-            currentConvData = conversations.find(c => c.id === id);
-            if(currentConvData) currentConvData.unread = false;
-            renderConversations(searchChatInput?.value || '');
-            renderMessages();
-            updateEscrowBanner();
-          }
+          const id = el.getAttribute('data-id');
+          currentConversationId = id;
+          currentConvData = conversations.find(c => String(c.id) === String(id)) || null;
+          if(currentConvData) currentConvData.unread = false;
+          renderConversations(searchChatInput?.value || '');
+          renderMessages();
+          updateEscrowBanner();
         });
       });
     }
@@ -271,43 +299,21 @@
     function sendNewMessage() {
       const text = messageInput.value.trim();
       if (!text || !currentConvData) return;
-      const newMsg = {
-        type: "sent",
-        text: text,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        sender: "buyer"
-      };
-      currentConvData.messages.push(newMsg);
-      currentConvData.lastMessage = text;
-      currentConvData.timestamp = "Just now";
       apiClient.post('../api/marketplace/messages', {
+        threadId: currentConvData.threadId || null,
+        listingId: currentConvData.listingId || null,
+        orderId: currentConvData.orderId || null,
         sellerName: currentConvData.sellerName,
         sellerInitials: currentConvData.sellerInitials,
         itemTitle: currentConvData.item,
         itemPrice: currentConvData.itemPrice,
-        orderId: currentConvData.orderId,
         text,
-        amount: currentConvData.escrowAmount
+        amount: currentConvData.escrowAmount,
+        sender: currentConvData.viewerRole || 'buyer'
+      }).then(() => {
+        messageInput.value = '';
+        loadConversations();
       }).catch(console.error);
-      renderMessages();
-      messageInput.value = '';
-      // simulate auto-reply (optional)
-      if (text.toLowerCase().includes('pickup') || text.toLowerCase().includes('meet')) {
-        setTimeout(() => {
-          const autoReply = {
-            type: "received",
-            text: "Got it! I'll be at the pickup spot. Let me know when you arrive.",
-            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            sender: "seller"
-          };
-          currentConvData.messages.push(autoReply);
-          currentConvData.lastMessage = autoReply.text;
-          renderMessages();
-          renderConversations(searchChatInput?.value || '');
-        }, 1200);
-      } else {
-        renderConversations(searchChatInput?.value || '');
-      }
     }
 
     // Update escrow banner visibility (only for orders that are delivered but not confirmed)
@@ -358,37 +364,36 @@ Only proceed if you have received the item and are satisfied. This action is fin
 
     async function loadConversations() {
       try {
-        const messages = await apiClient.get('../api/marketplace/messages');
-        if (messages.length) {
-          const grouped = {};
-          messages.forEach((message, index) => {
-            const key = message.orderId || message.itemTitle || index;
-            if (!grouped[key]) {
-              grouped[key] = {
-                id: index + 1,
-                sellerName: message.sellerName || 'Marketplace Seller',
-                sellerInitials: (message.sellerName || 'MS').split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase(),
-                item: message.itemTitle || 'Marketplace listing',
-                itemPrice: message.itemPrice || 0,
-                orderId: message.orderId || null,
-                lastMessage: message.text || '',
-                timestamp: 'Just now',
-                unread: false,
-                online: true,
-                messages: [],
-                orderStatus: 'delivered',
-                escrowAmount: message.amount || null
-              };
-            }
-            grouped[key].messages.push({ type: 'sent', text: message.text || '', time: 'Just now', sender: 'buyer' });
-          });
-          conversations = Object.values(grouped);
-        }
+        const inbox = await apiClient.get('../api/marketplace/inbox');
+        marketplaceListings = await apiClient.get('../api/marketplace/listings').catch(() => []);
+        conversations = inbox.map(thread => ({
+          id: thread.id,
+          threadId: thread.threadId || null,
+          listingId: thread.listingId || null,
+          sellerName: thread.sellerName || 'Marketplace Seller',
+          sellerInitials: thread.sellerInitials || (thread.sellerName || 'MS').split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase(),
+          viewerRole: thread.viewerRole || 'buyer',
+          item: thread.item || 'Marketplace listing',
+          itemPrice: Number(thread.itemPrice || 0),
+          orderId: thread.orderId || null,
+          lastMessage: thread.lastMessage || '',
+          timestamp: thread.timestamp || 'Just now',
+          unread: Boolean(thread.unread),
+          online: true,
+          messages: (thread.messages || []).map(message => ({
+            type: message.sender === 'seller' ? 'received' : 'sent',
+            text: message.text || '',
+            time: message.time || 'Just now',
+            sender: message.sender || 'buyer'
+          })),
+          orderStatus: thread.orderStatus || 'pending',
+          escrowAmount: thread.escrowAmount || null
+        }));
       } catch (error) {
         console.error(error);
       }
-      currentConversationId = conversations[0]?.id || null;
-      currentConvData = conversations.find(c => c.id === currentConversationId) || null;
+      currentConversationId = conversations.find(conv => String(conv.listingId) === String(initialListingId) || String(conv.orderId) === String(initialOrderId))?.id || conversations[0]?.id || null;
+      currentConvData = conversations.find(c => String(c.id) === String(currentConversationId)) || null;
       renderConversations();
       renderMessages();
       updateEscrowBanner();
@@ -401,6 +406,14 @@ Only proceed if you have received the item and are satisfied. This action is fin
     const mobileBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     if(mobileBtn) mobileBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+
+    document.querySelectorAll('[data-logout="1"]').forEach(link => {
+      link.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try { await apiClient.post('../api/auth/logout', {}); } catch {}
+        window.location.href = AUTH_URL;
+      });
+    });
 
     // Additional: Simulate Socket.io real-time feel - auto update last message timestamp
     setInterval(() => {

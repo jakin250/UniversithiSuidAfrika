@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Academic Help - UCT Student Forum</title>
+  <title>Academic Help - UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -314,7 +314,7 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToHome" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToHome" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <div class="forum-grid">
@@ -348,7 +348,7 @@
       </div>
       <div class="sidebar-card">
         <h3>💡 Pro Tip</h3>
-        <p style="font-size: 0.85rem;">Use the search bar (coming soon) to find specific topics. Popular categories like Academic Help have the most active discussions.</p>
+        <p style="font-size: 0.85rem;">Use the search bar to find specific topics. Popular categories like Academic Help have the most active discussions.</p>
       </div>
       <div class="sidebar-card">
         <h3>🏆 Top Contributors in this Category</h3>
@@ -359,7 +359,7 @@
 </div>
 
 <script>
-  // --- MOCK DATA: All posts for Academic Help category (plus few from other for demo but only show current category)
+  // --- DATA: Posts for Academic Help category
   const allPosts = [
     { id: 1, title: "How do I survive Quantitative Methods?", category: "Academic Help", author: "Sipho M.", timeAgo: "3h ago", votes: 327, replies: 24, tags: ["#Stats", "#QM"] },
     { id: 2, title: "Best resources for learning Calculus?", category: "Academic Help", author: "Lerato K.", timeAgo: "1d ago", votes: 156, replies: 12, tags: ["#Calculus", "#Math"] },
@@ -476,7 +476,7 @@
     document.querySelectorAll('.post-item').forEach(el => {
       el.addEventListener('click', (e) => {
         const id = parseInt(el.getAttribute('data-id'));
-        alert(`🔍 Navigate to post #${id}: "${allPosts.find(p=>p.id===id)?.title}"\n(Discussion detail page would open here)`);
+        window.location.href = `discussion-unisa-student-forum.html?id=${id}`;
       });
     });
   }
@@ -576,7 +576,7 @@
     // update back link behavior
     document.getElementById('backToHome')?.addEventListener('click', (e) => {
       e.preventDefault();
-      alert('← Returning to homepage (simulated navigation)');
+      window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
     });
   }
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Sipho M. - UCT Student Forum Profile</title>
+  <title>Sipho M. - UNISA Student Forum Profile</title>
   <style>
     * {
       margin: 0;
@@ -306,7 +306,7 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <div class="profile-grid">
@@ -346,7 +346,7 @@
     id: 101,
     name: "Sipho M.",
     fullName: "Sipho Mkhize",
-    email: "sipho.m@uct.ac.za",
+    email: "sipho.m@unisa.ac.za",
     joinDate: "February 2024",
     points: 4250,
     rank: "Top Contributor #1",
@@ -426,7 +426,7 @@
         <button class="btn-outline" id="followBtn">➕ Follow</button>
       </div>
     `;
-    document.getElementById('messageBtn')?.addEventListener('click', () => alert(`💬 Messaging ${userProfile.name} (demo: chat feature coming soon)`));
+    document.getElementById('messageBtn')?.addEventListener('click', () => window.location.href = 'messages-unisa-student-forum.html');
     document.getElementById('followBtn')?.addEventListener('click', (e) => {
       e.target.innerText = e.target.innerText === '➕ Follow' ? '✓ Following' : '➕ Follow';
       alert(`You are now ${e.target.innerText === '✓ Following' ? 'following' : 'unfollowed'} ${userProfile.name}`);
@@ -491,7 +491,7 @@
     container.innerHTML = `
       <div style="line-height: 1.7;">
         <p><strong>Full name:</strong> ${escapeHtml(userProfile.fullName)}</p>
-        <p><strong>Email:</strong> ${escapeHtml(userProfile.email)} (verified UCT email)</p>
+        <p><strong>Email:</strong> ${escapeHtml(userProfile.email)} (verified UNISA email)</p>
         <p><strong>Member since:</strong> ${userProfile.joinDate}</p>
         <p><strong>Total activity:</strong> ${userProfile.stats.posts} posts · ${userProfile.stats.replies} replies</p>
         <p><strong>Favorite categories:</strong> Academic Help, Tech & Gadgets</p>
@@ -523,7 +523,7 @@
   // Simulate back to forum navigation
   document.getElementById('backToForum')?.addEventListener('click', (e) => {
     e.preventDefault();
-    alert('← Returning to homepage (simulated navigation)');
+    window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
   });
 
   renderSidebar();

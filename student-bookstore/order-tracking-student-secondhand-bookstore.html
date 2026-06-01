@@ -712,8 +712,7 @@
     };
     
     window.chatWithSeller = () => {
-        alert(`💬 Opening chat with ${order.book.seller}\n\n(Next page: chat-student-secondhand-bookstore.html?order=${order.orderId}&seller=${order.book.seller})`);
-        // window.location.href = `chat-student-secondhand-bookstore.html?order=${order.orderId}&seller=${order.book.seller}`;
+        window.location.href = `chat-student-secondhand-bookstore.html?order=${order.id || order.orderId}`;
     };
     
     window.rateSeller = () => {

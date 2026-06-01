@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Report & Moderation Center - UCT Student Forum</title>
+  <title>Report & Moderation Center - UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -294,7 +294,7 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <div class="two-column">
@@ -317,7 +317,7 @@
 
         <div class="form-group">
           <label>Link or ID of content (URL or post ID)</label>
-          <input type="text" id="reportContentId" placeholder="e.g., https://forum.uct.ac.za/post/123 or post ID 123">
+          <input type="text" id="reportContentId" placeholder="e.g., https://forum.unisa.ac.za/post/123 or post ID 123">
         </div>
 
         <div class="form-group">
@@ -437,7 +437,7 @@
     }
   ];
 
-  // Track if user is moderator (simulated - for demo, show moderator controls)
+  // Track whether moderation controls are visible
   const isModerator = true; // Set to true to show moderator actions
 
   function escapeHtml(str) {
@@ -618,7 +618,7 @@
   document.getElementById('submitReportBtn')?.addEventListener('click', submitReport);
   document.getElementById('backToForum')?.addEventListener('click', (e) => {
     e.preventDefault();
-    alert('← Returning to homepage (simulated navigation)');
+    window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
   });
 
   // Initial render

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>How do I survive Quantitative Methods? - UCT Student Forum</title>
+  <title>How do I survive Quantitative Methods? - UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -399,7 +399,7 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <div class="discussion-grid">
@@ -556,7 +556,7 @@
       document.getElementById('postVoteCount').innerText = postVotes;
     });
     document.getElementById('sharePost')?.addEventListener('click', () => {
-      alert('🔗 Link copied to clipboard (simulated)');
+      navigator.clipboard?.writeText(window.location.href).catch(()=>{});
     });
   }
 
@@ -610,7 +610,7 @@
         if (c.replies) c.replies.sort((a, b) => b.votes - a.votes);
       });
     } else if (sortType === 'newest') {
-      // mock: just keep original order for demo, but reverse
+      // keep a stable sort order for readability
       sorted.reverse();
     }
     return sorted;
@@ -730,7 +730,7 @@
     `).join('');
     document.querySelectorAll('.similar-post').forEach(el => {
       el.addEventListener('click', () => {
-        alert('🔁 Similar discussion (simulated navigation)');
+        window.location.href = `discussion-unisa-student-forum.html?id=${el.dataset.id}`;
       });
     });
   }
@@ -751,7 +751,7 @@
   // Event listeners
   document.getElementById('backToForum')?.addEventListener('click', (e) => {
     e.preventDefault();
-    alert('← Returning to homepage (simulated navigation)');
+    window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
   });
   document.getElementById('submitCommentBtn')?.addEventListener('click', addNewComment);
   document.getElementById('commentSort')?.addEventListener('change', () => renderFullComments());

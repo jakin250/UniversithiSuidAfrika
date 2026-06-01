@@ -76,7 +76,7 @@
               <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
               <a href="saved-items-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Saved items</a>
               <hr class="my-1">
-              <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+              <a href="authentication-student-marketplace.html" data-logout="1" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
             </div>
           </div>
         </div>
@@ -90,7 +90,7 @@
       <a href="create-listing-student-marketplace.html" class="text-gray-700 hover:text-indigo-600 font-medium">Sell</a>
       <a href="messages-student-marketplace.html" class="block py-2 text-gray-700">Messages</a>
       <a href="my-dashboard-student-marketplace.html" class="block px-4 py-2 text-sm text-gray-700 hover:bg-indigo-50">Dashboard</a>
-      <a href="authentication-student-marketplace.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
+      <a href="authentication-student-marketplace.html" data-logout="1" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-50">Log out</a>
     </div>
   </nav>
 
@@ -239,6 +239,24 @@
 
   <script src="../public/api-client.js"></script>
   <script>
+    const AUTH_URL = 'authentication-student-marketplace.html';
+    function buildNextParam() {
+      const url = new URL(window.location.href);
+      return encodeURIComponent(`${url.pathname}${url.search}${url.hash}`);
+    }
+    async function requireAuthOrRedirect() {
+      try {
+        const me = await apiClient.get('../api/auth/me');
+        if (me?.user) return me.user;
+      } catch {
+        // ignore
+      }
+      window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+      return null;
+    }
+
+    requireAuthOrRedirect();
+
     // Mobile menu
     const mobileBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
@@ -348,6 +366,8 @@
     const form = document.getElementById('listingForm');
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      const user = await requireAuthOrRedirect();
+      if (!user) return;
       const title = document.getElementById('title').value;
       const category = categorySelect.value;
       const price = document.getElementById('price').value;
@@ -365,7 +385,7 @@
       }
       
       try {
-        await apiClient.post('../api/marketplace/listings', {
+        const saved = await apiClient.post('../api/marketplace/listings', {
           title,
           category,
           price: Number(price),
@@ -374,19 +394,27 @@
           isbn: document.getElementById('isbn').value,
           description,
           pickupLocation: document.getElementById('pickupLocation').value,
-          seller: 'You',
-          images: uploadedFiles
+          campusPickup: document.getElementById('campusPickupOnly').checked,
+          images: uploadedFiles,
+          rating: 5
         });
-        alert(`✅ Listing "${title}" published successfully!\n\nIt will appear in browse listings. Other students can now view, chat, and purchase via escrow.`);
-        form.reset();
-        previewContainer.innerHTML = '';
-        uploadedFiles = [];
-        conditionHidden.value = '';
-        conditionBadges.forEach(b => b.classList.remove('selected', 'bg-indigo-600', 'text-white'));
+        window.location.href = `item-details-student-marketplace.html?id=${encodeURIComponent(String(saved.id))}`;
       } catch (error) {
         console.error(error);
-        alert('Could not publish listing. Please try again.');
+        if (error?.status === 401) {
+          window.location.href = `${AUTH_URL}?next=${buildNextParam()}`;
+          return;
+        }
+        alert(error?.message || 'Could not publish listing. Please try again.');
       }
+    });
+
+    document.querySelectorAll('[data-logout="1"]').forEach(link => {
+      link.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try { await apiClient.post('../api/auth/logout', {}); } catch {}
+        window.location.href = 'authentication-student-marketplace.html';
+      });
     });
   </script>
 </body>

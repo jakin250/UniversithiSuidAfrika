@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Help Center - UCT Student Forum</title>
+  <title>Help Center - UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -254,12 +254,12 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="backToForum" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
   </div>
 
   <div class="help-hero">
     <h2>📚 Help Center</h2>
-    <p>Find answers, guides, and support for using the UCT Student Forum</p>
+    <p>Find answers, guides, and support for using the UNISA Student Forum</p>
     <div class="search-container">
       <input type="text" id="faqSearch" class="search-input" placeholder="Search for help... e.g., 'how to post', 'study groups'">
     </div>
@@ -314,7 +314,7 @@
     {
       id: 1,
       question: "How do I create an account?",
-      answer: "All UCT students are automatically verified through their university email. Click 'Sign Up' and use your @uct.ac.za email address. You'll receive a verification link.",
+      answer: "All UNISA students are automatically verified through their university email. Click 'Sign Up' and use your @unisa.ac.za email address. You'll receive a verification link.",
       category: "getting-started",
       keywords: ["account", "sign up", "register", "create account", "verification"]
     },
@@ -391,7 +391,7 @@
     {
       id: 12,
       question: "Is the forum accessible on mobile?",
-      answer: "Yes! The UCT Student Forum is fully responsive and works on all devices. You can also save it to your home screen as a web app.",
+      answer: "Yes! The UNISA Student Forum is fully responsive and works on all devices. You can also save it to your home screen as a web app.",
       category: "account",
       keywords: ["mobile", "phone", "responsive", "app"]
     }
@@ -532,7 +532,7 @@
   // Back button
   document.getElementById('backToForum')?.addEventListener('click', (e) => {
     e.preventDefault();
-    alert('← Returning to homepage (simulated navigation)');
+    window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
   });
 
   document.getElementById('contactSupportBtn')?.addEventListener('click', contactSupport);

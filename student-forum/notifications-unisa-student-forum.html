@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications - UNISA Student Forum</title>
+  <style>
+    body{font-family:system-ui,sans-serif;background:#f4f7fc;color:#0a2b3e;margin:0}
+    .container{max-width:1000px;margin:0 auto;padding:24px}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;border-bottom:2px solid #dce5ec;padding-bottom:16px;margin-bottom:24px}
+    .btn{border:1px solid #0f5b8c;background:white;color:#0f5b8c;padding:10px 14px;border-radius:999px;cursor:pointer}
+    .btn.primary{background:#0f5b8c;color:white}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+    .tab{border:none;background:white;padding:10px 14px;border-radius:999px;cursor:pointer;color:#5a6e7a}
+    .tab.active{background:#0f5b8c;color:white}
+    .list{display:flex;flex-direction:column;gap:12px}
+    .card{background:white;border:1px solid #eaf0f5;border-radius:18px;padding:16px;display:flex;gap:14px;cursor:pointer}
+    .card.unread{background:#f0f7ff;border-left:4px solid #0f5b8c}
+    .icon{font-size:28px;min-width:40px;text-align:center}
+    .title{font-weight:700}
+    .message{color:#4a627a;font-size:.92rem;margin-top:4px}
+    .meta{color:#8ba0b0;font-size:.75rem;margin-top:6px}
+    .empty{background:white;border-radius:18px;padding:32px;text-align:center;color:#8ba0b0}
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="top">
+    <div>
+      <h1>Notifications</h1>
+      <div style="color:#5a6e7a">Forum activity, reports, and announcements</div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <a class="btn" href="unisa-student-forum-your-campus-your-voice.html">← Back to Forum</a>
+      <button id="markAllReadBtn" class="btn primary">✓ Mark all as read</button>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-filter="all">All</button>
+    <button class="tab" data-filter="unread">Unread</button>
+    <button class="tab" data-filter="reply">Replies</button>
+    <button class="tab" data-filter="upvote">Upvotes</button>
+    <button class="tab" data-filter="mention">Mentions</button>
+    <button class="tab" data-filter="announcement">Announcements</button>
+    <button class="tab" data-filter="report">Reports</button>
+  </div>
+
+  <div id="notificationsList" class="list"></div>
+</div>
+<script src="../public/api-client.js"></script>
+<script>
+  let notifications = [];
+  let currentFilter = 'all';
+
+  function iconFor(type){
+    return {reply:'💬',upvote:'👍',mention:'@',announcement:'📢',report:'🚩'}[type] || '🔔';
+  }
+
+  function filtered(){
+    if(currentFilter === 'all') return notifications;
+    if(currentFilter === 'unread') return notifications.filter(n => !n.read);
+    return notifications.filter(n => n.type === currentFilter);
+  }
+
+  function render(){
+    const list = document.getElementById('notificationsList');
+    const unread = notifications.filter(n => !n.read).length;
+    document.title = unread ? `(${unread}) Notifications - UNISA Student Forum` : 'Notifications - UNISA Student Forum';
+    if(!filtered().length){
+      list.innerHTML = '<div class="empty">No notifications yet. When people reply, mention you, or moderators act on reports, they will appear here.</div>';
+      return;
+    }
+    list.innerHTML = filtered().map(n => `
+      <div class="card ${n.read ? '' : 'unread'}" data-id="${n.id}">
+        <div class="icon">${iconFor(n.type)}</div>
+        <div>
+          <div class="title">${n.title || 'Notification'}</div>
+          <div class="message">${n.message || ''}</div>
+          <div class="meta">${n.timeAgo || new Date(n.createdAt || Date.now()).toLocaleString()}</div>
+        </div>
+      </div>
+    `).join('');
+    list.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => {
+        const notif = notifications.find(n => String(n.id) === card.dataset.id);
+        if(!notif) return;
+        notif.read = true;
+        render();
+        if(notif.postId) location.href = `discussion-unisa-student-forum.html?id=${notif.postId}`;
+      });
+    });
+  }
+
+  async function load(){
+    try {
+      notifications = await apiClient.get('../api/forum/notifications');
+    } catch {
+      notifications = [];
+    }
+    render();
+  }
+
+  document.getElementById('tabs').addEventListener('click', e => {
+    const btn = e.target.closest('.tab');
+    if(!btn) return;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    currentFilter = btn.dataset.filter;
+    render();
+  });
+
+  document.getElementById('markAllReadBtn').addEventListener('click', async () => {
+    await apiClient.post('../api/forum/notifications/read-all', {});
+    await load();
+  });
+
+  load();
+</script>
+</body>
+</html>

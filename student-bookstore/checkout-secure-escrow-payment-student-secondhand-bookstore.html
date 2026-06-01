@@ -478,7 +478,7 @@
             price: 200,
             condition: "Great Condition",
             seller: "Thando M.",
-            university: "UCT Student",
+            university: "UNISA Student",
             cover: "📊",
             reward: "+0.25 USD store credit"
         },
@@ -518,11 +518,36 @@
         return booksDB[1];
     }
 
-    const book = getBookFromURL();
+    let book = getBookFromURL();
     
     // Calculate fees
-    const platformFee = Math.round(book.price * 0.05); // 5% platform fee
-    const total = book.price + platformFee;
+    let platformFee = Math.round(book.price * 0.05); // 5% platform fee
+    let total = book.price + platformFee;
+
+    async function hydrateBook() {
+        const params = new URLSearchParams(window.location.search);
+        const apiBookId = params.get('book') || params.get('id');
+        if (!apiBookId) return;
+        try {
+            const remote = await apiClient.get(`../api/bookstore/books/${apiBookId}`);
+            book = {
+                id: remote.id,
+                title: remote.title,
+                author: remote.author || 'Unknown author',
+                edition: remote.edition || '',
+                price: Number(remote.price || 0),
+                condition: remote.condition || 'Good',
+                seller: remote.seller || 'Campus Seller',
+                university: remote.university || 'Student Marketplace',
+                cover: remote.cover || '📘',
+                reward: remote.reward || null
+            };
+            platformFee = Math.round(book.price * 0.05);
+            total = book.price + platformFee;
+        } catch (error) {
+            console.error(error);
+        }
+    }
     
     // Render order summary
     function renderOrderSummary() {
@@ -671,20 +696,16 @@
             trackingId: 'TRK-' + Math.random().toString(36).substr(2, 8).toUpperCase()
         };
         
-        fetch('../api/bookstore/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(order)
-        }).then(() => {
-            alert(`✅ Payment Successful!\n\nOrder ID: ${order.orderId}\nTotal Paid: R${total}\n\n🔒 Your payment is held in escrow.\nThe seller has been notified and will arrange delivery.\n\nYou will be redirected to Order Tracking.`);
-            window.location.href = `order-tracking-student-secondhand-bookstore.html?id=${order.orderId}`;
+        apiClient.post('../api/bookstore/orders', order).then(savedOrder => {
+            alert(`✅ Payment Successful!\n\nOrder ID: ${savedOrder.id}\nTotal Paid: R${total}\n\n🔒 Your payment is held in escrow.\nThe seller has been notified and will arrange delivery.\n\nYou will be redirected to Order Tracking.`);
+            window.location.href = `order-tracking-student-secondhand-bookstore.html?id=${savedOrder.id}`;
         }).catch(() => {
             alert('❌ Could not save the order. Please try again.');
         });
     };
     
     // Initial render
-    renderOrderSummary();
+    hydrateBook().then(renderOrderSummary);
 </script>
 </body>
 </html>

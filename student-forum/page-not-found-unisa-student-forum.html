@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Page Not Found - UCT Student Forum</title>
+  <title>Page Not Found - UNISA Student Forum</title>
   <style>
     * {
       margin: 0;
@@ -249,7 +249,7 @@
       <h1>STUDENT FORUM</h1>
       <div class="tagline">Your campus. Your voice.</div>
     </div>
-    <a href="uct-student-forum-your-campus-your-voice.html" class="back-link" id="homeLink" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">← Back to Home</a>
+    <a href="unisa-student-forum-your-campus-your-voice.html" class="back-link" id="homeLink" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">← Back to Home</a>
   </div>
 
   <div class="error-content">
@@ -268,32 +268,32 @@
 
     <!-- Quick Links -->
     <div class="quick-links">
-      <a href="uct-student-forum-your-campus-your-voice.html" class="quick-link-card" id="homepageLink" href="uct-student-forum-your-campus-your-voice.html" href="uct-student-forum-your-campus-your-voice.html">
+      <a href="unisa-student-forum-your-campus-your-voice.html" class="quick-link-card" id="homepageLink" href="unisa-student-forum-your-campus-your-voice.html" href="unisa-student-forum-your-campus-your-voice.html">
         <div class="quick-link-icon">🏠</div>
         <div class="quick-link-title">Homepage</div>
         <div class="quick-link-desc">Trending discussions</div>
       </a>
-      <a href="uct-student-forum-your-campus-your-voice.html" class="quick-link-card" id="studyGroupsLink" href="study-groups-uct-student-forum.html" href="study-groups-uct-student-forum.html">
+      <a href="unisa-student-forum-your-campus-your-voice.html" class="quick-link-card" id="studyGroupsLink" href="study-groups-unisa-student-forum.html" href="study-groups-unisa-student-forum.html">
         <div class="quick-link-icon">👥</div>
         <div class="quick-link-title">Study Groups</div>
         <div class="quick-link-desc">Find your crew</div>
       </a>
-      <a href="uct-student-forum-your-campus-your-voice.html" class="quick-link-card" id="leaderboardLink" href="leaderboard-top-contributors-uct-student-forum.html" href="leaderboard-top-contributors-uct-student-forum.html">
+      <a href="unisa-student-forum-your-campus-your-voice.html" class="quick-link-card" id="leaderboardLink" href="leaderboard-top-contributors-unisa-student-forum.html" href="leaderboard-top-contributors-unisa-student-forum.html">
         <div class="quick-link-icon">🏆</div>
         <div class="quick-link-title">Leaderboard</div>
         <div class="quick-link-desc">Top contributors</div>
       </a>
-      <a href="uct-student-forum-your-campus-your-voice.html" class="quick-link-card" id="helpCenterLink" href="help-center-uct-student-forum.html" href="help-center-uct-student-forum.html">
+      <a href="unisa-student-forum-your-campus-your-voice.html" class="quick-link-card" id="helpCenterLink" href="help-center-unisa-student-forum.html" href="help-center-unisa-student-forum.html">
         <div class="quick-link-icon">📚</div>
         <div class="quick-link-title">Help Center</div>
         <div class="quick-link-desc">FAQs & support</div>
       </a>
-      <a href="uct-student-forum-your-campus-your-voice.html" class="quick-link-card" id="createPostLink" href="create-new-post-uct-student-forum.html" href="create-new-post-uct-student-forum.html">
+      <a href="unisa-student-forum-your-campus-your-voice.html" class="quick-link-card" id="createPostLink" href="create-new-post-unisa-student-forum.html" href="create-new-post-unisa-student-forum.html">
         <div class="quick-link-icon">✍️</div>
         <div class="quick-link-title">Create Post</div>
         <div class="quick-link-desc">Start a discussion</div>
       </a>
-      <a href="uct-student-forum-your-campus-your-voice.html" class="quick-link-card" id="announcementsLink" href="announcements-uct-student-forum.html" href="announcements-uct-student-forum.html">
+      <a href="unisa-student-forum-your-campus-your-voice.html" class="quick-link-card" id="announcementsLink" href="announcements-unisa-student-forum.html" href="announcements-unisa-student-forum.html">
         <div class="quick-link-icon">📢</div>
         <div class="quick-link-title">Announcements</div>
         <div class="quick-link-desc">Campus news</div>
@@ -302,12 +302,12 @@
 
     <!-- Fun Fact -->
     <div class="fun-fact">
-      <p>💡 <strong>Did you know?</strong> The UCT Student Forum has over 2,800 verified students and 8,000+ discussions. You're just a click away from finding what you need!</p>
+      <p>💡 <strong>Did you know?</strong> The UNISA Student Forum has over 2,800 verified students and 8,000+ discussions. You're just a click away from finding what you need!</p>
     </div>
   </div>
 
   <div class="footer">
-    <p>UCT Student Forum — Your campus. Your voice.</p>
+    <p>UNISA Student Forum — Your campus. Your voice.</p>
   </div>
 </div>
 
@@ -335,14 +335,14 @@
     if (query) {
       showToast(`🔍 Searching for "${query}"... Redirecting to search results.`);
       setTimeout(() => {
-        alert(`Search results for "${query}" (simulated navigation to search page)`);
+        window.location.href = `search-results-unisa-student-forum.html?q=${encodeURIComponent(query)}`;
       }, 500);
     } else {
       showToast('Please enter a search term');
     }
   }
 
-  // Handle quick link clicks with simulated navigation
+  // Handle quick link clicks
   function setupQuickLinks() {
     const links = [
       { id: 'homepageLink', name: 'Homepage' },
@@ -359,9 +359,6 @@
         element.addEventListener('click', (e) => {
           e.preventDefault();
           showToast(`✨ Navigating to ${link.name}...`);
-          setTimeout(() => {
-            alert(`Navigating to ${link.name} (simulated)`);
-          }, 300);
         });
       }
     });
@@ -370,10 +367,7 @@
   // Back to home button
   document.getElementById('homeLink')?.addEventListener('click', (e) => {
     e.preventDefault();
-    showToast('🏠 Returning to homepage...');
-    setTimeout(() => {
-      alert('Returning to homepage (simulated)');
-    }, 300);
+    window.location.href = 'unisa-student-forum-your-campus-your-voice.html';
   });
 
   // Search button
