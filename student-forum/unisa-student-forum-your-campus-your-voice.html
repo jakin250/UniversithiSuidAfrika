@@ -13,7 +13,10 @@
 
     body {
       font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
-      background: #f4f7fc;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(15, 91, 140, 0.14), transparent 32%),
+        radial-gradient(circle at 95% 8%, rgba(30, 111, 63, 0.12), transparent 28%),
+        #f4f7fc;
       color: #0a2b3e;
       line-height: 1.5;
     }
@@ -380,10 +383,159 @@
       margin: 0.5rem 0;
       border-color: #ecf3f8;
     }
+
+
+    .portal-switcher {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(220, 229, 236, 0.9);
+      border-radius: 24px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 18px 40px rgba(10, 43, 62, 0.08);
+      backdrop-filter: blur(14px);
+    }
+
+    .portal-switcher strong {
+      color: #0a2b3e;
+      display: block;
+      line-height: 1.1;
+    }
+
+    .portal-switcher span {
+      color: #6c7e8c;
+      font-size: 0.78rem;
+    }
+
+    .portal-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+
+    .portal-links a {
+      background: #eef6fb;
+      border: 1px solid #d6e8f3;
+      border-radius: 999px;
+      color: #0f5b8c;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 0.48rem 0.82rem;
+    }
+
+    .portal-links a.active {
+      background: #0f5b8c;
+      color: #ffffff;
+    }
+
+    .forum-hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0a4368 0%, #0f5b8c 52%, #1e6f3f 100%);
+      color: #ffffff;
+      border-radius: 32px;
+      padding: 2rem;
+      margin-bottom: 1.75rem;
+      box-shadow: 0 24px 60px rgba(10, 67, 104, 0.18);
+    }
+
+    .forum-hero::after {
+      content: '';
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      right: -90px;
+      top: -110px;
+      background: rgba(255, 255, 255, 0.16);
+      border-radius: 999px;
+    }
+
+    .forum-hero-content {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      align-items: end;
+    }
+
+    .forum-hero h2 {
+      border-left: none;
+      padding-left: 0;
+      margin-bottom: 0.5rem;
+      color: #ffffff;
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      line-height: 0.98;
+      font-weight: 800;
+    }
+
+    .forum-hero p { color: rgba(255, 255, 255, 0.86); max-width: 680px; }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    .hero-actions a, .hero-actions button {
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 800;
+      padding: 0.75rem 1rem;
+    }
+
+    .hero-actions .light-action { background: #ffffff; color: #0a4368; }
+    .hero-actions .soft-action { background: rgba(255,255,255,0.14); color: #ffffff; border: 1px solid rgba(255,255,255,0.3); }
+
+    .hero-stat-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .hero-stat {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 20px;
+      padding: 1rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .hero-stat strong { display: block; font-size: 1.35rem; }
+    .hero-stat span { font-size: 0.78rem; color: rgba(255,255,255,0.78); }
+
+
+    @media (max-width: 900px) {
+      .portal-switcher, .forum-hero-content {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .portal-links { justify-content: flex-start; }
+    }
+
   </style>
 </head>
 <body>
 <div class="container">
+  <div class="portal-switcher" aria-label="Universithi SuidAfrika site switcher">
+    <div>
+      <strong>Universithi SuidAfrika</strong>
+      <span>Three connected student spaces</span>
+    </div>
+    <div class="portal-links">
+      <a href="/index.html">Portal</a>
+      <a class="active" href="/student-forum/unisa-student-forum-your-campus-your-voice.html">Forum</a>
+      <a href="/student-bookstore/student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Bookstore</a>
+      <a href="/student-marketplace/student-marketplace-buy-sell-trade-on-campus.html">Marketplace</a>
+    </div>
+  </div>
   <!-- HEADER -->
   <div class="top-bar">
     <div class="logo-area">
@@ -402,10 +554,24 @@
     <!-- MAIN COLUMN -->
     <div>
       <!-- Welcome banner -->
-      <div style="background: linear-gradient(135deg, #e9f2f9 0%, #ffffff 100%); padding: 1.2rem 1.5rem; border-radius: 28px; margin-bottom: 1.5rem;">
-        <h2 style="border-left: none; padding-left: 0; margin-bottom: 0.2rem;">Welcome to the Student Forum</h2>
-        <p>Ask questions. Share knowledge. Build community.</p>
-      </div>
+      <section class="forum-hero" aria-labelledby="forumHeroTitle">
+        <div class="forum-hero-content">
+          <div>
+            <h2 id="forumHeroTitle">A cleaner home for every student question.</h2>
+            <p>Ask for academic help, follow announcements, discover study groups, and keep conversations moving without leaving the Universithi SuidAfrika ecosystem.</p>
+            <div class="hero-actions">
+              <button class="light-action" id="heroStartDiscussionBtn" type="button">✨ Start a discussion</button>
+              <a class="soft-action" href="study-groups-unisa-student-forum.html">Find study groups</a>
+              <a class="soft-action" href="announcements-unisa-student-forum.html">View announcements</a>
+            </div>
+          </div>
+          <div class="hero-stat-grid" aria-label="Forum highlights">
+            <div class="hero-stat"><strong>Fast answers</strong><span>Trending posts and academic categories are surfaced first.</span></div>
+            <div class="hero-stat"><strong>Safer posts</strong><span>Anonymous posting, moderation, and clear guidelines stay visible.</span></div>
+            <div class="hero-stat"><strong>Study support</strong><span>Connect forum threads to groups, badges, and contributors.</span></div>
+          </div>
+        </div>
+      </section>
 
       <!-- TRENDING DISCUSSIONS -->
       <h2>📈 Trending Discussions</h2>
@@ -772,17 +938,26 @@
 
   // scroll to create post effect (Start a Discussion)
   function initButtons() {
+    const highlightCreateCard = () => {
+      const createCard = document.getElementById('createPostCard');
+      if (createCard) {
+        createCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        createCard.style.transition = '0.2s';
+        createCard.style.boxShadow = '0 0 0 2px #0f5b8c';
+        setTimeout(() => { createCard.style.boxShadow = ''; }, 1200);
+        const titleInput = document.getElementById('postTitleInput');
+        if (titleInput) titleInput.focus();
+      }
+    };
+
     const startBtn = document.getElementById('startDiscussionBtn');
     if (startBtn) {
-      startBtn.addEventListener('click', () => {
-        const createCard = document.getElementById('createPostCard');
-        if (createCard) {
-          createCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          createCard.style.transition = '0.2s';
-          createCard.style.boxShadow = '0 0 0 2px #0f5b8c';
-          setTimeout(() => { createCard.style.boxShadow = ''; }, 1200);
-        }
-      });
+      startBtn.addEventListener('click', highlightCreateCard);
+    }
+
+    const heroStartBtn = document.getElementById('heroStartDiscussionBtn');
+    if (heroStartBtn) {
+      heroStartBtn.addEventListener('click', highlightCreateCard);
     }
 
     const publishBtn = document.getElementById('publishPostBtn');
