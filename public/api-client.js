@@ -1,7 +1,7 @@
 window.apiClient = {
   async get(path) {
     const response = await fetch(path, { credentials: 'same-origin' });
-    return this.#handle(response);
+    return this.handle(response);
   },
   async post(path, body) {
     return this.request(path, 'POST', body);
@@ -16,9 +16,9 @@ window.apiClient = {
       credentials: 'same-origin',
       body: JSON.stringify(body)
     });
-    return this.#handle(response);
+    return this.handle(response);
   },
-  async #handle(response) {
+  async handle(response) {
     const contentType = response.headers.get('content-type') || '';
     const isJson = contentType.includes('application/json');
     const payload = isJson ? await response.json().catch(() => null) : await response.text().catch(() => '');

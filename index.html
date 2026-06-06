@@ -5,92 +5,248 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Universithi SuidAfrika</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     * { font-family: 'Inter', sans-serif; }
+    html { scroll-behavior: smooth; }
     body {
       min-height: 100vh;
       background:
-        radial-gradient(circle at top left, rgba(99,102,241,.18), transparent 28%),
-        radial-gradient(circle at top right, rgba(14,165,233,.16), transparent 24%),
-        linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+        radial-gradient(circle at 10% 8%, rgba(79, 70, 229, .24), transparent 30%),
+        radial-gradient(circle at 90% 4%, rgba(14, 165, 233, .20), transparent 28%),
+        radial-gradient(circle at 74% 76%, rgba(16, 185, 129, .18), transparent 32%),
+        linear-gradient(180deg, #f8fafc 0%, #eef2ff 58%, #f8fafc 100%);
+      color: #0f172a;
+    }
+    .glass-panel {
+      background: rgba(255, 255, 255, .78);
+      border: 1px solid rgba(226, 232, 240, .78);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, .10);
+      backdrop-filter: blur(18px);
     }
     .portal-card {
-      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+      position: relative;
+      overflow: hidden;
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    }
+    .portal-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.15), rgba(255,255,255,.7));
+      transition: opacity .22s ease;
+      pointer-events: none;
     }
     .portal-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+      transform: translateY(-6px);
+      box-shadow: 0 30px 80px rgba(15, 23, 42, .16);
+      border-color: rgba(99, 102, 241, .35);
+    }
+    .portal-card:hover::before { opacity: 1; }
+    .metric-card {
+      background: rgba(255,255,255,.70);
+      border: 1px solid rgba(226,232,240,.9);
+    }
+    .floating-card { animation: float 7s ease-in-out infinite; }
+    .floating-card:nth-child(2) { animation-delay: -1.8s; }
+    .floating-card:nth-child(3) { animation-delay: -3.5s; }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .floating-card, .portal-card, .portal-card::before { animation: none; transition: none; }
     }
   </style>
 </head>
-<body class="flex items-center justify-center px-4 py-10">
-  <main class="w-full max-w-6xl">
-    <section class="text-center mb-10">
-      <div class="inline-flex items-center gap-3 bg-white/80 backdrop-blur rounded-full px-5 py-2 shadow-sm border border-indigo-100">
-        <span class="h-3 w-3 rounded-full bg-indigo-500"></span>
-        <span class="font-semibold text-slate-700">Universithi SuidAfrika Portal</span>
+<body class="antialiased">
+  <header class="sticky top-0 z-50 border-b border-white/60 bg-white/75 backdrop-blur-xl">
+    <nav class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8" aria-label="Main navigation">
+      <a href="/" class="flex items-center gap-3" aria-label="Universithi SuidAfrika home">
+        <span class="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 to-sky-500 text-xl text-white shadow-lg shadow-indigo-500/20">🎓</span>
+        <span>
+          <span class="block text-lg font-black tracking-tight text-slate-950">Universithi</span>
+          <span class="block -mt-1 text-sm font-bold text-indigo-600">SuidAfrika</span>
+        </span>
+      </a>
+      <div class="hidden items-center gap-7 text-sm font-semibold text-slate-600 md:flex">
+        <a class="transition hover:text-indigo-600" href="#spaces">Spaces</a>
+        <a class="transition hover:text-indigo-600" href="#quick-access">Quick access</a>
+        <a class="transition hover:text-indigo-600" href="#support">Support</a>
       </div>
-      <h1 class="mt-6 text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight">Choose your campus space</h1>
-      <p class="mt-4 text-slate-600 text-lg max-w-2xl mx-auto">
-        Jump straight into the forum, bookstore, or student marketplace.
-      </p>
-    </section>
+      <a href="/student-forum/unisa-student-forum-your-campus-your-voice.html" class="rounded-full bg-slate-950 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-slate-900/15 transition hover:-translate-y-0.5 hover:bg-indigo-700">Open portal</a>
+    </nav>
+  </header>
 
-    <section class="grid gap-6 md:grid-cols-3">
-      <a href="/student-forum/unisa-student-forum-your-campus-your-voice.html" class="portal-card group rounded-3xl bg-white border border-slate-200 p-7 shadow-lg">
-        <div class="h-14 w-14 rounded-2xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-2xl mb-5">💬</div>
-        <h2 class="text-2xl font-bold text-slate-900">Student Forum</h2>
-        <p class="mt-3 text-slate-600">Join discussions, ask questions, and connect with fellow students.</p>
-        <div class="mt-6 inline-flex items-center font-semibold text-indigo-700 group-hover:translate-x-1 transition">Open forum →</div>
-      </a>
-
-      <a href="/student-bookstore/student-secondhand-bookstore-buy-sell-exchange-textbooks.html" class="portal-card group rounded-3xl bg-white border border-slate-200 p-7 shadow-lg">
-        <div class="h-14 w-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl mb-5">📚</div>
-        <h2 class="text-2xl font-bold text-slate-900">Bookstore</h2>
-        <p class="mt-3 text-slate-600">Browse and exchange secondhand textbooks for your courses.</p>
-        <div class="mt-6 inline-flex items-center font-semibold text-emerald-700 group-hover:translate-x-1 transition">Open bookstore →</div>
-      </a>
-
-      <a href="/student-marketplace/student-marketplace-buy-sell-trade-on-campus.html" class="portal-card group rounded-3xl bg-white border border-slate-200 p-7 shadow-lg">
-        <div class="h-14 w-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-2xl mb-5">🛍️</div>
-        <h2 class="text-2xl font-bold text-slate-900">Marketplace</h2>
-        <p class="mt-3 text-slate-600">Buy, sell, and trade everyday items with campus students.</p>
-        <div class="mt-6 inline-flex items-center font-semibold text-amber-700 group-hover:translate-x-1 transition">Open marketplace →</div>
-      </a>
-    </section>
-
-    <section class="mt-10 bg-white/80 backdrop-blur rounded-3xl border border-slate-200 shadow-lg p-6 md:p-8">
-      <div class="flex items-center justify-between gap-4 flex-wrap">
-        <div>
-          <h2 class="text-2xl font-bold text-slate-900">Quick access</h2>
-          <p class="mt-2 text-slate-600">Jump to commonly used pages across the platform.</p>
+  <main>
+    <section class="mx-auto grid max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 md:py-20 lg:grid-cols-[1.08fr_.92fr] lg:px-8">
+      <div>
+        <div class="inline-flex items-center gap-3 rounded-full border border-indigo-100 bg-white/80 px-4 py-2 text-sm font-bold text-indigo-700 shadow-sm">
+          <span class="relative flex h-3 w-3">
+            <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex h-3 w-3 rounded-full bg-emerald-500"></span>
+          </span>
+          Student services unified in one place
+        </div>
+        <h1 class="mt-7 max-w-4xl text-5xl font-black leading-[.98] tracking-tight text-slate-950 sm:text-6xl lg:text-7xl">
+          Your campus life dashboard, redesigned for action.
+        </h1>
+        <p class="mt-6 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
+          Move between conversations, secondhand textbooks, and trusted student trades with a cleaner interface built around the tasks students use every day.
+        </p>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a href="/student-marketplace/browse-listings-student-marketplace.html" class="inline-flex items-center justify-center gap-2 rounded-2xl bg-indigo-600 px-6 py-4 font-bold text-white shadow-xl shadow-indigo-600/25 transition hover:-translate-y-1 hover:bg-indigo-700">
+            Browse marketplace <span aria-hidden="true">→</span>
+          </a>
+          <a href="/student-forum/create-new-post-unisa-student-forum.html" class="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white/85 px-6 py-4 font-bold text-slate-800 shadow-sm transition hover:-translate-y-1 hover:border-indigo-200 hover:text-indigo-700">
+            Ask the forum <span aria-hidden="true">💬</span>
+          </a>
+        </div>
+        <div class="mt-9 grid max-w-2xl grid-cols-3 gap-3">
+          <div class="metric-card rounded-2xl p-4">
+            <div class="text-2xl font-black text-slate-950">3</div>
+            <div class="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Student hubs</div>
+          </div>
+          <div class="metric-card rounded-2xl p-4">
+            <div class="text-2xl font-black text-slate-950">24/7</div>
+            <div class="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Quick access</div>
+          </div>
+          <div class="metric-card rounded-2xl p-4">
+            <div class="text-2xl font-black text-slate-950">1</div>
+            <div class="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">Unified portal</div>
+          </div>
         </div>
       </div>
-      <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <a class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 hover:bg-indigo-50 hover:border-indigo-200 transition" href="/student-forum/notifications-unisa-student-forum.html">Forum notifications</a>
-        <a class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 hover:bg-indigo-50 hover:border-indigo-200 transition" href="/student-forum/search-results-unisa-student-forum.html">Forum search</a>
-        <a class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 hover:bg-indigo-50 hover:border-indigo-200 transition" href="/student-forum/study-groups-unisa-student-forum.html">Study groups</a>
-        <a class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 hover:bg-indigo-50 hover:border-indigo-200 transition" href="/student-forum/leaderboard-top-contributors-unisa-student-forum.html">Leaderboard</a>
-        <a class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 hover:bg-indigo-50 hover:border-indigo-200 transition" href="/student-forum/help-center-unisa-student-forum.html">Help center</a>
-        <a class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 hover:bg-indigo-50 hover:border-indigo-200 transition" href="/student-forum/settings-privacy-unisa-student-forum.html">Settings & privacy</a>
-        <a class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 hover:bg-emerald-50 hover:border-emerald-200 transition" href="/student-marketplace/my-dashboard-student-marketplace.html">Marketplace dashboard</a>
-        <a class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 hover:bg-emerald-50 hover:border-emerald-200 transition" href="/student-marketplace/messages-student-marketplace.html">Marketplace messages</a>
-        <a class="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 hover:bg-amber-50 hover:border-amber-200 transition" href="/student-bookstore/student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Bookstore browse</a>
+
+      <div class="glass-panel relative rounded-[2rem] p-5 sm:p-6">
+        <div class="absolute -right-4 -top-4 h-24 w-24 rounded-full bg-indigo-500/20 blur-2xl"></div>
+        <div class="absolute -bottom-7 -left-7 h-28 w-28 rounded-full bg-emerald-400/20 blur-2xl"></div>
+        <div class="relative rounded-[1.5rem] border border-slate-200 bg-slate-950 p-4 text-white shadow-2xl">
+          <div class="mb-5 flex items-center justify-between">
+            <div>
+              <p class="text-sm font-semibold text-slate-300">Today on campus</p>
+              <h2 class="text-2xl font-black">Activity snapshot</h2>
+            </div>
+            <span class="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-bold text-emerald-200">Live</span>
+          </div>
+          <div class="space-y-3">
+            <a href="/student-forum/study-groups-unisa-student-forum.html" class="floating-card block rounded-2xl border border-white/10 bg-white/10 p-4 transition hover:bg-white/15">
+              <div class="flex items-start gap-3">
+                <span class="grid h-11 w-11 place-items-center rounded-xl bg-indigo-400/20 text-xl">📌</span>
+                <div>
+                  <p class="font-bold">Quant Methods study group</p>
+                  <p class="mt-1 text-sm text-slate-300">Find collaborators and upcoming study sessions.</p>
+                </div>
+              </div>
+            </a>
+            <a href="/student-bookstore/student-secondhand-bookstore-buy-sell-exchange-textbooks.html" class="floating-card block rounded-2xl border border-white/10 bg-white/10 p-4 transition hover:bg-white/15">
+              <div class="flex items-start gap-3">
+                <span class="grid h-11 w-11 place-items-center rounded-xl bg-emerald-400/20 text-xl">📚</span>
+                <div>
+                  <p class="font-bold">Secondhand textbook deals</p>
+                  <p class="mt-1 text-sm text-slate-300">Browse, sell, or exchange course books securely.</p>
+                </div>
+              </div>
+            </a>
+            <a href="/student-marketplace/messages-student-marketplace.html" class="floating-card block rounded-2xl border border-white/10 bg-white/10 p-4 transition hover:bg-white/15">
+              <div class="flex items-start gap-3">
+                <span class="grid h-11 w-11 place-items-center rounded-xl bg-amber-300/20 text-xl">🛍️</span>
+                <div>
+                  <p class="font-bold">Marketplace messages</p>
+                  <p class="mt-1 text-sm text-slate-300">Keep trades moving with buyer and seller chat.</p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
       </div>
     </section>
 
-    <footer class="mt-10 text-center text-sm text-slate-500">
-      <div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
-        <a class="hover:text-slate-800" href="/student-forum/unisa-student-forum-your-campus-your-voice.html">Forum home</a>
-        <a class="hover:text-slate-800" href="/student-forum/notifications-unisa-student-forum.html">Notifications</a>
-        <a class="hover:text-slate-800" href="/student-forum/moderator-dashboard-unisa-student-forum.html">Moderation</a>
-        <a class="hover:text-slate-800" href="/student-marketplace/student-marketplace-buy-sell-trade-on-campus.html">Marketplace home</a>
-        <a class="hover:text-slate-800" href="/student-marketplace/messages-student-marketplace.html">Marketplace messages</a>
-        <a class="hover:text-slate-800" href="/student-bookstore/student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Bookstore home</a>
-        <a class="hover:text-slate-800" href="/student-bookstore/order-tracking-student-secondhand-bookstore.html">Bookstore orders</a>
+    <section id="spaces" class="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+      <div class="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
+        <div>
+          <p class="text-sm font-black uppercase tracking-[.18em] text-indigo-600">Choose a space</p>
+          <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">Start where your task lives</h2>
+        </div>
+        <p class="max-w-xl text-slate-600">Each section now has a stronger visual entry point, clearer actions, and direct links into the most-used workflows.</p>
       </div>
-    </footer>
+      <div class="grid gap-6 md:grid-cols-3">
+        <a href="/student-forum/unisa-student-forum-your-campus-your-voice.html" class="portal-card group rounded-[1.75rem] border border-slate-200 bg-white p-7 shadow-lg">
+          <div class="flex items-center justify-between gap-3">
+            <div class="grid h-16 w-16 place-items-center rounded-3xl bg-indigo-100 text-3xl text-indigo-700">💬</div>
+            <span class="rounded-full bg-indigo-50 px-3 py-1 text-xs font-black uppercase tracking-wide text-indigo-700">Discuss</span>
+          </div>
+          <h3 class="mt-6 text-2xl font-black text-slate-950">Student Forum</h3>
+          <p class="mt-3 leading-7 text-slate-600">Join discussions, ask questions, follow announcements, and build study-group momentum.</p>
+          <div class="mt-6 inline-flex items-center font-black text-indigo-700 transition group-hover:translate-x-1">Open forum →</div>
+        </a>
+
+        <a href="/student-bookstore/student-secondhand-bookstore-buy-sell-exchange-textbooks.html" class="portal-card group rounded-[1.75rem] border border-slate-200 bg-white p-7 shadow-lg">
+          <div class="flex items-center justify-between gap-3">
+            <div class="grid h-16 w-16 place-items-center rounded-3xl bg-emerald-100 text-3xl text-emerald-700">📚</div>
+            <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-black uppercase tracking-wide text-emerald-700">Exchange</span>
+          </div>
+          <h3 class="mt-6 text-2xl font-black text-slate-950">Bookstore</h3>
+          <p class="mt-3 leading-7 text-slate-600">Browse, sell, and exchange secondhand textbooks for course-ready savings.</p>
+          <div class="mt-6 inline-flex items-center font-black text-emerald-700 transition group-hover:translate-x-1">Open bookstore →</div>
+        </a>
+
+        <a href="/student-marketplace/student-marketplace-buy-sell-trade-on-campus.html" class="portal-card group rounded-[1.75rem] border border-slate-200 bg-white p-7 shadow-lg">
+          <div class="flex items-center justify-between gap-3">
+            <div class="grid h-16 w-16 place-items-center rounded-3xl bg-amber-100 text-3xl text-amber-700">🛍️</div>
+            <span class="rounded-full bg-amber-50 px-3 py-1 text-xs font-black uppercase tracking-wide text-amber-700">Trade</span>
+          </div>
+          <h3 class="mt-6 text-2xl font-black text-slate-950">Marketplace</h3>
+          <p class="mt-3 leading-7 text-slate-600">Buy, sell, and trade everyday items with student-focused trust and safety flows.</p>
+          <div class="mt-6 inline-flex items-center font-black text-amber-700 transition group-hover:translate-x-1">Open marketplace →</div>
+        </a>
+      </div>
+    </section>
+
+    <section id="quick-access" class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div class="glass-panel rounded-[2rem] p-6 md:p-8">
+        <div class="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+          <div>
+            <p class="text-sm font-black uppercase tracking-[.18em] text-indigo-600">Shortcuts</p>
+            <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-950">Quick access for common tasks</h2>
+            <p class="mt-2 text-slate-600">Jump directly to the pages students are most likely to need next.</p>
+          </div>
+          <a class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-700 transition hover:border-indigo-200 hover:text-indigo-700" href="/student-forum/help-center-unisa-student-forum.html">Visit help center</a>
+        </div>
+        <div class="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <a class="rounded-2xl border border-slate-200 bg-white/75 px-4 py-4 font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700" href="/student-forum/notifications-unisa-student-forum.html">🔔 Forum notifications</a>
+          <a class="rounded-2xl border border-slate-200 bg-white/75 px-4 py-4 font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700" href="/student-forum/search-results-unisa-student-forum.html">🔎 Forum search</a>
+          <a class="rounded-2xl border border-slate-200 bg-white/75 px-4 py-4 font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700" href="/student-forum/study-groups-unisa-student-forum.html">👥 Study groups</a>
+          <a class="rounded-2xl border border-slate-200 bg-white/75 px-4 py-4 font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700" href="/student-marketplace/my-dashboard-student-marketplace.html">📊 Marketplace dashboard</a>
+          <a class="rounded-2xl border border-slate-200 bg-white/75 px-4 py-4 font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700" href="/student-marketplace/messages-student-marketplace.html">💬 Marketplace messages</a>
+          <a class="rounded-2xl border border-slate-200 bg-white/75 px-4 py-4 font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-amber-200 hover:bg-amber-50 hover:text-amber-700" href="/student-bookstore/order-tracking-student-secondhand-bookstore.html">📦 Bookstore orders</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="support" class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div class="grid gap-5 rounded-[2rem] bg-slate-950 p-6 text-white shadow-2xl shadow-slate-900/20 md:grid-cols-[1fr_auto] md:items-center md:p-8">
+        <div>
+          <p class="text-sm font-black uppercase tracking-[.18em] text-indigo-300">Next step</p>
+          <h2 class="mt-2 text-3xl font-black">Keep refining the student experience</h2>
+          <p class="mt-3 max-w-3xl leading-7 text-slate-300">The portal now presents the site as a polished product hub, while still linking into every major forum, bookstore, and marketplace workflow.</p>
+        </div>
+        <a href="/student-forum/settings-privacy-unisa-student-forum.html" class="inline-flex items-center justify-center rounded-2xl bg-white px-6 py-4 font-black text-slate-950 transition hover:-translate-y-1 hover:bg-indigo-50">Manage settings</a>
+      </div>
+    </section>
   </main>
+
+  <footer class="mx-auto max-w-7xl px-4 py-10 text-sm text-slate-500 sm:px-6 lg:px-8">
+    <div class="flex flex-col justify-between gap-5 border-t border-slate-200 pt-8 md:flex-row md:items-center">
+      <p class="font-semibold">© 2026 Universithi SuidAfrika. Built for student communities.</p>
+      <div class="flex flex-wrap gap-x-6 gap-y-2 font-semibold">
+        <a class="hover:text-slate-900" href="/student-forum/unisa-student-forum-your-campus-your-voice.html">Forum home</a>
+        <a class="hover:text-slate-900" href="/student-marketplace/student-marketplace-buy-sell-trade-on-campus.html">Marketplace home</a>
+        <a class="hover:text-slate-900" href="/student-bookstore/student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Bookstore home</a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
