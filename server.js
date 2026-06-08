@@ -19,6 +19,10 @@ const defaultSessionSecret = 'change-me-in-production';
 const dataDir = path.join(__dirname, 'data');
 const dbPath = process.env.DATABASE_PATH || path.join(dataDir, 'app.json');
 const sessionSecret = process.env.SESSION_SECRET || defaultSessionSecret;
+const postgresAuthUrl = [process.env.POSTGRES_URL, process.env.POSTGRES_DATABASE_URL, process.env.DATABASE_URL]
+  .find(value => /^postgres(ql)?:\/\//i.test(String(value || '')));
+let postgresAuthPool = null;
+let postgresAuthInitError = null;
 
 const unsafeSessionSecrets = new Set([
   defaultSessionSecret,
@@ -34,6 +38,231 @@ const allowedUniversityDomains = String(process.env.UNIVERSITY_EMAIL_DOMAINS || 
   .split(',')
   .map(entry => entry.trim().toLowerCase())
   .filter(Boolean);
+
+
+function hasPostgresAuth() {
+  return Boolean(postgresAuthUrl);
+}
+
+async function getPostgresAuthPool() {
+  if (!hasPostgresAuth()) return null;
+  if (!postgresAuthPool) {
+    const pg = await import('pg');
+    const { Pool } = pg.default || pg;
+    postgresAuthPool = new Pool({
+      connectionString: postgresAuthUrl,
+      ssl: process.env.POSTGRES_SSL === 'false' ? false : { rejectUnauthorized: false }
+    });
+  }
+  return postgresAuthPool;
+}
+
+function toAppUserFromPostgres(row) {
+  if (!row) return null;
+  return {
+    id: `pg:${row.id}`,
+    postgresId: row.id,
+    name: row.name,
+    email: row.email,
+    passwordHash: row.password_hash,
+    role: row.role || 'user',
+    campus: row.campus || '',
+    status: row.status || 'active',
+    emailVerified: Boolean(row.email_verified),
+    createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : row.created_at,
+    updatedAt: row.updated_at instanceof Date ? row.updated_at.toISOString() : row.updated_at
+  };
+}
+
+async function initPostgresAuth() {
+  if (!hasPostgresAuth()) return;
+  try {
+    const pool = await getPostgresAuthPool();
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS registered_users (
+        id BIGSERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        email TEXT NOT NULL UNIQUE,
+        password_hash TEXT NOT NULL,
+        role TEXT NOT NULL DEFAULT 'user',
+        campus TEXT NOT NULL DEFAULT '',
+        status TEXT NOT NULL DEFAULT 'active',
+        email_verified BOOLEAN NOT NULL DEFAULT TRUE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `);
+    await migrateJsonUsersToPostgres();
+    postgresAuthInitError = null;
+  } catch (error) {
+    postgresAuthInitError = error;
+    console.error(`PostgreSQL registered-user storage is not ready: ${error.message}`);
+  }
+}
+
+async function migrateJsonUsersToPostgres() {
+  if (!hasPostgresAuth() || !Array.isArray(state.users) || state.users.length === 0) return;
+  const pool = await getPostgresAuthPool();
+  for (const user of state.users) {
+    if (!user.email || !(user.passwordHash || user.password_hash)) continue;
+    await pool.query(
+      `INSERT INTO registered_users (name, email, password_hash, role, campus, status, email_verified, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, COALESCE($8::timestamptz, NOW()), COALESCE($9::timestamptz, NOW()))
+       ON CONFLICT (email) DO NOTHING`,
+      [
+        user.name || 'Student',
+        String(user.email).toLowerCase(),
+        user.passwordHash || user.password_hash,
+        user.role || 'user',
+        user.campus || '',
+        user.status || 'active',
+        user.emailVerified ?? true,
+        user.createdAt || user.created_at || null,
+        user.updatedAt || user.updated_at || user.createdAt || user.created_at || null
+      ]
+    );
+  }
+}
+
+async function findPostgresUserByEmail(email) {
+  if (!hasPostgresAuth()) return null;
+  const pool = await getPostgresAuthPool();
+  const result = await pool.query('SELECT * FROM registered_users WHERE email = $1', [String(email).toLowerCase()]);
+  return toAppUserFromPostgres(result.rows[0]);
+}
+
+async function createPostgresUser({ name, email, passwordHash, campus }) {
+  const pool = await getPostgresAuthPool();
+  const result = await pool.query(
+    `INSERT INTO registered_users (name, email, password_hash, campus)
+     VALUES ($1, $2, $3, $4)
+     RETURNING *`,
+    [name, email, passwordHash, campus]
+  );
+  return toAppUserFromPostgres(result.rows[0]);
+}
+
+async function updatePostgresUserProfile(user, updates) {
+  if (!hasPostgresAuth() || !user?.postgresId) return user;
+  const pool = await getPostgresAuthPool();
+  const result = await pool.query(
+    `UPDATE registered_users
+     SET name = COALESCE(NULLIF($2, ''), name),
+         campus = COALESCE(NULLIF($3, ''), campus),
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [user.postgresId, updates.name || '', updates.campus || '']
+  );
+  return toAppUserFromPostgres(result.rows[0]) || user;
+}
+
+function findJsonUserByEmail(email) {
+  return state.users.find(entry => entry.email === email) || null;
+}
+
+
+function maskPath(value) {
+  return value || '';
+}
+
+function checkJsonPersistence() {
+  const directory = path.dirname(dbPath);
+  const probePath = path.join(directory, `.write-test-${process.pid}-${Date.now()}`);
+  const result = {
+    path: maskPath(dbPath),
+    directory,
+    directoryExists: fs.existsSync(directory),
+    fileExists: fs.existsSync(dbPath),
+    writable: false,
+    error: null
+  };
+
+  try {
+    fs.mkdirSync(directory, { recursive: true });
+    fs.writeFileSync(probePath, 'ok');
+    fs.unlinkSync(probePath);
+    result.writable = true;
+  } catch (error) {
+    result.error = error.message;
+  }
+
+  return result;
+}
+
+async function checkPostgresAuth() {
+  if (!hasPostgresAuth()) {
+    return { configured: false, connected: false, table: null, error: null };
+  }
+  if (postgresAuthInitError) {
+    return { configured: true, connected: false, table: null, error: postgresAuthInitError.message };
+  }
+
+  try {
+    const pool = await getPostgresAuthPool();
+    await pool.query('SELECT 1');
+    const table = await pool.query("SELECT to_regclass('public.registered_users') AS table_name");
+    return {
+      configured: true,
+      connected: true,
+      table: table.rows[0]?.table_name || null,
+      error: null
+    };
+  } catch (error) {
+    return {
+      configured: true,
+      connected: false,
+      table: null,
+      error: error.message
+    };
+  }
+}
+
+async function buildReadinessPayload() {
+  const jsonPersistence = checkJsonPersistence();
+  const postgresAuth = await checkPostgresAuth();
+  const sessionSecretConfigured = !unsafeSessionSecrets.has(sessionSecret) && sessionSecret.length >= 32;
+  const recommendations = [];
+
+  if (!sessionSecretConfigured) {
+    recommendations.push('Set SESSION_SECRET to a strong unique value of at least 32 characters before production use.');
+  }
+  if (!jsonPersistence.writable) {
+    recommendations.push(`Mount persistent storage and set DATABASE_PATH to a writable path such as /app/data/data.json. Current error: ${jsonPersistence.error || 'unknown'}`);
+  }
+  if (!postgresAuth.configured) {
+    recommendations.push('Set DATABASE_URL, POSTGRES_URL, or POSTGRES_DATABASE_URL to store registered users in PostgreSQL.');
+  } else if (!postgresAuth.connected) {
+    recommendations.push(`Check the PostgreSQL connection string and credentials. Current error: ${postgresAuth.error || 'unknown'}`);
+  }
+  if (allowedUniversityDomains.length === 0) {
+    recommendations.push('Set UNIVERSITY_EMAIL_DOMAINS to at least one allowed email domain.');
+  }
+
+  return {
+    ok: jsonPersistence.writable && (!postgresAuth.configured || postgresAuth.connected),
+    environment: isProduction ? 'production' : 'development',
+    authStorage: hasPostgresAuth() ? 'postgres' : 'json-file',
+    sessionSecret: {
+      configured: sessionSecretConfigured,
+      productionSafe: !isProduction || sessionSecretConfigured
+    },
+    universityEmailDomains: allowedUniversityDomains,
+    jsonPersistence,
+    postgresAuth,
+    recommendations
+  };
+}
+
+async function logStartupReadiness() {
+  const readiness = await buildReadinessPayload();
+  console.log(`Auth storage: ${readiness.authStorage}`);
+  console.log(`JSON data path: ${dbPath}`);
+  if (readiness.recommendations.length) {
+    console.warn('Readiness recommendations:');
+    for (const recommendation of readiness.recommendations) console.warn(`- ${recommendation}`);
+  }
+}
 
 fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
@@ -95,6 +324,8 @@ function ensureState() {
 }
 
 ensureState();
+await initPostgresAuth();
+await logStartupReadiness();
 
 function nextId(items) {
   return items.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
@@ -109,9 +340,15 @@ function getCookieValue(req, name) {
   return cookieHeader.split(';').map(part => part.trim()).find(part => part.startsWith(`${name}=`))?.slice(name.length + 1) || null;
 }
 
-function signSession(userId) {
-  const token = `${userId}.${crypto.randomBytes(32).toString('base64url')}`;
-  state.sessions[token] = { userId, expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000 };
+function signSession(user) {
+  const sessionUser = normalizeUser(user);
+  const token = `${sessionUser.id}.${crypto.randomBytes(32).toString('base64url')}`;
+  state.sessions[token] = {
+    userId: sessionUser.id,
+    postgresId: user.postgresId || null,
+    user: sessionUser,
+    expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000
+  };
   saveState();
   return token;
 }
@@ -127,11 +364,12 @@ function getSessionUser(req) {
   if (!token) return null;
   const entry = state.sessions[token];
   if (!entry || entry.expiresAt < Date.now()) return null;
+  if (entry.user) return { ...entry.user, postgresId: entry.postgresId || null };
   return state.users.find(user => String(user.id) === String(entry.userId)) || null;
 }
 
-function setSessionCookie(userId) {
-  return buildSessionCookie('universithi_session', signSession(userId), { maxAge: 7 * 24 * 60 * 60 });
+function setSessionCookie(user) {
+  return buildSessionCookie('universithi_session', signSession(user), { maxAge: 7 * 24 * 60 * 60 });
 }
 
 function clearSessionCookie(req) {
@@ -144,7 +382,16 @@ function clearSessionCookie(req) {
 }
 
 function normalizeUser(user) {
-  return user ? { id: user.id, name: user.name, email: user.email, role: user.role, createdAt: user.createdAt } : null;
+  return user ? {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    campus: user.campus || '',
+    status: user.status || 'active',
+    emailVerified: Boolean(user.emailVerified),
+    createdAt: user.createdAt
+  } : null;
 }
 
 function isAllowedUniversityEmail(email) {
@@ -437,7 +684,7 @@ function healthPayload() {
   return {
     ok: true,
     env: isProduction ? 'production' : 'development',
-    storage: 'json-file',
+    storage: hasPostgresAuth() ? 'postgres-users+json-file' : 'json-file',
     file: path.basename(dbPath),
     uptime: process.uptime()
   };
@@ -451,6 +698,11 @@ app.get('/healthz', (_req, res) => {
   res.json(healthPayload());
 });
 
+app.get('/api/debug/readiness', async (_req, res) => {
+  const readiness = await buildReadinessPayload();
+  res.status(readiness.ok ? 200 : 503).json(readiness);
+});
+
 app.get('/api/auth/domains', (_req, res) => {
   res.json({ domains: allowedUniversityDomains });
 });
@@ -459,13 +711,19 @@ app.get('/api/auth/me', (req, res) => {
   res.json({ user: normalizeUser(getSessionUser(req)) });
 });
 
-app.post('/api/auth/register', (req, res) => {
+app.post('/api/auth/register', async (req, res) => {
   const name = String(req.body?.name || '').trim();
   const email = String(req.body?.email || '').trim().toLowerCase();
   const password = String(req.body?.password || '');
   const campus = String(req.body?.campus || '').trim();
   if (!name || !email || password.length < 8) return res.status(400).json({ error: 'Invalid signup data' });
   if (!isAllowedUniversityEmail(email)) return res.status(400).json({ error: 'Please use your university email address' });
+  if (hasPostgresAuth()) {
+    if (await findPostgresUserByEmail(email)) return res.status(409).json({ error: 'Email already registered' });
+    const user = await createPostgresUser({ name, email, campus, passwordHash: bcrypt.hashSync(password, 12) });
+    res.setHeader('Set-Cookie', setSessionCookie(user));
+    return res.status(201).json({ user: normalizeUser(user) });
+  }
   if (state.users.some(user => user.email === email)) return res.status(409).json({ error: 'Email already registered' });
   const user = {
     id: nextId(state.users),
@@ -480,16 +738,16 @@ app.post('/api/auth/register', (req, res) => {
   };
   state.users.unshift(user);
   saveState();
-  res.setHeader('Set-Cookie', setSessionCookie(user.id));
+  res.setHeader('Set-Cookie', setSessionCookie(user));
   res.status(201).json({ user: normalizeUser(user) });
 });
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
   const email = String(req.body?.email || '').trim().toLowerCase();
   const password = String(req.body?.password || '');
-  const user = state.users.find(entry => entry.email === email);
+  const user = hasPostgresAuth() ? await findPostgresUserByEmail(email) : findJsonUserByEmail(email);
   if (!user || !bcrypt.compareSync(password, user.passwordHash)) return res.status(401).json({ error: 'Invalid email or password' });
-  res.setHeader('Set-Cookie', setSessionCookie(user.id));
+  res.setHeader('Set-Cookie', setSessionCookie(user));
   res.json({ user: normalizeUser(user) });
 });
 
@@ -511,11 +769,28 @@ app.get('/api/profile', (req, res) => {
   });
 });
 
-app.patch('/api/profile', (req, res) => {
+app.patch('/api/profile', async (req, res) => {
   const user = getSessionUser(req);
   if (!user) return res.status(401).json({ error: 'Authentication required' });
   const campus = String(req.body?.campus || '').trim();
   const displayName = String(req.body?.name || '').trim();
+  if (hasPostgresAuth() && user.postgresId) {
+    const updatedUser = await updatePostgresUserProfile(user, { name: displayName, campus });
+    const token = getCookieValue(req, 'universithi_session');
+    if (token && state.sessions[token]) {
+      state.sessions[token].postgresId = updatedUser.postgresId || state.sessions[token].postgresId || null;
+      state.sessions[token].user = normalizeUser(updatedUser);
+      saveState();
+    }
+    return res.json({
+      user: normalizeUser(updatedUser),
+      profile: {
+        campus: updatedUser.campus || '',
+        status: updatedUser.status || 'active',
+        emailVerified: Boolean(updatedUser.emailVerified)
+      }
+    });
+  }
   const currentUserIndex = state.users.findIndex(entry => String(entry.id) === String(user.id));
   if (currentUserIndex === -1) return res.status(404).json({ error: 'User not found' });
   state.users[currentUserIndex] = {
