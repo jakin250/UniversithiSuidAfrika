@@ -63,6 +63,14 @@ async function request(pathname, options = {}, cookie = '') {
 try {
   await waitForHealth();
 
+  const readiness = await request('/api/debug/readiness');
+  if (!readiness.payload?.jsonPersistence?.writable) {
+    throw new Error(`Readiness endpoint reported non-writable JSON persistence: ${JSON.stringify(readiness.payload)}`);
+  }
+  if (readiness.payload?.authStorage !== 'json-file') {
+    throw new Error(`Smoke test expected JSON auth fallback without a PostgreSQL URL, got: ${readiness.payload?.authStorage}`);
+  }
+
   const email = `student-${Date.now()}@example.edu`;
   const password = 'StrongPass123!';
   const registered = await request('/api/auth/register', {

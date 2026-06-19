@@ -388,7 +388,7 @@
       }
       
       if (password.length < 8) {
-        showAuthMessage('Password must be at least 8 characters.', 'error');
+        alert('❌ Password must be at least 8 characters');
         return;
       }
       
@@ -404,10 +404,12 @@
           password,
           campus
         });
-        showAuthMessage('Account created. Redirecting you to your dashboard...', 'success');
+        verificationModal.querySelector('h3').innerText = 'Account created';
+        verificationModal.querySelector('p').innerHTML = `Your account for <span class="font-medium text-indigo-600">${email}</span> is ready. Redirecting you to the student marketplace...`;
+        verificationCode.value = '';
         signupFormElem.reset();
         strengthBar.style.width = '0%';
-        setTimeout(redirectAfterAuth, 350);
+        redirectAfterAuth();
       } catch (error) {
         showAuthMessage(error.message || 'Signup failed', 'error');
       }
