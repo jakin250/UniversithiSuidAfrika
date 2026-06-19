@@ -10,7 +10,12 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * { font-family: 'Inter', sans-serif; }
-    body { background: #fafbfc; }
+    body {
+      background:
+        radial-gradient(circle at 8% 0%, rgba(79,70,229,.14), transparent 30%),
+        radial-gradient(circle at 94% 6%, rgba(245,158,11,.14), transparent 28%),
+        #fafbfc;
+    }
     /* Custom escrow step connector */
     .escrow-step:not(:last-child)::after {
       content: '';
@@ -34,9 +39,67 @@
       transform: translateY(-4px);
       box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.1);
     }
+
+    .portal-switcher {
+      max-width: 80rem;
+      margin: 1rem auto 0;
+      padding: .75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(226,232,240,.9);
+      border-radius: 1.5rem;
+      box-shadow: 0 18px 44px rgba(15,23,42,.08);
+      backdrop-filter: blur(14px);
+    }
+    .portal-switcher strong { display: block; color: #111827; line-height: 1.1; }
+    .portal-switcher span { color: #6b7280; font-size: .82rem; }
+    .portal-links { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; }
+    .portal-links a {
+      background: #eef2ff;
+      border: 1px solid #dbeafe;
+      border-radius: 999px;
+      color: #4f46e5;
+      font-size: .85rem;
+      font-weight: 800;
+      padding: .5rem .85rem;
+    }
+    .portal-links a.active { background: #4f46e5; color: #fff; }
+    .market-hero-card {
+      background:
+        radial-gradient(circle at 90% 12%, rgba(251,191,36,.28), transparent 30%),
+        linear-gradient(135deg, #1e1b4b 0%, #4338ca 55%, #7c3aed 100%);
+      color: #fff;
+      box-shadow: 0 28px 70px rgba(67,56,202,.22);
+    }
+    .market-hero-panel {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      backdrop-filter: blur(10px);
+    }
+    .hero-stat {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.16);
+    }
+
   </style>
 </head>
 <body class="antialiased">
+
+  <div class="portal-switcher mx-4" aria-label="Universithi SuidAfrika site switcher">
+    <div>
+      <strong>Universithi SuidAfrika</strong>
+      <span>Three connected student spaces</span>
+    </div>
+    <div class="portal-links">
+      <a href="/index.html">Portal</a>
+      <a href="/student-forum/unisa-student-forum-your-campus-your-voice.html">Forum</a>
+      <a href="/student-bookstore/student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Bookstore</a>
+      <a class="active" href="/student-marketplace/student-marketplace-buy-sell-trade-on-campus.html">Marketplace</a>
+    </div>
+  </div>
 
   <!-- ==================== NAVBAR ==================== -->
   <nav class="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
@@ -92,14 +155,28 @@
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
     
     <!-- ========== HERO SECTION ========== -->
-    <div class="bg-gradient-to-r from-indigo-50 via-white to-indigo-50 rounded-2xl p-6 md:p-12 mb-16 text-center shadow-sm border border-indigo-100">
-      <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">STUDENT MARKETPLACE</h1>
-      <p class="text-xl text-gray-600 max-w-2xl mx-auto">Buy, sell and trade with students on your campus.<br>Safe. Trusted. Student verified.</p>
-      <div class="flex flex-wrap justify-center gap-4 mt-8">
-        <button class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-semibold shadow-md transition flex items-center gap-2"><i class="fas fa-store"></i> Start Browsing</button>
-        <button class="border border-indigo-600 text-indigo-700 hover:bg-indigo-50 px-6 py-3 rounded-xl font-semibold transition flex items-center gap-2"><i class="fas fa-plus-circle"></i> Sell an Item</button>
+    <section class="market-hero-card rounded-[2rem] p-6 md:p-12 mb-16 shadow-sm border border-indigo-200/40" aria-labelledby="marketplaceHeroTitle">
+      <div class="grid lg:grid-cols-[1fr_360px] gap-8 items-center">
+        <div>
+          <div class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-4 py-2 text-sm font-bold text-indigo-100 mb-5"><i class="fas fa-shield-alt"></i> Student verified campus trade</div>
+          <h1 id="marketplaceHeroTitle" class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">Buy, sell, and trade without losing the student safety net.</h1>
+          <p class="text-xl text-indigo-100 max-w-2xl">Browse everyday items, list what you no longer need, chat with verified students, and use escrow for safer campus handovers.</p>
+          <div class="flex flex-wrap gap-4 mt-8">
+            <a href="browse-listings-student-marketplace.html" class="bg-white hover:bg-indigo-50 text-indigo-700 px-6 py-3 rounded-xl font-bold shadow-md transition flex items-center gap-2"><i class="fas fa-store"></i> Start browsing</a>
+            <a href="create-listing-student-marketplace.html" class="border border-white/30 text-white hover:bg-white/10 px-6 py-3 rounded-xl font-bold transition flex items-center gap-2"><i class="fas fa-plus-circle"></i> Sell an item</a>
+            <a href="saved-items-student-marketplace.html" class="border border-white/30 text-white hover:bg-white/10 px-6 py-3 rounded-xl font-bold transition flex items-center gap-2"><i class="fas fa-bookmark"></i> Saved items</a>
+          </div>
+        </div>
+        <aside class="market-hero-panel rounded-3xl p-5" aria-label="Marketplace highlights">
+          <h2 class="text-2xl font-extrabold mb-4">Trade flow at a glance</h2>
+          <div class="grid gap-3">
+            <div class="hero-stat rounded-2xl p-4"><strong class="block text-lg">1. Find or list</strong><span class="text-indigo-100 text-sm">Search categories or publish a listing in minutes.</span></div>
+            <div class="hero-stat rounded-2xl p-4"><strong class="block text-lg">2. Chat safely</strong><span class="text-indigo-100 text-sm">Keep buyer and seller decisions in one thread.</span></div>
+            <div class="hero-stat rounded-2xl p-4"><strong class="block text-lg">3. Escrow handover</strong><span class="text-indigo-100 text-sm">Release payment only after confirmation.</span></div>
+          </div>
+        </aside>
       </div>
-    </div>
+    </section>
 
     <!-- ========== CORE USER FLOW (simple visual steps) ========== -->
     <div class="mb-16">
@@ -176,7 +253,7 @@
       </div>
     </div>
 
-    <!-- ========== TRUST & SAFETY + SAMPLE LISTINGS (Mock Preview) ========== -->
+    <!-- ========== TRUST & SAFETY + LISTING PREVIEW ========== -->
     <div class="grid lg:grid-cols-3 gap-8 mb-16">
       <div class="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
         <i class="fas fa-shield-alt text-indigo-600 text-3xl mb-3"></i>
@@ -195,19 +272,19 @@
         <div class="grid sm:grid-cols-2 gap-5">
           <div class="bg-white rounded-xl shadow-sm overflow-hidden border hover-scale transition cursor-pointer">
             <div class="h-36 bg-gray-200 relative"><i class="fas fa-book absolute bottom-2 right-2 bg-white p-1 rounded-full text-xs"></i></div>
-            <div class="p-3"><h4 class="font-bold">Calculus: Early Transcendentals</h4><p class="text-indigo-600 font-bold text-lg">$45</p><div class="flex justify-between text-sm text-gray-500"><span>📘 Good condition</span><span>⭐ 4.8</span></div></div>
+            <div class="p-3"><h4 class="font-bold">Calculus: Early Transcendentals</h4><p class="text-indigo-600 font-bold text-lg">R450</p><div class="flex justify-between text-sm text-gray-500"><span>📘 Good condition</span><span>⭐ 4.8</span></div></div>
           </div>
           <div class="bg-white rounded-xl shadow-sm overflow-hidden border hover-scale transition cursor-pointer">
             <div class="h-36 bg-gray-200 relative"><i class="fas fa-laptop absolute bottom-2 right-2 bg-white p-1 rounded-full text-xs"></i></div>
-            <div class="p-3"><h4 class="font-bold">iPad Air 4th Gen + Pencil</h4><p class="text-indigo-600 font-bold text-lg">$320</p><div class="flex justify-between text-sm text-gray-500"><span>✨ Like new</span><span>⭐ 5.0</span></div></div>
+            <div class="p-3"><h4 class="font-bold">iPad Air 4th Gen + Pencil</h4><p class="text-indigo-600 font-bold text-lg">R3 200</p><div class="flex justify-between text-sm text-gray-500"><span>✨ Like new</span><span>⭐ 5.0</span></div></div>
           </div>
           <div class="bg-white rounded-xl shadow-sm overflow-hidden border hover-scale transition cursor-pointer">
             <div class="h-36 bg-gray-200 relative"><i class="fas fa-chair absolute bottom-2 right-2 bg-white p-1 rounded-full text-xs"></i></div>
-            <div class="p-3"><h4 class="font-bold">IKEA Desk + Office Chair</h4><p class="text-indigo-600 font-bold text-lg">$75</p><div class="flex justify-between text-sm text-gray-500"><span>🪑 Acceptable</span><span>⭐ 4.5</span></div></div>
+            <div class="p-3"><h4 class="font-bold">IKEA Desk + Office Chair</h4><p class="text-indigo-600 font-bold text-lg">R750</p><div class="flex justify-between text-sm text-gray-500"><span>🪑 Acceptable</span><span>⭐ 4.5</span></div></div>
           </div>
           <div class="bg-white rounded-xl shadow-sm overflow-hidden border hover-scale transition cursor-pointer">
             <div class="h-36 bg-gray-200 relative"><i class="fas fa-tshirt absolute bottom-2 right-2 bg-white p-1 rounded-full text-xs"></i></div>
-            <div class="p-3"><h4 class="font-bold">Hoodie - University Edition</h4><p class="text-indigo-600 font-bold text-lg">$25</p><div class="flex justify-between text-sm text-gray-500"><span>🧥 Like new</span><span>⭐ 4.7</span></div></div>
+            <div class="p-3"><h4 class="font-bold">Hoodie - University Edition</h4><p class="text-indigo-600 font-bold text-lg">R250</p><div class="flex justify-between text-sm text-gray-500"><span>🧥 Like new</span><span>⭐ 4.7</span></div></div>
           </div>
         </div>
       </div>
@@ -303,6 +380,7 @@
         display: none;
       }
     }
+
   </style>
 </body>
 </html>

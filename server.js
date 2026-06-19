@@ -1,8 +1,8 @@
 import compression from 'compression';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import dotenv from 'dotenv';
 import express from 'express';
-import session from 'express-session';
 import fs from 'fs';
 import helmet from 'helmet';
 import path from 'path';
@@ -14,15 +14,28 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 const port = Number(process.env.PORT || 3000);
+const isProduction = process.env.NODE_ENV === 'production';
+const defaultSessionSecret = 'change-me-in-production';
 const dataDir = path.join(__dirname, 'data');
 const dbPath = process.env.DATABASE_PATH || path.join(dataDir, 'app.json');
-const sessionSecret = process.env.SESSION_SECRET || 'change-me-in-production';
+const sessionSecret = process.env.SESSION_SECRET || defaultSessionSecret;
+
+const unsafeSessionSecrets = new Set([
+  defaultSessionSecret,
+  'replace-with-a-long-random-secret',
+  'dev-secret'
+]);
+
+if (isProduction && (unsafeSessionSecrets.has(sessionSecret) || sessionSecret.length < 32)) {
+  console.error('SESSION_SECRET must be set to a strong unique value of at least 32 characters before running in production.');
+  process.exit(1);
+}
 const allowedUniversityDomains = String(process.env.UNIVERSITY_EMAIL_DOMAINS || 'unisa.ac.za')
   .split(',')
   .map(entry => entry.trim().toLowerCase())
   .filter(Boolean);
 
-fs.mkdirSync(dataDir, { recursive: true });
+fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
 const seed = {
   users: [],
@@ -97,10 +110,16 @@ function getCookieValue(req, name) {
 }
 
 function signSession(userId) {
-  const token = `${userId}.${bcrypt.hashSync(`${userId}:${sessionSecret}`, 4).slice(0, 10)}`;
+  const token = `${userId}.${crypto.randomBytes(32).toString('base64url')}`;
   state.sessions[token] = { userId, expiresAt: Date.now() + 7 * 24 * 60 * 60 * 1000 };
   saveState();
   return token;
+}
+
+function buildSessionCookie(name, value, options = {}) {
+  const maxAge = Number(options.maxAge || 0);
+  const secure = isProduction ? '; Secure' : '';
+  return `${name}=${value}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${maxAge}${secure}`;
 }
 
 function getSessionUser(req) {
@@ -112,7 +131,7 @@ function getSessionUser(req) {
 }
 
 function setSessionCookie(userId) {
-  return `universithi_session=${signSession(userId)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}`;
+  return buildSessionCookie('universithi_session', signSession(userId), { maxAge: 7 * 24 * 60 * 60 });
 }
 
 function clearSessionCookie(req) {
@@ -121,7 +140,7 @@ function clearSessionCookie(req) {
     delete state.sessions[token];
     saveState();
   }
-  return 'universithi_session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0';
+  return buildSessionCookie('universithi_session', '', { maxAge: 0 });
 }
 
 function normalizeUser(user) {
@@ -409,21 +428,27 @@ app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(compression());
 app.use(express.json({ limit: '10mb' }));
-app.use(session({
-  secret: sessionSecret,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    httpOnly: true,
-    sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 7 * 24 * 60 * 60 * 1000
-  }
+app.use(express.static(__dirname, {
+  extensions: ['html'],
+  maxAge: isProduction ? '1h' : 0
 }));
-app.use(express.static(__dirname));
+
+function healthPayload() {
+  return {
+    ok: true,
+    env: isProduction ? 'production' : 'development',
+    storage: 'json-file',
+    file: path.basename(dbPath),
+    uptime: process.uptime()
+  };
+}
 
 app.get('/api/health', (_req, res) => {
-  res.json({ ok: true, storage: 'json-file', file: path.basename(dbPath) });
+  res.json(healthPayload());
+});
+
+app.get('/healthz', (_req, res) => {
+  res.json(healthPayload());
 });
 
 app.get('/api/auth/domains', (_req, res) => {

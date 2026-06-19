@@ -13,7 +13,10 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-            background: #f7f9fc;
+            background:
+                radial-gradient(circle at 8% 4%, rgba(15, 59, 44, 0.12), transparent 30%),
+                radial-gradient(circle at 90% 0%, rgba(24, 150, 105, 0.12), transparent 28%),
+                #f7f9fc;
             color: #1a2a3a;
             line-height: 1.5;
         }
@@ -93,10 +96,12 @@
 
         /* Hero */
         .hero {
-            background: linear-gradient(135deg, #e9f5ef 0%, #d4e8df 100%);
-            padding: 48px 0;
+            background: linear-gradient(135deg, #083326 0%, #0f3b2c 52%, #1f7a55 100%);
+            color: white;
+            padding: 54px 0;
             border-radius: 0 0 32px 32px;
             margin-bottom: 40px;
+            box-shadow: 0 22px 60px rgba(15, 59, 44, 0.18);
         }
 
         .hero h2 {
@@ -355,9 +360,137 @@
                 width: 100%;
             }
         }
+
+
+        .portal-switcher {
+            max-width: 1280px;
+            margin: 16px auto 0;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            background: rgba(255,255,255,0.88);
+            border: 1px solid #dfe9e4;
+            border-radius: 24px;
+            box-shadow: 0 18px 44px rgba(15,59,44,0.08);
+            backdrop-filter: blur(14px);
+        }
+
+        .portal-switcher strong { display: block; color: #0f3b2c; }
+        .portal-switcher span { color: #5a6e7c; font-size: 0.82rem; }
+
+        .portal-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .portal-links a {
+            text-decoration: none;
+            color: #0f3b2c;
+            background: #eef7f2;
+            border: 1px solid #d7eadf;
+            border-radius: 999px;
+            padding: 8px 14px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .portal-links a.active { background: #0f3b2c; color: white; }
+
+        .book-hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 330px;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .hero-kicker {
+            display: inline-flex;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 999px;
+            padding: 8px 12px;
+            margin-bottom: 16px;
+            font-weight: 800;
+            color: #c9f7df;
+        }
+
+        .hero p { color: rgba(255,255,255,0.82); font-size: 1.08rem; }
+
+        .hero .search-box { box-shadow: 0 18px 40px rgba(0,0,0,0.18); }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .hero-actions a {
+            border-radius: 999px;
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.12);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.22);
+            text-decoration: none;
+            font-weight: 800;
+        }
+
+        .book-hero-panel {
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 28px;
+            padding: 22px;
+            backdrop-filter: blur(10px);
+        }
+
+        .book-hero-panel h3 { margin-bottom: 14px; }
+
+        .hero-stat-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .hero-stat-list div {
+            background: rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 12px;
+        }
+
+        .hero-stat-list strong { display: block; font-size: 1.25rem; }
+        .hero-stat-list span { color: rgba(255,255,255,0.78); font-size: 0.86rem; }
+
+
+        @media (max-width: 860px) {
+            .portal-switcher, .book-hero-grid {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .portal-links { justify-content: flex-start; }
+            .hero .search-box { border-radius: 24px; flex-direction: column; padding: 12px; }
+        }
+
     </style>
 </head>
 <body>
+
+<div class="portal-switcher" aria-label="Universithi SuidAfrika site switcher">
+    <div>
+        <strong>Universithi SuidAfrika</strong>
+        <span>Three connected student spaces</span>
+    </div>
+    <div class="portal-links">
+        <a href="/index.html">Portal</a>
+        <a href="/student-forum/unisa-student-forum-your-campus-your-voice.html">Forum</a>
+        <a class="active" href="/student-bookstore/student-secondhand-bookstore-buy-sell-exchange-textbooks.html">Bookstore</a>
+        <a href="/student-marketplace/student-marketplace-buy-sell-trade-on-campus.html">Marketplace</a>
+    </div>
+</div>
 
 <div class="main-header">
     <div class="container">
@@ -380,16 +513,32 @@
     </div>
 </div>
 
-<div class="hero">
-    <div class="container">
-        <h2>📖 Find your books. Save money. Support students.</h2>
-        <p>Search by title, author, ISBN or course code</p>
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="e.g. Microeconomics, LAW101, 978-0-13...">
-            <button id="searchBtn">🔍 Search</button>
+<section class="hero" aria-labelledby="bookstoreHeroTitle">
+    <div class="container book-hero-grid">
+        <div>
+            <span class="hero-kicker">📚 Textbooks, trades, and trusted handovers</span>
+            <h2 id="bookstoreHeroTitle">Find the right book faster — then buy, sell, or exchange safely.</h2>
+            <p>Search by title, author, ISBN, or course code and move straight into escrow checkout, chat, order tracking, and reviews.</p>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="e.g. Microeconomics, LAW101, 978-0-13...">
+                <button id="searchBtn">🔍 Search</button>
+            </div>
+            <div class="hero-actions">
+                <a href="sell-your-books-student-secondhand-bookstore.html">Sell your books</a>
+                <a href="my-listings-student-secondhand-bookstore.html">Manage listings</a>
+                <a href="order-tracking-student-secondhand-bookstore.html">Track orders</a>
+            </div>
         </div>
+        <aside class="book-hero-panel" aria-label="Bookstore benefits">
+            <h3>Built for student book buying</h3>
+            <div class="hero-stat-list">
+                <div><strong>Escrow checkout</strong><span>Funds stay protected until books are received.</span></div>
+                <div><strong>Course-first search</strong><span>Find materials by ISBN, module, title, or author.</span></div>
+                <div><strong>Exchange ready</strong><span>Swap books with verified students on the same platform.</span></div>
+            </div>
+        </aside>
     </div>
-</div>
+</section>
 
 <div class="container">
     <div class="journey">
