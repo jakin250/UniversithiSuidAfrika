@@ -28,11 +28,6 @@
       height: 4px;
       transition: width 0.3s ease, background-color 0.3s ease;
     }
-    .verification-code-input {
-      letter-spacing: 0.5rem;
-      font-size: 1.5rem;
-      text-align: center;
-    }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -79,7 +74,7 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">University email</label>
             <div class="relative">
               <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-              <input type="email" id="loginEmail" required placeholder="student@university.edu" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+              <input type="email" id="loginEmail" required placeholder="student@unisa.ac.za" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
             </div>
           </div>
           
@@ -132,9 +127,9 @@
             <label class="block text-sm font-medium text-gray-700 mb-1">University email *</label>
             <div class="relative">
               <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-              <input type="email" id="signupEmail" required placeholder="name@university.edu" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-indigo-500">
+              <input type="email" id="signupEmail" required placeholder="name@unisa.ac.za" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-indigo-500">
             </div>
-            <p class="text-xs text-gray-400 mt-1">Must be a valid .edu email or university domain</p>
+            <p class="text-xs text-gray-400 mt-1" data-domain-hint>Loading approved university domains...</p>
           </div>
 
           <div>
@@ -175,34 +170,14 @@
           </button>
         </form>
         
-        <div class="mt-6 text-center text-xs text-gray-400">
-          <i class="fas fa-envelope"></i> Verification email will be sent to your university address
+        <div class="mt-6 rounded-xl bg-slate-50 border border-slate-200 px-4 py-3 text-xs text-slate-500">
+          <i class="fas fa-shield-alt text-indigo-500"></i>
+          Accounts are activated immediately after domain validation. Email verification can be added later when mail delivery is configured.
         </div>
       </div>
     </div>
 
-    <!-- Verification Modal (sent after signup) -->
-    <div id="verificationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-      <div class="bg-white rounded-2xl max-w-md w-full mx-4 p-6 transform transition-all">
-        <div class="text-center mb-4">
-          <i class="fas fa-envelope-open-text text-5xl text-indigo-500 mb-3"></i>
-          <h3 class="text-xl font-bold text-gray-800">Verify your email</h3>
-          <p class="text-sm text-gray-500 mt-2">We've sent a verification code to <span id="verificationEmailDisplay" class="font-medium text-indigo-600"></span></p>
-        </div>
-        
-        <div class="mb-5">
-          <label class="block text-sm font-medium text-gray-700 mb-2 text-center">Enter verification code</label>
-          <input type="text" id="verificationCode" maxlength="6" placeholder="000000" class="verification-code-input w-full text-center text-2xl tracking-widest border border-gray-300 rounded-xl py-3 focus:ring-indigo-500">
-        </div>
-        
-        <div class="flex gap-3">
-          <button id="resendCodeBtn" class="flex-1 border border-gray-300 py-2 rounded-lg text-sm hover:bg-gray-50">Resend code</button>
-          <button id="verifyCodeBtn" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700">Verify</button>
-        </div>
-        
-        <p class="text-center text-xs text-gray-400 mt-4">Check your spam folder if you don't see the email</p>
-      </div>
-    </div>
+    <div id="authStatusMessage" class="mt-4 hidden rounded-2xl border px-4 py-3 text-sm"></div>
 
     <!-- Forgot Password Modal -->
     <div id="forgotModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
@@ -210,12 +185,12 @@
         <div class="text-center mb-4">
           <i class="fas fa-key text-4xl text-amber-500 mb-3"></i>
           <h3 class="text-xl font-bold text-gray-800">Reset password</h3>
-          <p class="text-sm text-gray-500 mt-2">Enter your university email to receive reset instructions</p>
+          <p class="text-sm text-gray-500 mt-2">Password reset email is not enabled yet. Contact support or an administrator to reset your password.</p>
         </div>
-        <input type="email" id="resetEmail" placeholder="student@university.edu" class="w-full border border-gray-300 rounded-xl px-4 py-3 mb-4">
+        <input type="email" id="resetEmail" placeholder="student@unisa.ac.za" class="w-full border border-gray-300 rounded-xl px-4 py-3 mb-4">
         <div class="flex gap-3">
           <button id="closeForgotBtn" class="flex-1 border py-2 rounded-lg">Cancel</button>
-          <button id="sendResetBtn" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg">Send reset link</button>
+          <button id="sendResetBtn" class="flex-1 bg-indigo-600 text-white py-2 rounded-lg">Show next step</button>
         </div>
       </div>
     </div>
@@ -226,6 +201,19 @@
     const params = new URLSearchParams(window.location.search);
     const nextUrl = params.get('next');
     let allowedDomains = null;
+    const authStatusMessage = document.getElementById('authStatusMessage');
+
+    function showAuthMessage(message, type = 'info') {
+      if (!authStatusMessage) return;
+      const styles = type === 'error'
+        ? 'border-red-200 bg-red-50 text-red-700'
+        : type === 'success'
+          ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+          : 'border-indigo-200 bg-indigo-50 text-indigo-700';
+      authStatusMessage.className = `mt-4 rounded-2xl border px-4 py-3 text-sm ${styles}`;
+      authStatusMessage.textContent = message;
+      authStatusMessage.classList.remove('hidden');
+    }
 
     function redirectAfterAuth() {
       if (nextUrl) {
@@ -257,6 +245,8 @@
       try {
         const domainsResp = await apiClient.get('../api/auth/domains');
         allowedDomains = domainsResp?.domains || null;
+        const domainHint = allowedDomains?.length ? `Allowed domains: ${allowedDomains.join(', ')}` : 'Any university email domain is allowed.';
+        document.querySelectorAll('[data-domain-hint]').forEach(node => { node.textContent = domainHint; });
       } catch {
         allowedDomains = null;
       }
@@ -362,7 +352,7 @@
       const password = document.getElementById('loginPassword').value;
       
       if (!isAllowedEmail(email)) {
-        alert('⚠️ Please use your university email address.');
+        showAuthMessage('Please use an approved university email address.', 'error');
         return;
       }
       
@@ -370,15 +360,12 @@
         await apiClient.post('../api/auth/login', { email, password });
         redirectAfterAuth();
       } catch (error) {
-        alert(error.message || 'Login failed');
+        showAuthMessage(error.message || 'Login failed', 'error');
       }
     });
     
     // Signup Form Submit
     const signupFormElem = document.getElementById('signupFormElement');
-    const verificationModal = document.getElementById('verificationModal');
-    const verificationEmailDisplay = document.getElementById('verificationEmailDisplay');
-    let pendingSignupEmail = '';
     
     signupFormElem?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -391,12 +378,12 @@
       const terms = document.getElementById('termsCheckbox').checked;
       
       if (!isAllowedEmail(email)) {
-        alert('⚠️ Please use your university email address.');
+        showAuthMessage('Please use an approved university email address.', 'error');
         return;
       }
       
       if (password !== confirm) {
-        alert('❌ Passwords do not match');
+        showAuthMessage('Passwords do not match.', 'error');
         return;
       }
       
@@ -406,12 +393,10 @@
       }
       
       if (!terms) {
-        alert('Please accept the Terms of Service');
+        showAuthMessage('Please accept the Terms of Service and Community Guidelines.', 'error');
         return;
       }
       
-      pendingSignupEmail = email;
-
       try {
         await apiClient.post('../api/auth/register', {
           name: `${firstName} ${lastName}`.trim(),
@@ -426,22 +411,8 @@
         strengthBar.style.width = '0%';
         redirectAfterAuth();
       } catch (error) {
-        alert(error.message || 'Signup failed');
+        showAuthMessage(error.message || 'Signup failed', 'error');
       }
-    });
-    
-    // Verify Code
-    const verifyBtn = document.getElementById('verifyCodeBtn');
-    const verificationCode = document.getElementById('verificationCode');
-    
-    verifyBtn?.addEventListener('click', () => {
-      verificationModal.classList.add('hidden');
-      switchToLogin();
-    });
-    
-    // Resend code simulation
-    document.getElementById('resendCodeBtn')?.addEventListener('click', () => {
-      alert(`📧 New verification code sent to ${pendingSignupEmail}`);
     });
     
     // Forgot password modal
@@ -462,17 +433,14 @@
     sendResetBtn?.addEventListener('click', () => {
       const resetEmail = document.getElementById('resetEmail').value;
       if (resetEmail) {
-        alert(`📧 Password reset link sent to ${resetEmail}\n\nCheck your inbox (and spam folder) to reset your password.`);
         forgotModal.classList.add('hidden');
+        showAuthMessage(`Password reset email is not configured yet. Ask support to reset ${resetEmail}.`, 'info');
       } else {
-        alert('Please enter your university email');
+        showAuthMessage('Enter your university email before requesting support.', 'error');
       }
     });
     
     // Close modals by clicking backdrop
-    verificationModal?.addEventListener('click', (e) => {
-      if (e.target === verificationModal) verificationModal.classList.add('hidden');
-    });
     forgotModal?.addEventListener('click', (e) => {
       if (e.target === forgotModal) forgotModal.classList.add('hidden');
     });
