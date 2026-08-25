@@ -9,12 +9,15 @@ window.apiClient = {
   async patch(path, body) {
     return this.request(path, 'PATCH', body);
   },
+  async delete(path) {
+    return this.request(path, 'DELETE');
+  },
   async request(path, method, body) {
     const response = await fetch(path, {
       method,
       headers: { 'Content-Type': 'application/json' },
       credentials: 'same-origin',
-      body: JSON.stringify(body)
+      body: body === undefined ? undefined : JSON.stringify(body)
     });
     return this.handle(response);
   },
