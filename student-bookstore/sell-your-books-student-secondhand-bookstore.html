@@ -543,6 +543,7 @@
 <script>
     // Photo upload handling
     let uploadedPhotos = [];
+    const editingId = new URLSearchParams(window.location.search).get('edit');
     const AUTH_URL = '../student-marketplace/authentication-student-marketplace.html';
 
     function buildNextParam() {
@@ -629,10 +630,7 @@
     };
     
     // Save as Draft
-    window.saveAsDraft = () => {
-        alert('Drafts are not implemented yet. Publish the listing to save it.');
-        return;
-
+    window.saveAsDraft = async () => {
         const title = document.getElementById('title').value;
         const author = document.getElementById('author').value;
         const edition = document.getElementById('edition').value;
@@ -663,14 +661,17 @@
             dateCreated: new Date().toISOString().split('T')[0]
         };
         
-        fetch('../api/bookstore/listings', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(draftData)
-        }).finally(() => {
+        const user = await requireAuthOrRedirect();
+        if (!user) return;
+        const request = editingId
+            ? apiClient.patch(`../api/bookstore/books/${editingId}`, draftData)
+            : apiClient.post('../api/bookstore/books', draftData);
+        request.then(() => {
             alert(`✅ Draft saved successfully!\n\nTitle: ${title}\nPrice: R${price}\nCondition: ${condition}\n\nYou can publish it later from My Listings.`);
+            window.location.href = 'my-listings-student-secondhand-bookstore.html';
+        }).catch(error => {
+            alert(error?.message || 'Could not save the draft. Please sign in and try again.');
         });
-        window.location.href = 'my-listings-student-secondhand-bookstore.html';
     };
     
     // Publish Listing
@@ -726,7 +727,9 @@
         }
 
         try {
-            const saved = await apiClient.post('../api/bookstore/books', listingData);
+            const saved = editingId
+                ? await apiClient.patch(`../api/bookstore/books/${editingId}`, listingData)
+                : await apiClient.post('../api/bookstore/books', listingData);
             alert(`🎉 Listing Published Successfully!\n\n${saved.title || title}\n💰 R${price}\n📚 ${condition}\n\nYour book is now visible in Browse.`);
             window.location.href = `book-details-student-secondhand-bookstore.html?id=${encodeURIComponent(String(saved.id))}`;
         } catch (error) {
@@ -742,6 +745,44 @@
             }
         }
     });
+
+    async function loadListingForEditing() {
+        if (!editingId) return;
+        const user = await requireAuthOrRedirect();
+        if (!user) return;
+        try {
+            const listing = await apiClient.get(`../api/bookstore/books/${editingId}`);
+            const fields = {
+                title: listing.title,
+                author: listing.author,
+                edition: listing.edition,
+                isbn: listing.isbn,
+                course: listing.courseCode || listing.course,
+                price: listing.price,
+                retailPrice: listing.retailPrice,
+                description: listing.description,
+                wantedBooks: listing.wantedBooks,
+                exchangeTerms: listing.exchangeTerms
+            };
+            Object.entries(fields).forEach(([id, value]) => {
+                const field = document.getElementById(id);
+                if (field && value !== undefined && value !== null) field.value = value;
+            });
+            conditionInput.value = listing.condition || '';
+            conditionOptions.forEach(option => option.classList.toggle('selected', option.dataset.condition === listing.condition));
+            exchangeCheckbox.checked = Boolean(listing.exchange);
+            exchangeFields.classList.toggle('show', exchangeCheckbox.checked);
+            uploadedPhotos = Array.isArray(listing.photos) ? listing.photos : [];
+            displayPhotos();
+            const submitButton = sellForm.querySelector('button[type="submit"]');
+            if (submitButton) submitButton.textContent = 'Save Changes';
+        } catch (error) {
+            alert(error?.message || 'Could not load this listing.');
+            window.location.href = 'my-listings-student-secondhand-bookstore.html';
+        }
+    }
+
+    loadListingForEditing();
     
     function getCoverEmoji(title) {
         const lowerTitle = title.toLowerCase();
@@ -762,5 +803,3 @@
 </script>
 </body>
 </html>
-
-

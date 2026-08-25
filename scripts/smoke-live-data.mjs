@@ -94,13 +94,38 @@ try {
     throw new Error('Marketplace listing did not persist to live data store.');
   }
 
-  await request('/api/bookstore/books', {
+  const createdBook = await request('/api/bookstore/books', {
     method: 'POST',
     body: JSON.stringify({ title: 'Live Smoke Test Textbook', author: 'Readiness Bot', price: 95, condition: 'Good' })
   }, cookie);
   const books = await request('/api/bookstore/books');
   if (!books.payload.some(item => item.title === 'Live Smoke Test Textbook')) {
     throw new Error('Bookstore book did not persist to live data store.');
+  }
+
+  const draft = await request('/api/bookstore/books', {
+    method: 'POST',
+    body: JSON.stringify({ title: 'Private Draft Textbook', author: 'Readiness Bot', price: 80, condition: 'Fair', status: 'draft' })
+  }, cookie);
+  const publicBooks = await request('/api/bookstore/books');
+  if (publicBooks.payload.some(item => item.id === draft.payload.id)) {
+    throw new Error('Draft bookstore listing was exposed in the public catalogue.');
+  }
+  const myBooks = await request('/api/bookstore/books?mine=1', {}, cookie);
+  if (!myBooks.payload.some(item => item.id === draft.payload.id)) {
+    throw new Error('Student could not retrieve their own draft listing.');
+  }
+  const publishedDraft = await request(`/api/bookstore/books/${draft.payload.id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status: 'active', price: 85 })
+  }, cookie);
+  if (publishedDraft.payload.status !== 'active' || publishedDraft.payload.price !== 85) {
+    throw new Error('Student could not publish and update their draft listing.');
+  }
+  await request(`/api/bookstore/books/${createdBook.payload.id}`, { method: 'DELETE' }, cookie);
+  const booksAfterDelete = await request('/api/bookstore/books');
+  if (booksAfterDelete.payload.some(item => item.id === createdBook.payload.id)) {
+    throw new Error('Deleted bookstore listing remained in the catalogue.');
   }
 
   await request('/api/forum/posts', {

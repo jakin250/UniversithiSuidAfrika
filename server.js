@@ -810,7 +810,14 @@ app.patch('/api/profile', async (req, res) => {
   });
 });
 
-app.get('/api/bookstore/books', (_req, res) => res.json(responseCollection(state.bookstore.books)));
+app.get('/api/bookstore/books', (req, res) => {
+  const sessionUser = req.query.mine === '1' ? requireAuthenticatedUser(req, res) : requireSessionUser(req);
+  if (req.query.mine === '1' && !sessionUser) return;
+  const books = req.query.mine === '1'
+    ? state.bookstore.books.filter(book => sessionUser && String(book.ownerId) === String(sessionUser.id))
+    : state.bookstore.books.filter(book => book.status !== 'draft');
+  res.json(responseCollection(books));
+});
 app.post('/api/bookstore/books', (req, res) => {
   const sessionUser = requireAuthenticatedUser(req, res);
   if (!sessionUser) return;
@@ -836,7 +843,43 @@ app.post('/api/bookstore/books', (req, res) => {
 app.get('/api/bookstore/books/:id', (req, res) => {
   const book = state.bookstore.books.find(item => String(item.id) === String(req.params.id));
   if (!book) return res.status(404).json({ error: 'Book not found' });
+  if (book.status === 'draft') {
+    const sessionUser = requireSessionUser(req);
+    if (!sessionUser || String(book.ownerId) !== String(sessionUser.id)) {
+      return res.status(404).json({ error: 'Book not found' });
+    }
+  }
   res.json(book);
+});
+app.patch('/api/bookstore/books/:id', (req, res) => {
+  const sessionUser = requireAuthenticatedUser(req, res);
+  if (!sessionUser) return;
+  const index = state.bookstore.books.findIndex(item => String(item.id) === String(req.params.id));
+  if (index === -1) return res.status(404).json({ error: 'Book not found' });
+  if (String(state.bookstore.books[index].ownerId) !== String(sessionUser.id)) {
+    return res.status(403).json({ error: 'You can only update your own listing' });
+  }
+  const allowed = ['title', 'author', 'edition', 'isbn', 'courseCode', 'price', 'retailPrice', 'condition', 'description', 'exchange', 'wantedBooks', 'exchangeTerms', 'status'];
+  const updates = Object.fromEntries(allowed.filter(key => req.body?.[key] !== undefined).map(key => [key, req.body[key]]));
+  if (updates.price !== undefined && (!Number.isFinite(Number(updates.price)) || Number(updates.price) < 0)) {
+    return res.status(400).json({ error: 'Price must be a positive number' });
+  }
+  if (updates.price !== undefined) updates.price = Number(updates.price);
+  state.bookstore.books[index] = { ...state.bookstore.books[index], ...updates, updatedAt: new Date().toISOString() };
+  saveState();
+  res.json(state.bookstore.books[index]);
+});
+app.delete('/api/bookstore/books/:id', (req, res) => {
+  const sessionUser = requireAuthenticatedUser(req, res);
+  if (!sessionUser) return;
+  const index = state.bookstore.books.findIndex(item => String(item.id) === String(req.params.id));
+  if (index === -1) return res.status(404).json({ error: 'Book not found' });
+  if (String(state.bookstore.books[index].ownerId) !== String(sessionUser.id)) {
+    return res.status(403).json({ error: 'You can only delete your own listing' });
+  }
+  const [deleted] = state.bookstore.books.splice(index, 1);
+  saveState();
+  res.json({ deleted: true, id: deleted.id });
 });
 app.get('/api/bookstore/orders', (_req, res) => res.json(responseCollection(state.bookstore.orders)));
 app.post('/api/bookstore/orders', (req, res) => {
