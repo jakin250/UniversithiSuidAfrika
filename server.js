@@ -268,6 +268,7 @@ fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
 const seed = {
   users: [],
+  payments: [],
   bookstore: {
     books: [],
     orders: [],
@@ -314,6 +315,7 @@ function saveState() {
 
 function ensureState() {
   state.users ||= [];
+  state.payments ||= [];
   state.bookstore ||= structuredClone(seed.bookstore);
   state.marketplace ||= structuredClone(seed.marketplace);
   state.forum ||= structuredClone(seed.forum);
@@ -324,8 +326,11 @@ function ensureState() {
 }
 
 ensureState();
-await initPostgresAuth();
-await logStartupReadiness();
+const startupReadiness = initPostgresAuth()
+  .then(logStartupReadiness)
+  .catch(error => {
+    console.error(`Startup readiness check failed: ${error.message}`);
+  });
 
 function nextId(items) {
   return items.reduce((max, item) => Math.max(max, Number(item.id) || 0), 0) + 1;
@@ -671,6 +676,36 @@ function responseCollection(collection) {
   return clone(collection).reverse();
 }
 
+function makePaymentReference(type) {
+  const prefix = type === 'bookstore' ? 'USB' : 'USM';
+  return `${prefix}-${Date.now()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+}
+
+function resolvePaymentProvider(method) {
+  const normalizedMethod = String(method || 'card').toLowerCase();
+  if (normalizedMethod === 'cash') return 'escrow-cash-pickup';
+  if (normalizedMethod === 'bank' || normalizedMethod === 'mobile') return 'flutterwave-ready';
+  return 'flutterwave-ready';
+}
+
+function createPaymentRecord({ type, order, method, amount, currency = 'ZAR' }) {
+  const payment = {
+    id: nextId(state.payments),
+    reference: makePaymentReference(type),
+    type,
+    orderId: order.id,
+    method,
+    provider: resolvePaymentProvider(method),
+    amount: Number(amount || 0),
+    currency,
+    status: method === 'cash' ? 'cash_on_pickup_pending' : 'escrow_held',
+    escrowStatus: method === 'cash' ? 'handover_required' : 'payment_held',
+    createdAt: new Date().toISOString()
+  };
+  state.payments.unshift(payment);
+  return payment;
+}
+
 app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(compression());
@@ -885,13 +920,22 @@ app.get('/api/bookstore/orders', (_req, res) => res.json(responseCollection(stat
 app.post('/api/bookstore/orders', (req, res) => {
   const sessionUser = requireAuthenticatedUser(req, res);
   if (!sessionUser) return;
+  const amount = Number(req.body?.amount || req.body?.total || 0);
+  const paymentMethod = String(req.body?.paymentMethod || 'card');
   const order = {
     id: nextId(state.bookstore.orders),
     ...req.body,
     ownerId: sessionUser?.id || null,
+    amount,
+    paymentMethod,
     status: req.body?.status || 'payment_pending',
+    escrowStatus: req.body?.escrowStatus || 'payment_held',
     createdAt: new Date().toISOString()
   };
+  const payment = createPaymentRecord({ type: 'bookstore', order, method: paymentMethod, amount, currency: 'ZAR' });
+  order.paymentReference = payment.reference;
+  order.paymentProvider = payment.provider;
+  order.escrowStatus = payment.escrowStatus;
   state.bookstore.orders.unshift(order);
   saveState();
   res.status(201).json(order);
@@ -986,16 +1030,81 @@ app.get('/api/marketplace/orders', (_req, res) => res.json(responseCollection(st
 app.post('/api/marketplace/orders', (req, res) => {
   const sessionUser = requireAuthenticatedUser(req, res);
   if (!sessionUser) return;
+  const amount = Number(req.body?.amount || req.body?.total || 0);
+  const paymentMethod = String(req.body?.paymentMethod || 'card');
   const order = {
     id: nextId(state.marketplace.orders),
     ...req.body,
     ownerId: sessionUser?.id || null,
+    amount,
+    paymentMethod,
     status: req.body?.status || 'payment_pending',
+    escrowStatus: req.body?.escrowStatus || 'payment_held',
     createdAt: new Date().toISOString()
   };
+  const payment = createPaymentRecord({ type: 'marketplace', order, method: paymentMethod, amount, currency: 'ZAR' });
+  order.paymentReference = payment.reference;
+  order.paymentProvider = payment.provider;
+  order.escrowStatus = payment.escrowStatus;
   state.marketplace.orders.unshift(order);
   saveState();
   res.status(201).json(order);
+});
+
+app.get('/api/payments', (req, res) => {
+  const sessionUser = requireSessionUser(req);
+  if (!sessionUser) return res.json([]);
+  const userOrders = new Set([
+    ...state.marketplace.orders.filter(order => String(order.ownerId || '') === String(sessionUser.id)).map(order => `marketplace:${order.id}`),
+    ...state.bookstore.orders.filter(order => String(order.ownerId || '') === String(sessionUser.id)).map(order => `bookstore:${order.id}`)
+  ]);
+  const payments = state.payments.filter(payment => userOrders.has(`${payment.type}:${payment.orderId}`));
+  res.json(responseCollection(payments));
+});
+
+app.post('/api/payments/checkout', (req, res) => {
+  const sessionUser = requireAuthenticatedUser(req, res);
+  if (!sessionUser) return;
+  const type = String(req.body?.type || '').trim().toLowerCase();
+  const paymentMethod = String(req.body?.paymentMethod || 'card').trim().toLowerCase();
+  if (!['marketplace', 'bookstore'].includes(type)) {
+    return res.status(400).json({ error: 'Checkout type must be marketplace or bookstore' });
+  }
+
+  const amount = Number(req.body?.amount || req.body?.total || 0);
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return res.status(400).json({ error: 'Checkout amount must be greater than zero' });
+  }
+
+  const orderCollection = type === 'bookstore' ? state.bookstore.orders : state.marketplace.orders;
+  const order = {
+    id: nextId(orderCollection),
+    ...(req.body?.order || {}),
+    ownerId: sessionUser.id,
+    buyer: {
+      name: sessionUser.name,
+      email: sessionUser.email,
+      ...(req.body?.buyer || {})
+    },
+    amount,
+    paymentMethod,
+    status: paymentMethod === 'cash' ? 'handover_pending' : 'payment_pending',
+    escrowStatus: paymentMethod === 'cash' ? 'handover_required' : 'payment_held',
+    createdAt: new Date().toISOString()
+  };
+  const payment = createPaymentRecord({
+    type,
+    order,
+    method: paymentMethod,
+    amount,
+    currency: String(req.body?.currency || 'ZAR').toUpperCase()
+  });
+  order.paymentReference = payment.reference;
+  order.paymentProvider = payment.provider;
+  order.escrowStatus = payment.escrowStatus;
+  orderCollection.unshift(order);
+  saveState();
+  res.status(201).json({ order, payment });
 });
 app.get('/api/marketplace/offers', (_req, res) => res.json(responseCollection(state.marketplace.offers)));
 app.post('/api/marketplace/offers', (req, res) => {

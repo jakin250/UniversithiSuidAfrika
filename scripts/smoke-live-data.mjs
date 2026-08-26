@@ -23,16 +23,23 @@ const server = spawn(process.execPath, ['server.js'], {
 });
 
 let output = '';
+let serverExit = null;
 server.stdout.on('data', chunk => { output += chunk.toString(); });
 server.stderr.on('data', chunk => { output += chunk.toString(); });
+server.on('exit', (code, signal) => {
+  serverExit = { code, signal };
+});
 
 function stopServer() {
   if (!server.killed) server.kill('SIGTERM');
 }
 
 async function waitForHealth() {
-  const deadline = Date.now() + 10_000;
+  const deadline = Date.now() + 30_000;
   while (Date.now() < deadline) {
+    if (serverExit) {
+      throw new Error(`Server exited before becoming healthy (${JSON.stringify(serverExit)}). Output:\n${output}`);
+    }
     try {
       const response = await fetch(`${baseUrl}/healthz`);
       if (response.ok) return;
@@ -85,13 +92,31 @@ try {
   const me = await request('/api/auth/me', {}, cookie);
   if (me.payload?.user?.email !== email) throw new Error('Session cookie did not authenticate the registered user.');
 
-  await request('/api/marketplace/listings', {
+  const createdListing = await request('/api/marketplace/listings', {
     method: 'POST',
     body: JSON.stringify({ title: 'Live Smoke Test Laptop Stand', price: 120, condition: 'Good' })
   }, cookie);
   const listings = await request('/api/marketplace/listings');
   if (!listings.payload.some(item => item.title === 'Live Smoke Test Laptop Stand')) {
     throw new Error('Marketplace listing did not persist to live data store.');
+  }
+
+  const marketplaceCheckout = await request('/api/payments/checkout', {
+    method: 'POST',
+    body: JSON.stringify({
+      type: 'marketplace',
+      amount: 120,
+      currency: 'ZAR',
+      paymentMethod: 'card',
+      order: {
+        listingId: createdListing.payload.id,
+        itemTitle: createdListing.payload.title,
+        deliveryMethod: 'Campus pickup'
+      }
+    })
+  }, cookie);
+  if (!marketplaceCheckout.payload?.payment?.reference || marketplaceCheckout.payload?.order?.escrowStatus !== 'payment_held') {
+    throw new Error(`Marketplace checkout did not create escrow payment metadata: ${JSON.stringify(marketplaceCheckout.payload)}`);
   }
 
   const createdBook = await request('/api/bookstore/books', {
@@ -122,6 +147,33 @@ try {
   if (publishedDraft.payload.status !== 'active' || publishedDraft.payload.price !== 85) {
     throw new Error('Student could not publish and update their draft listing.');
   }
+
+  const bookstoreCheckout = await request('/api/payments/checkout', {
+    method: 'POST',
+    body: JSON.stringify({
+      type: 'bookstore',
+      amount: 100,
+      currency: 'ZAR',
+      paymentMethod: 'cash',
+      order: {
+        bookId: publishedDraft.payload.id,
+        book: publishedDraft.payload
+      },
+      buyer: {
+        phone: '+27 12 345 6789',
+        address: 'Campus pickup'
+      }
+    })
+  }, cookie);
+  if (!bookstoreCheckout.payload?.payment?.reference || bookstoreCheckout.payload?.order?.escrowStatus !== 'handover_required') {
+    throw new Error(`Bookstore checkout did not create handover payment metadata: ${JSON.stringify(bookstoreCheckout.payload)}`);
+  }
+
+  const payments = await request('/api/payments', {}, cookie);
+  if (payments.payload.length < 2) {
+    throw new Error('Authenticated student could not retrieve their payment records.');
+  }
+
   await request(`/api/bookstore/books/${createdBook.payload.id}`, { method: 'DELETE' }, cookie);
   const booksAfterDelete = await request('/api/bookstore/books');
   if (booksAfterDelete.payload.some(item => item.id === createdBook.payload.id)) {

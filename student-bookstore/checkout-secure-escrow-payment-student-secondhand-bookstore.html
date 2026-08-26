@@ -467,6 +467,7 @@
     <p>Student Secondhand Bookstore — Buy wisely, sell easily, exchange fairly.</p>
 </footer>
 
+<script src="../public/api-client.js"></script>
 <script>
     // Mock book data (would come from URL parameter or previous page)
     const booksDB = {
@@ -519,6 +520,7 @@
     }
 
     let book = getBookFromURL();
+    let currentUser = null;
     
     // Calculate fees
     let platformFee = Math.round(book.price * 0.05); // 5% platform fee
@@ -547,6 +549,24 @@
         } catch (error) {
             console.error(error);
         }
+    }
+
+    async function hydrateCurrentUser() {
+        try {
+            const response = await apiClient.get('../api/auth/me');
+            currentUser = response?.user || null;
+            if (currentUser) {
+                document.getElementById('fullName').value = currentUser.name || '';
+                document.getElementById('email').value = currentUser.email || '';
+            }
+        } catch {
+            currentUser = null;
+        }
+    }
+
+    function redirectToSignin() {
+        const next = encodeURIComponent(`${window.location.pathname}${window.location.search}`);
+        window.location.href = `../student-marketplace/authentication-student-marketplace.html?next=${next}`;
     }
     
     // Render order summary
@@ -632,7 +652,13 @@
     }
     
     // Process payment
-    window.processPayment = () => {
+    window.processPayment = async () => {
+        if (!currentUser) {
+            alert('Please sign in with your university email before checkout.');
+            redirectToSignin();
+            return;
+        }
+
         const fullName = document.getElementById('fullName').value;
         const email = document.getElementById('email').value;
         const phone = document.getElementById('phone').value;
@@ -696,18 +722,30 @@
             trackingId: 'TRK-' + Math.random().toString(36).substr(2, 8).toUpperCase()
         };
         
-        apiClient.post('../api/bookstore/orders', order).then(savedOrder => {
-            alert(`✅ Payment Successful!\n\nOrder ID: ${savedOrder.id}\nTotal Paid: R${total}\n\n🔒 Your payment is held in escrow.\nThe seller has been notified and will arrange delivery.\n\nYou will be redirected to Order Tracking.`);
-            window.location.href = `order-tracking-student-secondhand-bookstore.html?id=${savedOrder.id}`;
-        }).catch(() => {
-            alert('❌ Could not save the order. Please try again.');
-        });
+        try {
+            const checkout = await apiClient.post('../api/payments/checkout', {
+                type: 'bookstore',
+                amount: total,
+                currency: 'ZAR',
+                paymentMethod: selectedMethod,
+                buyer: order.buyer,
+                order
+            });
+            alert(`Payment successful.\n\nOrder ID: ${checkout.order.id}\nReference: ${checkout.payment.reference}\nTotal Paid: R${total}\n\nYour payment is held in escrow. The seller has been notified and will arrange delivery.`);
+            window.location.href = `order-tracking-student-secondhand-bookstore.html?id=${checkout.order.id}`;
+        } catch (error) {
+            if (error.status === 401) {
+                alert('Please sign in with your university email before checkout.');
+                redirectToSignin();
+                return;
+            }
+            alert(error.message || 'Could not initiate payment. Please try again.');
+        }
     };
     
     // Initial render
-    hydrateBook().then(renderOrderSummary);
+    Promise.all([hydrateCurrentUser(), hydrateBook()]).then(renderOrderSummary);
 </script>
 </body>
 </html>
-
 

@@ -404,12 +404,10 @@
           password,
           campus
         });
-        verificationModal.querySelector('h3').innerText = 'Account created';
-        verificationModal.querySelector('p').innerHTML = `Your account for <span class="font-medium text-indigo-600">${email}</span> is ready. Redirecting you to the student marketplace...`;
-        verificationCode.value = '';
+        showAuthMessage(`Account created for ${email}. Redirecting you now...`, 'success');
         signupFormElem.reset();
         strengthBar.style.width = '0%';
-        redirectAfterAuth();
+        setTimeout(redirectAfterAuth, 350);
       } catch (error) {
         showAuthMessage(error.message || 'Signup failed', 'error');
       }
@@ -447,4 +445,3 @@
   </script>
 </body>
 </html>
-

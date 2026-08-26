@@ -215,6 +215,21 @@
     let basePrice = 45;
     let currentTotal = 45;
     let currentListing = null;
+    let currentUser = null;
+
+    function redirectToSignin() {
+      const next = encodeURIComponent(`${window.location.pathname}${window.location.search}`);
+      window.location.href = `authentication-student-marketplace.html?next=${next}`;
+    }
+
+    async function hydrateCurrentUser() {
+      try {
+        const response = await apiClient.get('../api/auth/me');
+        currentUser = response?.user || null;
+      } catch {
+        currentUser = null;
+      }
+    }
 
     function updateTotal() {
       let deliveryFee = 0;
@@ -272,29 +287,51 @@
     // default select first card
     if(paymentCards[0]) paymentCards[0].classList.add('selected', 'border-indigo-500', 'bg-indigo-50');
     
-    // Confirm & Pay Action (simulate escrow payment)
+    // Confirm & Pay Action
     const confirmBtn = document.getElementById('confirmPayBtn');
     if(confirmBtn) {
-      confirmBtn.addEventListener('click', (e) => {
+      confirmBtn.addEventListener('click', async (e) => {
         e.preventDefault();
+        if (!currentUser) {
+          alert('Please sign in with your university email before checkout.');
+          redirectToSignin();
+          return;
+        }
         if (!currentListing) {
           alert('Please select a listing before checking out.');
           return;
         }
         const deliveryMethod = pickupRadio.checked ? 'Campus pickup' : 'Local delivery';
         const methodSelected = document.querySelector('.payment-card.selected')?.getAttribute('data-method') || 'card';
-        apiClient.post('../api/marketplace/orders', {
-          listingId: currentListing.id,
-          title: currentListing.title || 'Marketplace order',
-          seller: currentListing.seller || 'Marketplace seller',
-          total: currentTotal,
-          deliveryMethod,
-          paymentMethod: methodSelected,
-          status: 'processing'
-        }).then(order => {
-          alert(`✅ Payment initiated: $${currentTotal} via ${methodSelected}.\n\n🛡️ ESCROW ACTIVE: Your money is held securely. Seller will be notified to prepare your item.\n\nYou can track your order and confirm delivery once you receive the item.\n\n📦 Order #${order.id} created.`);
-          window.location.href = `order-tracking-student-marketplace.html?id=${order.id}`;
-        });
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('opacity-70', 'cursor-wait');
+        try {
+          const checkout = await apiClient.post('../api/payments/checkout', {
+            type: 'marketplace',
+            amount: currentTotal,
+            currency: 'ZAR',
+            paymentMethod: methodSelected,
+            buyer: { deliveryMethod },
+            order: {
+              listingId: currentListing.id,
+              itemTitle: currentListing.title || 'Marketplace order',
+              title: currentListing.title || 'Marketplace order',
+              seller: currentListing.seller || 'Marketplace seller',
+              deliveryMethod
+            }
+          });
+          alert(`Payment initiated: ${checkout.payment.currency} ${currentTotal.toFixed(2)} via ${methodSelected}.\n\nEscrow is active. Reference: ${checkout.payment.reference}\n\nTrack your order and confirm delivery once you receive the item.`);
+          window.location.href = `order-tracking-student-marketplace.html?id=${checkout.order.id}`;
+        } catch (error) {
+          if (error.status === 401) {
+            alert('Please sign in with your university email before checkout.');
+            redirectToSignin();
+            return;
+          }
+          alert(error.message || 'Could not initiate payment. Please try again.');
+          confirmBtn.disabled = false;
+          confirmBtn.classList.remove('opacity-70', 'cursor-wait');
+        }
       });
     }
     
@@ -331,8 +368,7 @@
       }
     }
 
-    loadListingForCheckout();
+    Promise.all([hydrateCurrentUser(), loadListingForCheckout()]);
   </script>
 </body>
 </html>
-
